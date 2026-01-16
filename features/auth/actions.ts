@@ -2,6 +2,8 @@
 
 import { auth } from '@/lib/auth';
 import { SignInForm, SignUpForm } from './types';
+import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 
 export const signIn = async (values: SignInForm) => {
     const { username, password } = values;

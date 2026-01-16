@@ -34,15 +34,15 @@ export function WhatsAppModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
-              <MessageCircle className="h-6 w-6 text-green-500" />
+            <div className="h-12 w-12 rounded-full bg-success/10 flex items-center justify-center border border-success/20">
+              <MessageCircle className="h-6 w-6 text-success" />
             </div>
             <div>
               <DialogTitle className="font-serif">
                 {isResend ? 'Reenviar recibo' : 'Enviar recibo por WhatsApp'}
               </DialogTitle>
               <DialogDescription>
-                {isResend 
+                {isResend
                   ? 'Se ha detectado cambios en la escritura. ¿Desea reenviar el recibo actualizado?'
                   : '¿Desea enviar el recibo de la escritura al cliente?'}
               </DialogDescription>
@@ -88,7 +88,7 @@ export function WhatsAppModal({
             {isResend ? 'No reenviar' : 'Continuar sin enviar'}
           </Button>
           <Button
-            className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+            className="flex-1 bg-success hover:bg-success/90 text-success-foreground"
             onClick={onSend}
           >
             <Send className="h-4 w-4 mr-2" />

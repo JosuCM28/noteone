@@ -86,19 +86,19 @@ export default function EscriturasLista({ escrituras }: EscriturasListaProps) {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in px-4 sm:px-6 max-w-screen-2xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="font-serif text-2xl lg:text-3xl font-bold tracking-tight">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+        <div className="flex-1 min-w-0">
+          <h1 className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">
             Escrituras
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">
             {escrituras.length} escritura{escrituras.length !== 1 ? 's' : ''} encontrada{escrituras.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <Button asChild className="btn-accent w-fit">
-          <Link href="/escrituras/nueva">
+        <Button asChild className="btn-accent w-full sm:w-fit">
+          <Link href="/escrituras/new">
             <Plus className="mr-2 h-4 w-4" />
             Nueva escritura
           </Link>
@@ -107,10 +107,10 @@ export default function EscriturasLista({ escrituras }: EscriturasListaProps) {
 
       {/* Filters */}
       <Card className="shadow-premium">
-        <CardContent className="p-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <div className="relative flex-1 min-w-45 sm:min-w-50">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
               <Input
                 placeholder="Buscar por folio, número o nombre..."
                 value={localSearch}
@@ -118,13 +118,13 @@ export default function EscriturasLista({ escrituras }: EscriturasListaProps) {
                   setLocalSearch(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="pl-9 input-focus"
+                className="pl-9 input-focus text-sm"
               />
             </div>
 
             <Select value={tipoFilter} onValueChange={(v) => { setTipoFilter(v); setCurrentPage(1); }}>
-              <SelectTrigger className="w-[180px]">
-                <Filter className="h-4 w-4 mr-2" />
+              <SelectTrigger className="w-full sm:w-45 text-sm">
+                <Filter className="h-4 w-4 mr-2 shrink-0" />
                 <SelectValue placeholder="Tipo" />
               </SelectTrigger>
               <SelectContent>
@@ -138,7 +138,7 @@ export default function EscriturasLista({ escrituras }: EscriturasListaProps) {
             </Select>
 
             <Select value={estatusFilter} onValueChange={(v) => { setEstatusFilter(v); setCurrentPage(1); }}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-45 text-sm">
                 <SelectValue placeholder="Estatus" />
               </SelectTrigger>
               <SelectContent>
@@ -152,9 +152,10 @@ export default function EscriturasLista({ escrituras }: EscriturasListaProps) {
             </Select>
 
             {hasFilters && (
-              <Button variant="ghost" size="sm" onClick={clearFilters}>
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="text-sm">
                 <X className="h-4 w-4 mr-1" />
-                Limpiar
+                <span className="hidden sm:inline">Limpiar</span>
+                <span className="sm:hidden">Limpiar</span>
               </Button>
             )}
           </div>

@@ -27,19 +27,19 @@ export default function Dashboard({ escrituras }: DashboardProps) {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in max-w-7xl mx-auto p-4 pt-8">
+    <div className="space-y-6 animate-fade-in max-w-7xl mx-auto sm:p-6 lg:p-8 pt-10 sm:pt-8 lg:pt-5">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl lg:text-3xl font-bold">
+        <div className="flex-1">
+          <h1 className="text-2xl sm:text-2xl lg:text-3xl font-bold tracking-tight">
             Bienvenido Josue{/* Bienvenido, {user?.nombre.split(' ')[0]} */}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">
             Aquí está el resumen de actividad de la notaría
           </p>
         </div>
-        <Button asChild className="btn-accent w-fit">
-          <Link href="/escrituras/nueva">
+        <Button asChild className="btn-accent w-full sm:w-fit">
+          <Link href="/escrituras/new">
             Nueva escritura
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
@@ -47,40 +47,41 @@ export default function Dashboard({ escrituras }: DashboardProps) {
       </div>
 
       {/* Metrics */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="metric-card">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Escrituras</p>
-                <p className="text-3xl font-bold mt-1">{stats.total}</p>
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">Total Escrituras</p>
+                <p className="text-2xl sm:text-3xl font-bold mt-1">{stats.total}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <FileText className="h-6 w-6 text-primary" />
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </div>
             </div>
-            <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-              <TrendingUp className="h-3 w-3 text-success" />
+            <div className="mt-3 sm:mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+              <TrendingUp className="h-3 w-3 text-success shrink-0" />
               <span className="text-success font-medium">+12%</span>
-              <span>vs. mes anterior</span>
+              <span className="hidden sm:inline">vs. mes anterior</span>
+              <span className="sm:hidden">vs mes anterior</span>
             </div>
           </CardContent>
         </Card>
 
         <Card className="metric-card">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Por Liquidar</p>
-                <p className="text-3xl font-bold mt-1">{stats.porLiquidar}</p>
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">Por Liquidar</p>
+                <p className="text-2xl sm:text-3xl font-bold mt-1">{stats.porLiquidar}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-warning/10 flex items-center justify-center">
-                <Clock className="h-6 w-6 text-warning" />
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-warning/10 flex items-center justify-center flex-shrink-0">
+                <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-warning" />
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-3 sm:mt-4">
               <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-warning rounded-full transition-all duration-500"
                   style={{ width: `${stats.total ? (stats.porLiquidar / stats.total) * 100 : 0}%` }}
                 />
@@ -90,19 +91,19 @@ export default function Dashboard({ escrituras }: DashboardProps) {
         </Card>
 
         <Card className="metric-card">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">En Registro</p>
-                <p className="text-3xl font-bold mt-1">{stats.enRegistro}</p>
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">En Registro</p>
+                <p className="text-2xl sm:text-3xl font-bold mt-1">{stats.enRegistro}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-info/10 flex items-center justify-center">
-                <Truck className="h-6 w-6 text-info" />
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-info/10 flex items-center justify-center flex-shrink-0">
+                <Truck className="h-5 w-5 sm:h-6 sm:w-6 text-info" />
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-3 sm:mt-4">
               <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-info rounded-full transition-all duration-500"
                   style={{ width: `${stats.total ? (stats.enRegistro / stats.total) * 100 : 0}%` }}
                 />
@@ -112,19 +113,19 @@ export default function Dashboard({ escrituras }: DashboardProps) {
         </Card>
 
         <Card className="metric-card">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Entregadas</p>
-                <p className="text-3xl font-bold mt-1">{stats.entregadas}</p>
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">Entregadas</p>
+                <p className="text-2xl sm:text-3xl font-bold mt-1">{stats.entregadas}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-success/10 flex items-center justify-center">
-                <CheckCircle className="h-6 w-6 text-success" />
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
+                <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-success" />
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-3 sm:mt-4">
               <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-success rounded-full transition-all duration-500"
                   style={{ width: `${stats.total ? (stats.entregadas / stats.total) * 100 : 0}%` }}
                 />

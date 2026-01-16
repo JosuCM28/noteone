@@ -72,11 +72,11 @@ export const TIPOS_ESCRITURA: TipoEscrituraConfig[] = [
 ];
 
 export const ESTATUS_CONFIG: EstatusConfig[] = [
-  { value: 'por-liquidar', label: 'Por liquidar', color: 'warning' },
+  { value: 'por-liquidar', label: 'Pendiente de Pago', color: 'warning' },
   { value: 'liquidado', label: 'Liquidado', color: 'info' },
-  { value: 'proceso-pago', label: 'Proceso de pago', color: 'secondary' },
-  { value: 'registro', label: 'Registro', color: 'info' },
-  { value: 'proceso-entrega', label: 'Proceso de entrega', color: 'secondary' },
+  { value: 'proceso-pago', label: 'Proceso de Pago', color: 'secondary' },
+  { value: 'registro', label: 'en Inscripción Registral', color: 'info' },
+  { value: 'proceso-entrega', label: 'Proceso de Entrega', color: 'secondary' },
   { value: 'entregado', label: 'Entregado', color: 'success' },
 ];
 

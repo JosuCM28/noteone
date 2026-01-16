@@ -30,22 +30,22 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="left" className="w-72 p-0 bg-sidebar">
-        <SheetHeader className="border-b border-sidebar-border px-4 py-5">
+      <SheetContent side="left" className="w-72 p-0 border-r border-border/50">
+        <SheetHeader className="border-b border-border/50 px-4 py-5 bg-card">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-accent to-amber-600">
-              <Scale className="h-5 w-5 text-sidebar" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg shadow-md" style={{background: 'var(--gradient-accent)'}}>
+              <Scale className="h-5 w-5" style={{color: 'var(--accent-foreground)'}} />
             </div>
             <div>
-              <SheetTitle className="font-serif text-lg font-semibold text-sidebar-foreground text-left">
+              <SheetTitle className="font-serif text-lg font-semibold text-foreground text-left">
                 Notaría
               </SheetTitle>
-              <p className="text-xs text-sidebar-foreground/60">Sistema de Gestión</p>
+              <p className="text-xs text-muted-foreground">Sistema de Gestión</p>
             </div>
           </div>
         </SheetHeader>
 
-        <nav className="flex-1 space-y-1 px-3 py-4">
+        <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
           {filteredItems.map(item => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -53,31 +53,36 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
                 key={item.href}
                 href={item.href}
                 onClick={() => onOpenChange(false)}
-                className={cn('nav-item', isActive && 'active')}
+                className={cn(
+                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200',
+                  isActive
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:bg-accent/10 hover:text-foreground'
+                )}
               >
-                <item.icon className="h-5 w-5" />
+                <item.icon className={cn('h-5 w-5 shrink-0', isActive && 'text-primary-foreground')} />
                 <span>{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="border-t border-sidebar-border p-3 mt-auto">
+        <div className="border-t border-border/50 p-3 mt-auto bg-card">
           {/* {user && (
-            <div className="mb-3 rounded-lg bg-sidebar-accent p-3">
-              <p className="text-sm font-medium text-sidebar-foreground">
+            <div className="mb-3 rounded-lg bg-muted p-3">
+              <p className="text-sm font-medium text-foreground">
                 {user.nombre}
               </p>
-              <p className="text-xs text-sidebar-foreground/60 capitalize">
+              <p className="text-xs text-muted-foreground capitalize">
                 {user.rol}
               </p>
             </div>
           )} */}
-          
+
           <Button
             variant="ghost"
             // onClick={handleLogout}
-            className="w-full justify-start text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+            className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-muted"
           >
             <LogOut className="h-5 w-5 mr-3" />
             Cerrar sesión

@@ -107,38 +107,38 @@ export default function EscrituraDetail(
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in px-4 sm:px-6 max-w-screen-2xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
+      <div className="flex flex-col gap-3 sm:gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <Button variant="ghost" size="icon" asChild className="shrink-0">
             <Link href="/escrituras">
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
-          <div className="flex-1">
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="font-serif text-2xl lg:text-3xl font-bold tracking-tight">
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <h1 className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight truncate">
                 {escritura.folioInterno}
               </h1>
               <StatusBadge status={escritura.estatus} />
               {escritura.reciboEnviado && !escritura.reciboEnviado && (
-                <span className="inline-flex items-center gap-1 text-xs text-success bg-success/10 px-2 py-1 rounded-full">
+                <span className="inline-flex items-center gap-1 text-xs text-success bg-success/10 px-2 py-1 rounded-full border border-success/20">
                   <CheckCircle className="h-3 w-3" />
                   Recibo enviado
                 </span>
               )}
             </div>
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground mt-1 truncate">
               Escritura #{escritura.numeroEscritura} • {tipoConfig?.label}
             </p>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Select value={escritura.estatus} onValueChange={handleStatusChange}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-full sm:w-45">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -150,37 +150,40 @@ export default function EscrituraDetail(
             </SelectContent>
           </Select>
 
-          <div className="flex-1" />
+          <div className="flex-1 min-w-0" />
 
           {showResendButton && (
             <Button
               variant="outline"
-              className="text-green-600 border-green-600 hover:bg-green-50"
+              className="text-success border-success hover:bg-success/10 hover:text-success w-full sm:w-auto"
               onClick={() => setShowWhatsAppModal(true)}
             >
               <MessageCircle className="h-4 w-4 mr-2" />
-              {escritura.reciboEnviado ? 'Reenviar recibo' : 'Enviar recibo'}
+              <span className="hidden sm:inline">{escritura.reciboEnviado ? 'Reenviar recibo' : 'Enviar recibo'}</span>
+              <span className="sm:hidden">Recibo</span>
             </Button>
           )}
 
-          <Button variant="outline" asChild>
+          <Button variant="outline" asChild className="w-full sm:w-auto">
             <Link href={`/escrituras/${escritura.id}/editar`}>
               <Pencil className="h-4 w-4 mr-2" />
-              Editar
+              <span className="hidden sm:inline">Editar</span>
+              <span className="sm:hidden">Editar</span>
             </Link>
           </Button>
           <Button
             variant="outline"
-            className="text-destructive hover:text-destructive"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10 w-full sm:w-auto"
             onClick={() => setShowDeleteDialog(true)}
           >
             <Trash2 className="h-4 w-4 mr-2" />
-            Eliminar
+            <span className="hidden sm:inline">Eliminar</span>
+            <span className="sm:hidden">Eliminar</span>
           </Button>
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Datos Generales */}

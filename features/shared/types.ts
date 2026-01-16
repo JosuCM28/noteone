@@ -98,3 +98,18 @@ export interface EstatusConfig {
   label: string;
   color: 'default' | 'warning' | 'info' | 'success' | 'destructive' | 'secondary';
 }
+
+export interface DraftParticipant {
+  id: string;
+  nombre: string;
+  rol: string;
+  telefono: string;
+  side: "A" | "B"; // A = personaA (comprador/vendedor), B = personaB
+}
+
+export interface ParticipantForm {
+  nombre: string;
+  rol: string;
+  telefono: string;
+}
+
