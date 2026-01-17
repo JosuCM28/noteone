@@ -41,11 +41,11 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {/* Main Content */}
        <div className="lg:pl-64">
-        {/* <Topbar
+        <Topbar
           onMenuClick={() => setMobileNavOpen(true)}
           onSearch={setGlobalSearch}
           searchValue={globalSearch}
-        /> */}
+        />
 
         <main className="p-4 sm:p-6 lg:p-8">
           {children}

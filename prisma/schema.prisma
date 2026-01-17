@@ -78,3 +78,21 @@ model Verification {
   @@index([identifier])
   @@map("verification")
 }
+
+model Deed {
+  id             String        @id @default(uuid())
+  type           String
+  folio          String
+  deedNumber     String
+  signatureDate  DateTime?
+  notes         String?
+  participants  Participant[]
+  baseValue     Float
+  propertyTax      Float
+  estimated   Float
+  estatus       EstatusEscritura @default(por_liquidar)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("escritura")
+}

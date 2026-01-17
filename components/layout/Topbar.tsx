@@ -13,7 +13,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 // import { useAuth } from '@/features/auth';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { authClient } from '@/lib/auth-client';
+import { toast } from 'sonner';
 
 const HIDE_BUTTON_ROUTES = new Set([
   "/dashboard",
@@ -33,6 +35,7 @@ export default function Topbar({ onMenuClick, onSearch, searchValue = '', showSe
   const [localSearch, setLocalSearch] = useState(searchValue);
   const pathname = usePathname();
   const hideButton = HIDE_BUTTON_ROUTES.has(pathname);
+  const router = useRouter();
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocalSearch(e.target.value);
@@ -45,6 +48,22 @@ export default function Topbar({ onMenuClick, onSearch, searchValue = '', showSe
   //     .slice(0, 2)
   //     .join('')
   //     .toUpperCase() || 'U';
+
+  const handleLogOut = async () => {
+    try {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            router.push("/login");
+          },
+        },
+      });
+    }
+    catch (error) {
+      console.log(error);
+      toast.error('Error al cerrar sesión');
+    }
+  }
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 px-4 lg:px-6 shadow-sm">
@@ -98,33 +117,48 @@ export default function Topbar({ onMenuClick, onSearch, searchValue = '', showSe
         {/* User dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="gap-2 pl-2 pr-1 shrink-0">
+            <Button variant="ghost" className="gap-2 pl-2 pr-1 shrink-0 hover:bg-muted-foreground/10 hover:text-muted-foreground/90">
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                   {/* {initials} */} JCM
                 </AvatarFallback>
               </Avatar>
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              <ChevronDown className="h-4 w-4 text-muted-foreground " />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>
-              <div>
-                <p className="font-medium">Josue</p>
-                <p className="text-xs text-muted-foreground capitalize">Administrador</p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
-              Mi perfil
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
-              <LogOut className="mr-2 h-4 w-4" />
-              Cerrar sesión
-            </DropdownMenuItem>
-          </DropdownMenuContent>
+  <DropdownMenuLabel>
+    <div>
+      <p className="font-medium">Josue</p>
+      <p className="text-xs text-muted-foreground capitalize">Administrador</p>
+    </div>
+  </DropdownMenuLabel>
+
+  <DropdownMenuSeparator />
+
+  {/* <DropdownMenuItem className="cursor-pointer">
+    <User className="mr-2 h-4 w-4" />
+    Mi perfil
+  </DropdownMenuItem>
+
+  <DropdownMenuSeparator /> */}
+  <DropdownMenuItem
+    onClick={handleLogOut}
+    className="
+      cursor-pointer 
+      text-destructive 
+      focus:text-destructive
+      focus:bg-destructive/10
+      hover:bg-destructive/10
+      data-[highlighted]:bg-destructive/10
+      data-[highlighted]:text-destructive
+    "
+  >
+    <LogOut className="mr-2 h-4 w-4" />
+    Cerrar sesión
+  </DropdownMenuItem>
+</DropdownMenuContent>
+
         </DropdownMenu>
       </div>
     </header>

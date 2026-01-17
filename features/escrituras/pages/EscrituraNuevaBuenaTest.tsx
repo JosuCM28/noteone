@@ -1,12 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
   ArrowRight,
   Scroll,
-  UserPlus
+  Home,
+  Gift,
+  Ban,
+  XCircle,
+  Users,
+  PenTool,
+  Building,
+  FileEdit,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -22,12 +29,13 @@ import { BudgetBreakdown } from '../components/BudgetBreakdown';
 import { WhatsAppModal } from '../components/WhatsAppModal';
 import { TIPOS_ESCRITURA, ESTATUS_CONFIG, IMPUESTOS_FIJOS } from '@/features/shared/data/mock-data';
 import { TipoEscritura, EstatusEscritura, Persona, Presupuesto, Escritura, ParticipantForm, DraftParticipant } from '@/features/shared/types';
-import { cn, iconMap } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import z from 'zod';
-import { Controller, useForm, useWatch } from 'react-hook-form';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { EscrituraSchema, ParticipantSchema } from '@/features/auth/schemas';
+import { EscrituraSchema } from '@/features/auth/schemas';
+import { Pencil, Trash2, UserPlus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -40,6 +48,17 @@ import { ParticipantsTable } from '../components/ParticipantsTable';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 
 
+const iconMap: Record<string, any> = {
+  scroll: Scroll,
+  home: Home,
+  gift: Gift,
+  ban: Ban,
+  'x-circle': XCircle,
+  users: Users,
+  'pen-tool': PenTool,
+  building: Building,
+  'file-edit': FileEdit,
+};
 
 
 const ISR_TIPOS: TipoEscritura[] = ['compraventa', 'donacion'];
@@ -61,6 +80,7 @@ export default function EscrituraNueva() {
   const [estatus, setEstatus] = useState<EstatusEscritura>('por-liquidar');
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
   const [savedEscritura, setSavedEscritura] = useState<Escritura | null>(null);
+  const [draft, setDraft] = useState({ nombre: "", rol: "", telefono: "" });
 
   // Participantes
   const emptyParticipantForm: ParticipantForm = { nombre: "", rol: "", telefono: "" };
@@ -73,31 +93,6 @@ export default function EscrituraNueva() {
 
   const tipoConfig = TIPOS_ESCRITURA.find((t) => t.value === tipo);
 
-  const form = useForm<z.infer<typeof EscrituraSchema>>({
-    resolver: zodResolver(EscrituraSchema),
-    defaultValues: {
-      tipo: '',
-      folioInterno: '',
-      numeroEscritura: '',
-      fechaFirma: '',
-      notas: '',
-      participants: [],
-      valorBase: 0,
-      traslado: 0,
-      presupuesto: 0,
-      honorarios: 0,
-      isr: 0,
-      estatus: 'por-validar',
-    },
-    mode: 'onChange',
-  });
-
-  const values = useWatch({
-    control: form.control,
-  });
-  useEffect(() => {
-    console.log(values);
-  }, [values]);
   //reseteaDraft Para TIPOS distintos
   const resetDraftByType = () => {
     // drafts participantes
@@ -119,6 +114,7 @@ export default function EscrituraNueva() {
     setIsr(0);
     setEstatus("por-liquidar");
   };
+
 
   const traslado = valorBase * 0.05;
   const subtotal =
@@ -142,16 +138,6 @@ export default function EscrituraNueva() {
     totalFinal,
   };
 
-  const handleBack = () => {
-    if (step === 0) return router.push('/escrituras');
-    setStep((s) => s - 1);
-  };
-  const handleNext = () => {
-    if (step === STEPS.length - 1) return handleSubmit();
-    setStep((s) => s + 1);
-  };
-
-
   const handleTipoSelect = (t: TipoEscritura) => {
     // ✅ si ya había un tipo y lo cambias, limpia todo lo draft
     if (tipo && tipo !== t) {
@@ -168,44 +154,34 @@ export default function EscrituraNueva() {
     }
   };
 
-  useEffect(() => {
-    form.setValue(
-      "participants",
-      participants.map((p) => ({ nombre: p.nombre, rol: p.rol, telefono: p.telefono })),
-      { shouldValidate: true, shouldDirty: true }
-    );
-  }, [participants, form]);
-
-
-
   const canProceed = () => {
-    if (step === 0) return !!tipo;
+  if (step === 0) return !!tipo;
 
-    if (step === 1) {
-      const folio = form.getValues("folioInterno")?.trim();
-      const numero = form.getValues("numeroEscritura")?.trim();
+  if (step === 1) {
+    const folio = form.getValues("folioInterno")?.trim();
+    const numero = form.getValues("numeroEscritura")?.trim();
 
-      const baseOk = !!folio && !!numero;
+    const baseOk = !!folio && !!numero;
 
-      const aOk = participantsA.length >= 1;
+    const aOk = participantsA.length >= 1;
 
-      const bRequired = !!tipoConfig?.personaBLabel;
-      const bOk = !bRequired || participantsB.length >= 1;
+    const bRequired = !!tipoConfig?.personaBLabel;
+    const bOk = !bRequired || participantsB.length >= 1;
 
-      return baseOk && aOk && bOk;
-    }
+    return baseOk && aOk && bOk;
+  }
 
-    if (step === 2) return valorBase > 0;
+  if (step === 2) return valorBase > 0;
 
-    if (step === 3) {
-      const honorariosOk = honorarios > 0;
-      const isrAplica = !!tipo && ISR_TIPOS.includes(tipo);
-      const isrOk = !isrAplica || isr > 0;
-      return honorariosOk && isrOk;
-    }
+  if (step === 3) {
+    const honorariosOk = honorarios > 0;
+    const isrAplica = !!tipo && ISR_TIPOS.includes(tipo);
+    const isrOk = !isrAplica || isr > 0;
+    return honorariosOk && isrOk;
+  }
 
-    return true;
-  };
+  return true;
+};
 
   const handleSubmit = () => {
     toast.success('Escritura creada correctamente');
@@ -241,7 +217,24 @@ export default function EscrituraNueva() {
     }
   };
 
-
+  const form = useForm<z.infer<typeof EscrituraSchema>>({
+    resolver: zodResolver(EscrituraSchema),
+    defaultValues: {
+      tipo: '',
+      folioInterno: '',
+      numeroEscritura: '',
+      fechaFirma: '',
+      notas: '',
+      participants: [],
+      valorBase: 0,
+      traslado: 0,
+      presupuesto: 0,
+      honorarios: 0,
+      isr: 0,
+      estatus: 'por-validar',
+    },
+    mode: 'onChange',
+  });
 
   //Borrar el Draft cuando se regresa a la seleccion de TIPO
 
@@ -316,15 +309,6 @@ export default function EscrituraNueva() {
   const participantsA = participants.filter((p) => p.side === "A");
   const participantsB = participants.filter((p) => p.side === "B");
   //---------------------------------------------------------------------------------------------------------------------
-
-  const ParticipantModalSchema = ParticipantSchema;
-
-  const participantRHF = useForm<z.infer<typeof ParticipantSchema>>({
-    resolver: zodResolver(ParticipantSchema),
-    defaultValues: { nombre: "", rol: "", telefono: "" },
-    mode: "onChange",
-  });
-
 
 
   return (
@@ -530,20 +514,7 @@ export default function EscrituraNueva() {
                 </div>
 
                 {/* ✅ Modal shadcn para agregar/editar */}
-                <Dialog
-                  open={participantModalOpen}
-                  onOpenChange={(open) => {
-                    setParticipantModalOpen(open);
-
-                    if (open) {
-                      participantRHF.reset({
-                        nombre: participantForm.nombre ?? "",
-                        rol: participantForm.rol ?? "",
-                        telefono: participantForm.telefono ?? "",
-                      });
-                    }
-                  }}
-                >
+                <Dialog open={participantModalOpen} onOpenChange={setParticipantModalOpen}>
                   <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                       <DialogTitle>
@@ -555,92 +526,47 @@ export default function EscrituraNueva() {
                     </DialogHeader>
 
                     <div className="space-y-3">
-                      <Controller
-                        name="nombre"
-                        control={participantRHF.control}
-                        render={({ field, fieldState }) => (
-                          <Field data-invalid={!!fieldState.error}>
-                            <FieldLabel>Nombre *</FieldLabel>
-                            <Input {...field} />
-                            {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                          </Field>
-                        )}
-                      />
+                      <div>
+                        <Label>Nombre *</Label>
+                        <Input
+                          value={participantForm.nombre}
+                          onChange={(e) => setParticipantForm((p) => ({ ...p, nombre: e.target.value }))}
+                        />
+                      </div>
 
-                      <Controller
-                        name="rol"
-                        control={participantRHF.control}
-                        render={({ field, fieldState }) => (
-                          <Field data-invalid={!!fieldState.error}>
-                            <FieldLabel>Rol *</FieldLabel>
-                            <Input {...field} />
-                            {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                          </Field>
-                        )}
-                      />
+                      <div>
+                        <Label>Rol *</Label>
+                        <Input
+                          value={participantForm.rol}
+                          onChange={(e) => setParticipantForm((p) => ({ ...p, rol: e.target.value }))}
+                        />
+                      </div>
 
-                      <Controller
-                        name="telefono"
-                        control={participantRHF.control}
-                        render={({ field, fieldState }) => (
-                          <Field data-invalid={!!fieldState.error}>
-                            <FieldLabel>Teléfono *</FieldLabel>
-                            <Input {...field} placeholder="2221234567" />
-                            {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                          </Field>
-                        )}
-                      />
+                      <div>
+                        <Label>Teléfono *</Label>
+                        <Input
+                          value={participantForm.telefono}
+                          onChange={(e) => setParticipantForm((p) => ({ ...p, telefono: e.target.value }))}
+                          placeholder="2221234567"
+                        />
+                      </div>
                     </div>
 
                     <DialogFooter className="gap-2 sm:gap-0">
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() => {
-                          setParticipantModalOpen(false);
-                          participantRHF.reset(emptyParticipantForm);
-                        }}
+                        onClick={() => setParticipantModalOpen(false)}
                       >
                         Cancelar
                       </Button>
 
-                      <Button
-                        type="button"
-                        className="btn-accent"
-                        onClick={participantRHF.handleSubmit((data) => {
-                          const nombre = data.nombre.trim();
-                          const rol = data.rol.trim();
-                          const telefono = data.telefono.trim();
-
-                          if (editingParticipantId) {
-                            setParticipants((prev) =>
-                              prev.map((p) =>
-                                p.id === editingParticipantId
-                                  ? { ...p, nombre, rol, telefono, side: participantSide }
-                                  : p
-                              )
-                            );
-                          } else {
-                            setParticipants((prev) => [
-                              ...prev,
-                              { id: crypto.randomUUID(), nombre, rol, telefono, side: participantSide },
-                            ]);
-                          }
-
-                          setParticipantModalOpen(false);
-                          setEditingParticipantId(null);
-                          setParticipantForm(emptyParticipantForm);
-                          participantRHF.reset(emptyParticipantForm);
-                        })}
-                        disabled={!participantRHF.formState.isValid}
-                      >
+                      <Button type="button" className="btn-accent" onClick={saveParticipantDraft}>
                         {editingParticipantId ? "Guardar cambios" : "Agregar"}
                       </Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
-
-
               </div>
             )}
 
@@ -736,21 +662,27 @@ export default function EscrituraNueva() {
       <div className="flex flex-col sm:flex-row justify-between gap-3">
         <Button
           variant="outline"
-          onClick={handleBack}
+          onClick={() => (step === 0 ? router.push('/escrituras') : setStep((s) => s - 1))}
           className="w-full sm:w-auto"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           {step === 0 ? 'Cancelar' : 'Anterior'}
         </Button>
 
-        <Button
-          onClick={handleNext}
-          disabled={!canProceed()}
-          className="btn-accent w-full sm:w-auto cursor-pointer"
-        >
-          {step === STEPS.length - 1 ? 'Crear Escritura' : 'Siguiente'}
-          <ArrowRight className="h-4 w-4 ml-2" />
-        </Button>
+        {step < STEPS.length - 1 ? (
+          <Button
+            onClick={() => setStep((s) => s + 1)}
+            disabled={!canProceed()}
+            className="btn-accent w-full sm:w-auto cursor-pointer"
+          >
+            Siguiente
+            <ArrowRight className="h-4 w-4 ml-2" />
+          </Button>
+        ) : (
+          <Button onClick={handleSubmit} className="btn-accent w-full sm:w-auto">
+            Guardar Escritura
+          </Button>
+        )}
       </div>
 
       {/* WhatsApp Modal */}

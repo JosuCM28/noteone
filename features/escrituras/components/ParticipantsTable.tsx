@@ -18,7 +18,7 @@ export function ParticipantsTable({
   items,
   onEdit,
   onDelete,
-  maxVisible = 3,
+  maxVisible = 1,
 }: ParticipantsTableProps) {
   if (items.length === 0) return null;
 
