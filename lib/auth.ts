@@ -7,7 +7,7 @@ import { username } from "better-auth/plugins";
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {provider: 'postgresql'}),
     emailAndPassword: {
-        enabled: true,
+        enabled: false,
     },
     plugins: [nextCookies(), username()],
 

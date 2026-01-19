@@ -9,7 +9,53 @@
 * 🟢 You can import this file directly.
 */
 
+export const UserRole = {
+  ADMIN: 'ADMIN',
+  OPERATOR: 'OPERATOR'
+} as const
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const ParticipantRole = {
+  Testador: 'Testador',
+  Comprador: 'Comprador',
+  Donante: 'Donante',
+  Acreedor: 'Acreedor',
+  Deudor: 'Deudor',
+  Otorgante: 'Otorgante',
+  Apoderado: 'Apoderado',
+  Representante: 'Representante',
+  Participante: 'Participante',
+  Solicitante: 'Solicitante',
+  Causante: 'Causante',
+  Administrador: 'Administrador',
+  Heredero: 'Heredero',
+  Propietario: 'Propietario'
+} as const
+
+export type ParticipantRole = (typeof ParticipantRole)[keyof typeof ParticipantRole]
+
+
+export const DeedStatus = {
+  por_liquidar: 'por_liquidar',
+  liquidado: 'liquidado',
+  proceso_pago: 'proceso_pago',
+  registro: 'registro',
+  proceso_entrega: 'proceso_entrega',
+  entregado: 'entregado',
+  cancelado: 'cancelado'
+} as const
+
+export type DeedStatus = (typeof DeedStatus)[keyof typeof DeedStatus]
+
+
+export const AuditAction = {
+  CREATE: 'CREATE',
+  UPDATE: 'UPDATE',
+  STATUS_CHANGE: 'STATUS_CHANGE',
+  DELETE: 'DELETE',
+  NOTE_CHANGE: 'NOTE_CHANGE'
+} as const
+
+export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
