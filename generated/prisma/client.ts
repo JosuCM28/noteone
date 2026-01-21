@@ -74,3 +74,8 @@ export type Participant = Prisma.ParticipantModel
  * 
  */
 export type AuditLog = Prisma.AuditLogModel
+/**
+ * Model Taxes
+ * 
+ */
+export type Taxes = Prisma.TaxesModel

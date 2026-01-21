@@ -1,4 +1,4 @@
-import { Presupuesto, TipoEscritura } from '@/features/shared/types';
+import { Presupuesto, Tax, TipoEscritura } from '@/features/shared/types';
 import { Money } from '@/components/shared/Money';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';

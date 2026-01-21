@@ -9,6 +9,16 @@
 * 🟢 You can import this file directly.
 */
 
+export const TaxType = {
+  TRASLADO: 'TRASLADO',
+  DERECHO_REGISTRO: 'DERECHO_REGISTRO',
+  CERTIFICADO_CATASTALES: 'CERTIFICADO_CATASTALES',
+  CONSTANCIAS_ADEUTOS: 'CONSTANCIAS_ADEUTOS'
+} as const
+
+export type TaxType = (typeof TaxType)[keyof typeof TaxType]
+
+
 export const UserRole = {
   ADMIN: 'ADMIN',
   OPERATOR: 'OPERATOR'

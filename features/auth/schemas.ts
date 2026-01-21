@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const SignInSchema = z.object({
   username: z.string().min(1, 'El usuario no puede estar vacío').max(50, 'El usuario no puede exceder los 50 caracteres'),
-  password: z.string().min(1, 'La contraseña no puede estar vacía').max(50, 'La contraseña no puede exceder los 50 caracteres'),
+  password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres').max(50, 'La contraseña no puede exceder los 50 caracteres'),
 });
 
 export const ParticipantSchema = z.object({
@@ -25,3 +25,4 @@ export const EscrituraSchema = z.object({
   isr: z.number().min(1, 'El ISR no puede ser menor a 1').optional(),
   estatus: z.string().min(1, 'El estatus no puede estar vacío').max(50, 'El estatus no puede exceder los 50 caracteres'),
 });
+

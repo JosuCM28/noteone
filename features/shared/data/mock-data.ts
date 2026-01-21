@@ -81,9 +81,9 @@ export const ESTATUS_CONFIG: EstatusConfig[] = [
 ];
 
 export const IMPUESTOS_FIJOS = {
-  derechoRegistro: 2850,
-  certificadoCatastral: 1250,
-  constanciasAdeudo: 890,
+  derechoRegistro: 10,
+  certificadoCatastral: 11,
+  constanciasAdeudo: 12,
 };
 
 const uuid = () => crypto.randomUUID();

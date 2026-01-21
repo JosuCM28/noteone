@@ -57,7 +57,8 @@ export const ModelName = {
   Verification: 'Verification',
   Deed: 'Deed',
   Participant: 'Participant',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  Taxes: 'Taxes'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -79,14 +80,14 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 export const UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  username: 'username',
   email: 'email',
   emailVerified: 'emailVerified',
   image: 'image',
-  rol: 'rol',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  displayUsername: 'displayUsername'
+  username: 'username',
+  displayUsername: 'displayUsername',
+  rol: 'rol'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -160,8 +161,8 @@ export const ParticipantScalarFieldEnum = {
   id: 'id',
   name: 'name',
   phone: 'phone',
-  deedId: 'deedId',
   role: 'role',
+  deedId: 'deedId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -184,6 +185,17 @@ export const AuditLogScalarFieldEnum = {
 } as const
 
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+export const TaxesScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  value: 'value',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaxesScalarFieldEnum = (typeof TaxesScalarFieldEnum)[keyof typeof TaxesScalarFieldEnum]
 
 
 export const SortOrder = {

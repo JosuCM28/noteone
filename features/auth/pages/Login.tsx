@@ -26,7 +26,8 @@ export default function Login() {
       username: '',
       password: '',
     },
-    mode: 'onChange',
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
   });
 
   const router = useRouter();
@@ -35,12 +36,12 @@ export default function Login() {
   const handleRegister = async () => {
     try {
       const res = await signUp({
-        username: 'daniel',
-        password: '123456789',
-        name: 'Daniel',
-        email: 'daniel@example.com',
+        username: 'josue',
+        password: 'Piripitiflautica',
+        name: 'josue',
+        email: 'josue@example.com',
+        
       });
-      console.log(res);
       toast.success('Registro exitoso');
     } catch (error) {
       console.log(error);
@@ -218,9 +219,9 @@ export default function Login() {
                 </Button>
 
                 {/* Debug / Register Button (Opcional) */}
-                {/* <Button type="button" variant="outline" onClick={handleRegister} className="w-full">
+                <Button type="button" variant="outline" onClick={handleRegister} className="w-full">
                   Registrar rápido (dev)
-                </Button> */}
+                </Button>
               </form>
             </CardContent>
           </Card>

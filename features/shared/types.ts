@@ -1,5 +1,7 @@
 // Domain Types for Notaría App
 
+import { Decimal } from "@prisma/client/runtime/client";
+
 export type TipoEscritura =
   | 'testamento'
   | 'compraventa'
@@ -111,5 +113,10 @@ export interface ParticipantForm {
   nombre: string;
   rol: string;
   telefono: string;
+}
+
+export interface Tax {
+  name: string;
+  value: number;
 }
 
