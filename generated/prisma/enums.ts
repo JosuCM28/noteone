@@ -12,8 +12,8 @@
 export const TaxType = {
   TRASLADO: 'TRASLADO',
   DERECHO_REGISTRO: 'DERECHO_REGISTRO',
-  CERTIFICADO_CATASTALES: 'CERTIFICADO_CATASTALES',
-  CONSTANCIAS_ADEUTOS: 'CONSTANCIAS_ADEUTOS'
+  CERTIFICADO_CATASTRAL: 'CERTIFICADO_CATASTRAL',
+  CONSTANCIAS_ADEUDOS: 'CONSTANCIAS_ADEUDOS'
 } as const
 
 export type TaxType = (typeof TaxType)[keyof typeof TaxType]
@@ -28,33 +28,33 @@ export type UserRole = (typeof UserRole)[keyof typeof UserRole]
 
 
 export const ParticipantRole = {
-  Testador: 'Testador',
-  Comprador: 'Comprador',
-  Donante: 'Donante',
-  Acreedor: 'Acreedor',
-  Deudor: 'Deudor',
-  Otorgante: 'Otorgante',
-  Apoderado: 'Apoderado',
-  Representante: 'Representante',
-  Participante: 'Participante',
-  Solicitante: 'Solicitante',
-  Causante: 'Causante',
-  Administrador: 'Administrador',
-  Heredero: 'Heredero',
-  Propietario: 'Propietario'
+  TESTADOR: 'TESTADOR',
+  COMPRADOR: 'COMPRADOR',
+  DONANTE: 'DONANTE',
+  ACREEDOR: 'ACREEDOR',
+  DEUDOR: 'DEUDOR',
+  OTORGANTE: 'OTORGANTE',
+  APODERADO: 'APODERADO',
+  REPRESENTANTE: 'REPRESENTANTE',
+  PARTICIPANTE: 'PARTICIPANTE',
+  SOLICITANTE: 'SOLICITANTE',
+  CAUSANTE: 'CAUSANTE',
+  ADMINISTRADOR: 'ADMINISTRADOR',
+  HEREDERO: 'HEREDERO',
+  PROPIETARIO: 'PROPIETARIO'
 } as const
 
 export type ParticipantRole = (typeof ParticipantRole)[keyof typeof ParticipantRole]
 
 
 export const DeedStatus = {
-  por_liquidar: 'por_liquidar',
-  liquidado: 'liquidado',
-  proceso_pago: 'proceso_pago',
-  registro: 'registro',
-  proceso_entrega: 'proceso_entrega',
-  entregado: 'entregado',
-  cancelado: 'cancelado'
+  POR_LIQUIDAR: 'POR_LIQUIDAR',
+  LIQUIDADO: 'LIQUIDADO',
+  PROCESO_PAGO: 'PROCESO_PAGO',
+  REGISTRO: 'REGISTRO',
+  PROCESO_ENTREGA: 'PROCESO_ENTREGA',
+  ENTREGADO: 'ENTREGADO',
+  CANCELADO: 'CANCELADO'
 } as const
 
 export type DeedStatus = (typeof DeedStatus)[keyof typeof DeedStatus]

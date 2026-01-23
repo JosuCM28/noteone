@@ -25,4 +25,10 @@ export const EscrituraSchema = z.object({
   isr: z.number().min(1, 'El ISR no puede ser menor a 1').optional(),
   estatus: z.string().min(1, 'El estatus no puede estar vacío').max(50, 'El estatus no puede exceder los 50 caracteres'),
 });
+export const TaxSettingsSchema = z.object({
+  porcentaje: z.number().min(1, 'El porcentaje no puede ser menor a 1'),
+  derechoRegistro: z.number().min(1, 'El derecho de registro no puede ser menor a 1'),
+  certificadoCatastral: z.number().min(1, 'El certificado de catastrales no puede ser menor a 1'),
+  constanciaAdeudo: z.number().min(1, 'Las constancias de adeudos no pueden ser menores a 1'),
+});
 

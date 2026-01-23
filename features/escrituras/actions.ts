@@ -6,12 +6,15 @@ import { z } from "zod";
 
 
 export async function getTaxes() {
-    return prisma.taxes.findMany(
-        {
-            select: {
-                name: true,
-                value: true,
-            }
-        }
-    );
+  return prisma.taxes.findMany(
+    {
+      select: {
+        name: true,
+        value: true,
+      }
+    }
+  );
 }
+
+
+

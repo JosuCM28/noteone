@@ -248,7 +248,7 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
     form.reset(
       {
         ...form.getValues(),
-        folioInterno: '',
+        folioInterno: getRandomFolio(),
         numeroEscritura: '',
         notas: '',
         participants: [],
@@ -488,7 +488,7 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
                             aria-invalid={showError}
                             placeholder="FI-Year-Number-XXX"
                             className="input-focus"
-                            disabled
+                           readOnly
                           />
                           {showError && <FieldError errors={[fieldState.error]} />}
                         </Field>

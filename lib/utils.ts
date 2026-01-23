@@ -22,5 +22,15 @@ export const iconMap: Record<string, any> = {
   'file-edit': FileEdit,
 };
 
+const UI_TO_ENUM ={
+certificadoCatastral: 'CERTIFICADO_CATASTRAL',
+constanciaAdeudo: 'CONSTANCIAS_ADEUDOS',
+derechoRegistro: 'DERECHO_REGISTRO',
+porcentaje: 'TRASLADO'
+}
+export type UI_TYPES = keyof typeof UI_TO_ENUM
 
+export function getTaxType(name: UI_TYPES) {
+  return UI_TO_ENUM[name]
+}
 

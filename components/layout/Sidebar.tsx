@@ -1,7 +1,7 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { LayoutDashboard, FileText, Users, Scale, LogOut } from 'lucide-react';
+import { LayoutDashboard, FileText, Users, Scale, LogOut, Cog } from 'lucide-react';
 import { cn } from '@/lib/utils';
 // import { useAuth } from '@/features/auth';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,8 @@ import { useRouter } from 'next/navigation';
 const navItems = [
     { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { href: '/escrituras', icon: FileText, label: 'Escrituras' },
-    { href: '/usuarios', icon: Users, label: 'Usuarios', adminOnly: true },
+    { href: '/users', icon: Users, label: 'Usuarios' },
+    { href: '/settings', icon: Cog, label: 'Configuraciones'},
 ];
 
 interface SidebarProps {

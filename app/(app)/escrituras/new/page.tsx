@@ -1,3 +1,4 @@
+'use server';
 import { EscrituraNueva } from '@/features/escrituras'
 import { getTaxes } from '@/features/escrituras/actions';
 
