@@ -8,4 +8,5 @@ export type SignUpForm = {
   name: string;
   username: string;
   password: string;
+  role: 'user' | 'admin';
 };

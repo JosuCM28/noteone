@@ -21,7 +21,7 @@ export type EstatusEscritura =
   | 'proceso-entrega'
   | 'entregado';
 
-export type UserRole = 'admin' | 'operador';
+export type UserRole = 'ADMIN' | 'OPERATOR';
 
 export interface Persona {
   rolLabel: string;
@@ -81,7 +81,7 @@ export interface User {
   nombre: string;
   usuario: string;
   password: string;
-  rol: UserRole;
+  role: UserRole;
   activo: boolean;
   creadoEn: Date;
 }
@@ -104,7 +104,7 @@ export interface EstatusConfig {
 export interface DraftParticipant {
   id: string;
   nombre: string;
-  rol: string;
+  role: string;
   telefono: string;
   side: "A" | "B"; // A = personaA (comprador/vendedor), B = personaB
 }

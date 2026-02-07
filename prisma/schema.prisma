@@ -17,7 +17,8 @@ model User {
   updatedAt       DateTime   @updatedAt
   username        String?
   displayUsername String?
-  rol             UserRole   @default(OPERATOR)
+  role            UserRole   @default(user)
+  banned          Boolean    @default(false)
   sessions        Session[]
   accounts        Account[]
   auditLogs       AuditLog[]
@@ -154,8 +155,8 @@ enum TaxType {
 }
 
 enum UserRole {
-  ADMIN
-  OPERATOR
+  user
+  admin
 }
 
 enum ParticipantRole {

@@ -20,8 +20,8 @@ export type TaxType = (typeof TaxType)[keyof typeof TaxType]
 
 
 export const UserRole = {
-  ADMIN: 'ADMIN',
-  OPERATOR: 'OPERATOR'
+  user: 'user',
+  admin: 'admin'
 } as const
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]

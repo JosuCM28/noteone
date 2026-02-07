@@ -40,6 +40,7 @@ export default function Login() {
         password: 'Piripitiflautica',
         name: 'josue',
         email: 'josue@example.com',
+        role: 'user',
         
       });
       toast.success('Registro exitoso');
@@ -201,7 +202,7 @@ export default function Login() {
 
                 <Button
                   type="submit"
-                  className="w-full btn-accent h-11"
+                  className="w-full btn-accent h-11 cursor-pointer"
                   disabled={
                     form.formState.isSubmitting ||
                     !form.formState.isDirty ||
@@ -219,7 +220,7 @@ export default function Login() {
                 </Button>
 
                 {/* Debug / Register Button (Opcional) */}
-                <Button type="button" variant="outline" onClick={handleRegister} className="w-full">
+                <Button type="button" variant="outline" onClick={handleRegister} className="cursor-pointer w-full">
                   Registrar rápido (dev)
                 </Button>
               </form>
