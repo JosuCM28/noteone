@@ -56,6 +56,7 @@ export const ModelName = {
   Account: 'Account',
   Verification: 'Verification',
   Deed: 'Deed',
+  DeedTax: 'DeedTax',
   Participant: 'Participant',
   AuditLog: 'AuditLog',
   Taxes: 'Taxes'
@@ -158,6 +159,18 @@ export const DeedScalarFieldEnum = {
 export type DeedScalarFieldEnum = (typeof DeedScalarFieldEnum)[keyof typeof DeedScalarFieldEnum]
 
 
+export const DeedTaxScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  value: 'value',
+  deedId: 'deedId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DeedTaxScalarFieldEnum = (typeof DeedTaxScalarFieldEnum)[keyof typeof DeedTaxScalarFieldEnum]
+
+
 export const ParticipantScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -191,6 +204,7 @@ export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typ
 export const TaxesScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  type: 'type',
   value: 'value',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

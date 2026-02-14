@@ -20,38 +20,26 @@ export type ParticipantModel = runtime.Types.Result.DefaultSelection<Prisma.$Par
 
 export type AggregateParticipant = {
   _count: ParticipantCountAggregateOutputType | null
-  _avg: ParticipantAvgAggregateOutputType | null
-  _sum: ParticipantSumAggregateOutputType | null
   _min: ParticipantMinAggregateOutputType | null
   _max: ParticipantMaxAggregateOutputType | null
 }
 
-export type ParticipantAvgAggregateOutputType = {
-  id: number | null
-  deedId: number | null
-}
-
-export type ParticipantSumAggregateOutputType = {
-  id: number | null
-  deedId: number | null
-}
-
 export type ParticipantMinAggregateOutputType = {
-  id: number | null
+  id: string | null
   name: string | null
   phone: string | null
   role: string | null
-  deedId: number | null
+  deedId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type ParticipantMaxAggregateOutputType = {
-  id: number | null
+  id: string | null
   name: string | null
   phone: string | null
   role: string | null
-  deedId: number | null
+  deedId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -67,16 +55,6 @@ export type ParticipantCountAggregateOutputType = {
   _all: number
 }
 
-
-export type ParticipantAvgAggregateInputType = {
-  id?: true
-  deedId?: true
-}
-
-export type ParticipantSumAggregateInputType = {
-  id?: true
-  deedId?: true
-}
 
 export type ParticipantMinAggregateInputType = {
   id?: true
@@ -147,18 +125,6 @@ export type ParticipantAggregateArgs<ExtArgs extends runtime.Types.Extensions.In
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: ParticipantAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: ParticipantSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: ParticipantMinAggregateInputType
@@ -189,23 +155,19 @@ export type ParticipantGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   _count?: ParticipantCountAggregateInputType | true
-  _avg?: ParticipantAvgAggregateInputType
-  _sum?: ParticipantSumAggregateInputType
   _min?: ParticipantMinAggregateInputType
   _max?: ParticipantMaxAggregateInputType
 }
 
 export type ParticipantGroupByOutputType = {
-  id: number
+  id: string
   name: string
   phone: string | null
   role: string
-  deedId: number
+  deedId: string
   createdAt: Date
   updatedAt: Date
   _count: ParticipantCountAggregateOutputType | null
-  _avg: ParticipantAvgAggregateOutputType | null
-  _sum: ParticipantSumAggregateOutputType | null
   _min: ParticipantMinAggregateOutputType | null
   _max: ParticipantMaxAggregateOutputType | null
 }
@@ -229,11 +191,11 @@ export type ParticipantWhereInput = {
   AND?: Prisma.ParticipantWhereInput | Prisma.ParticipantWhereInput[]
   OR?: Prisma.ParticipantWhereInput[]
   NOT?: Prisma.ParticipantWhereInput | Prisma.ParticipantWhereInput[]
-  id?: Prisma.IntFilter<"Participant"> | number
+  id?: Prisma.StringFilter<"Participant"> | string
   name?: Prisma.StringFilter<"Participant"> | string
   phone?: Prisma.StringNullableFilter<"Participant"> | string | null
   role?: Prisma.StringFilter<"Participant"> | string
-  deedId?: Prisma.IntFilter<"Participant"> | number
+  deedId?: Prisma.StringFilter<"Participant"> | string
   createdAt?: Prisma.DateTimeFilter<"Participant"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Participant"> | Date | string
   deed?: Prisma.XOR<Prisma.DeedScalarRelationFilter, Prisma.DeedWhereInput>
@@ -251,7 +213,7 @@ export type ParticipantOrderByWithRelationInput = {
 }
 
 export type ParticipantWhereUniqueInput = Prisma.AtLeast<{
-  id?: number
+  id?: string
   deedId_name?: Prisma.ParticipantDeedIdNameCompoundUniqueInput
   AND?: Prisma.ParticipantWhereInput | Prisma.ParticipantWhereInput[]
   OR?: Prisma.ParticipantWhereInput[]
@@ -259,7 +221,7 @@ export type ParticipantWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Participant"> | string
   phone?: Prisma.StringNullableFilter<"Participant"> | string | null
   role?: Prisma.StringFilter<"Participant"> | string
-  deedId?: Prisma.IntFilter<"Participant"> | number
+  deedId?: Prisma.StringFilter<"Participant"> | string
   createdAt?: Prisma.DateTimeFilter<"Participant"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Participant"> | Date | string
   deed?: Prisma.XOR<Prisma.DeedScalarRelationFilter, Prisma.DeedWhereInput>
@@ -274,26 +236,25 @@ export type ParticipantOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ParticipantCountOrderByAggregateInput
-  _avg?: Prisma.ParticipantAvgOrderByAggregateInput
   _max?: Prisma.ParticipantMaxOrderByAggregateInput
   _min?: Prisma.ParticipantMinOrderByAggregateInput
-  _sum?: Prisma.ParticipantSumOrderByAggregateInput
 }
 
 export type ParticipantScalarWhereWithAggregatesInput = {
   AND?: Prisma.ParticipantScalarWhereWithAggregatesInput | Prisma.ParticipantScalarWhereWithAggregatesInput[]
   OR?: Prisma.ParticipantScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ParticipantScalarWhereWithAggregatesInput | Prisma.ParticipantScalarWhereWithAggregatesInput[]
-  id?: Prisma.IntWithAggregatesFilter<"Participant"> | number
+  id?: Prisma.StringWithAggregatesFilter<"Participant"> | string
   name?: Prisma.StringWithAggregatesFilter<"Participant"> | string
   phone?: Prisma.StringNullableWithAggregatesFilter<"Participant"> | string | null
   role?: Prisma.StringWithAggregatesFilter<"Participant"> | string
-  deedId?: Prisma.IntWithAggregatesFilter<"Participant"> | number
+  deedId?: Prisma.StringWithAggregatesFilter<"Participant"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Participant"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Participant"> | Date | string
 }
 
 export type ParticipantCreateInput = {
+  id?: string
   name: string
   phone?: string | null
   role: string
@@ -303,16 +264,17 @@ export type ParticipantCreateInput = {
 }
 
 export type ParticipantUncheckedCreateInput = {
-  id?: number
+  id?: string
   name: string
   phone?: string | null
   role: string
-  deedId: number
+  deedId: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type ParticipantUpdateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.StringFieldUpdateOperationsInput | string
@@ -322,26 +284,27 @@ export type ParticipantUpdateInput = {
 }
 
 export type ParticipantUncheckedUpdateInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.StringFieldUpdateOperationsInput | string
-  deedId?: Prisma.IntFieldUpdateOperationsInput | number
+  deedId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ParticipantCreateManyInput = {
-  id?: number
+  id?: string
   name: string
   phone?: string | null
   role: string
-  deedId: number
+  deedId: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type ParticipantUpdateManyMutationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.StringFieldUpdateOperationsInput | string
@@ -350,11 +313,11 @@ export type ParticipantUpdateManyMutationInput = {
 }
 
 export type ParticipantUncheckedUpdateManyInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.StringFieldUpdateOperationsInput | string
-  deedId?: Prisma.IntFieldUpdateOperationsInput | number
+  deedId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -370,7 +333,7 @@ export type ParticipantOrderByRelationAggregateInput = {
 }
 
 export type ParticipantDeedIdNameCompoundUniqueInput = {
-  deedId: number
+  deedId: string
   name: string
 }
 
@@ -382,11 +345,6 @@ export type ParticipantCountOrderByAggregateInput = {
   deedId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-}
-
-export type ParticipantAvgOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  deedId?: Prisma.SortOrder
 }
 
 export type ParticipantMaxOrderByAggregateInput = {
@@ -407,11 +365,6 @@ export type ParticipantMinOrderByAggregateInput = {
   deedId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-}
-
-export type ParticipantSumOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  deedId?: Prisma.SortOrder
 }
 
 export type ParticipantCreateNestedManyWithoutDeedInput = {
@@ -457,6 +410,7 @@ export type ParticipantUncheckedUpdateManyWithoutDeedNestedInput = {
 }
 
 export type ParticipantCreateWithoutDeedInput = {
+  id?: string
   name: string
   phone?: string | null
   role: string
@@ -465,7 +419,7 @@ export type ParticipantCreateWithoutDeedInput = {
 }
 
 export type ParticipantUncheckedCreateWithoutDeedInput = {
-  id?: number
+  id?: string
   name: string
   phone?: string | null
   role: string
@@ -503,17 +457,17 @@ export type ParticipantScalarWhereInput = {
   AND?: Prisma.ParticipantScalarWhereInput | Prisma.ParticipantScalarWhereInput[]
   OR?: Prisma.ParticipantScalarWhereInput[]
   NOT?: Prisma.ParticipantScalarWhereInput | Prisma.ParticipantScalarWhereInput[]
-  id?: Prisma.IntFilter<"Participant"> | number
+  id?: Prisma.StringFilter<"Participant"> | string
   name?: Prisma.StringFilter<"Participant"> | string
   phone?: Prisma.StringNullableFilter<"Participant"> | string | null
   role?: Prisma.StringFilter<"Participant"> | string
-  deedId?: Prisma.IntFilter<"Participant"> | number
+  deedId?: Prisma.StringFilter<"Participant"> | string
   createdAt?: Prisma.DateTimeFilter<"Participant"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Participant"> | Date | string
 }
 
 export type ParticipantCreateManyDeedInput = {
-  id?: number
+  id?: string
   name: string
   phone?: string | null
   role: string
@@ -522,6 +476,7 @@ export type ParticipantCreateManyDeedInput = {
 }
 
 export type ParticipantUpdateWithoutDeedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.StringFieldUpdateOperationsInput | string
@@ -530,7 +485,7 @@ export type ParticipantUpdateWithoutDeedInput = {
 }
 
 export type ParticipantUncheckedUpdateWithoutDeedInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.StringFieldUpdateOperationsInput | string
@@ -539,7 +494,7 @@ export type ParticipantUncheckedUpdateWithoutDeedInput = {
 }
 
 export type ParticipantUncheckedUpdateManyWithoutDeedInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.StringFieldUpdateOperationsInput | string
@@ -609,11 +564,11 @@ export type $ParticipantPayload<ExtArgs extends runtime.Types.Extensions.Interna
     deed: Prisma.$DeedPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    id: number
+    id: string
     name: string
     phone: string | null
     role: string
-    deedId: number
+    deedId: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["participant"]>
@@ -1040,11 +995,11 @@ export interface Prisma__ParticipantClient<T, Null = never, ExtArgs extends runt
  * Fields of the Participant model
  */
 export interface ParticipantFieldRefs {
-  readonly id: Prisma.FieldRef<"Participant", 'Int'>
+  readonly id: Prisma.FieldRef<"Participant", 'String'>
   readonly name: Prisma.FieldRef<"Participant", 'String'>
   readonly phone: Prisma.FieldRef<"Participant", 'String'>
   readonly role: Prisma.FieldRef<"Participant", 'String'>
-  readonly deedId: Prisma.FieldRef<"Participant", 'Int'>
+  readonly deedId: Prisma.FieldRef<"Participant", 'String'>
   readonly createdAt: Prisma.FieldRef<"Participant", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Participant", 'DateTime'>
 }

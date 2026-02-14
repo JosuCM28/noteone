@@ -389,6 +389,7 @@ export const ModelName = {
   Account: 'Account',
   Verification: 'Verification',
   Deed: 'Deed',
+  DeedTax: 'DeedTax',
   Participant: 'Participant',
   AuditLog: 'AuditLog',
   Taxes: 'Taxes'
@@ -407,7 +408,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "deed" | "participant" | "auditLog" | "taxes"
+    modelProps: "user" | "session" | "account" | "verification" | "deed" | "deedTax" | "participant" | "auditLog" | "taxes"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -781,6 +782,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    DeedTax: {
+      payload: Prisma.$DeedTaxPayload<ExtArgs>
+      fields: Prisma.DeedTaxFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DeedTaxFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeedTaxPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DeedTaxFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeedTaxPayload>
+        }
+        findFirst: {
+          args: Prisma.DeedTaxFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeedTaxPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DeedTaxFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeedTaxPayload>
+        }
+        findMany: {
+          args: Prisma.DeedTaxFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeedTaxPayload>[]
+        }
+        create: {
+          args: Prisma.DeedTaxCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeedTaxPayload>
+        }
+        createMany: {
+          args: Prisma.DeedTaxCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DeedTaxCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeedTaxPayload>[]
+        }
+        delete: {
+          args: Prisma.DeedTaxDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeedTaxPayload>
+        }
+        update: {
+          args: Prisma.DeedTaxUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeedTaxPayload>
+        }
+        deleteMany: {
+          args: Prisma.DeedTaxDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DeedTaxUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DeedTaxUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeedTaxPayload>[]
+        }
+        upsert: {
+          args: Prisma.DeedTaxUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeedTaxPayload>
+        }
+        aggregate: {
+          args: Prisma.DeedTaxAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDeedTax>
+        }
+        groupBy: {
+          args: Prisma.DeedTaxGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DeedTaxGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DeedTaxCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DeedTaxCountAggregateOutputType> | number
+        }
+      }
+    }
     Participant: {
       payload: Prisma.$ParticipantPayload<ExtArgs>
       fields: Prisma.ParticipantFieldRefs
@@ -1123,6 +1198,18 @@ export const DeedScalarFieldEnum = {
 export type DeedScalarFieldEnum = (typeof DeedScalarFieldEnum)[keyof typeof DeedScalarFieldEnum]
 
 
+export const DeedTaxScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  value: 'value',
+  deedId: 'deedId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DeedTaxScalarFieldEnum = (typeof DeedTaxScalarFieldEnum)[keyof typeof DeedTaxScalarFieldEnum]
+
+
 export const ParticipantScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -1156,6 +1243,7 @@ export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typ
 export const TaxesScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  type: 'type',
   value: 'value',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1247,30 +1335,16 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
- * Reference to a field of type 'UserRole'
+ * Reference to a field of type 'UserRoles'
  */
-export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
+export type EnumUserRolesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRoles'>
     
 
 
 /**
- * Reference to a field of type 'UserRole[]'
+ * Reference to a field of type 'UserRoles[]'
  */
-export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
-    
-
-
-/**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+export type ListEnumUserRolesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRoles[]'>
     
 
 
@@ -1331,30 +1405,16 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
- * Reference to a field of type 'TaxType'
+ * Reference to a field of type 'Int'
  */
-export type EnumTaxTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaxType'>
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
     
 
 
 /**
- * Reference to a field of type 'TaxType[]'
+ * Reference to a field of type 'Int[]'
  */
-export type ListEnumTaxTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaxType[]'>
-    
-
-
-/**
- * Reference to a field of type 'Float'
- */
-export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-/**
- * Reference to a field of type 'Float[]'
- */
-export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 /**
@@ -1457,6 +1517,7 @@ export type GlobalOmitConfig = {
   account?: Prisma.AccountOmit
   verification?: Prisma.VerificationOmit
   deed?: Prisma.DeedOmit
+  deedTax?: Prisma.DeedTaxOmit
   participant?: Prisma.ParticipantOmit
   auditLog?: Prisma.AuditLogOmit
   taxes?: Prisma.TaxesOmit

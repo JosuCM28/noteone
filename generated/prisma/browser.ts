@@ -43,6 +43,11 @@ export type Verification = Prisma.VerificationModel
  */
 export type Deed = Prisma.DeedModel
 /**
+ * Model DeedTax
+ * 
+ */
+export type DeedTax = Prisma.DeedTaxModel
+/**
  * Model Participant
  * 
  */

@@ -13,35 +13,35 @@ export const TaxType = {
   TRASLADO: 'TRASLADO',
   DERECHO_REGISTRO: 'DERECHO_REGISTRO',
   CERTIFICADO_CATASTRAL: 'CERTIFICADO_CATASTRAL',
-  CONSTANCIAS_ADEUDOS: 'CONSTANCIAS_ADEUDOS'
+  CONSTANCIAS_ADEUDO: 'CONSTANCIAS_ADEUDO',
+  AVISO: 'AVISO',
+  REGISTRO_ESCRITURA: 'REGISTRO_ESCRITURA',
+  GASTO_NOTARIAL: 'GASTO_NOTARIAL',
+  PAGO_ISR: 'PAGO_ISR',
+  HONORARIOS: 'HONORARIOS'
 } as const
 
 export type TaxType = (typeof TaxType)[keyof typeof TaxType]
 
 
-export const UserRole = {
+export const UserRoles = {
   user: 'user',
   admin: 'admin'
 } as const
 
-export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+export type UserRoles = (typeof UserRoles)[keyof typeof UserRoles]
 
 
 export const ParticipantRole = {
-  TESTADOR: 'TESTADOR',
+  VENDEDOR: 'VENDEDOR',
   COMPRADOR: 'COMPRADOR',
   DONANTE: 'DONANTE',
-  ACREEDOR: 'ACREEDOR',
-  DEUDOR: 'DEUDOR',
-  OTORGANTE: 'OTORGANTE',
-  APODERADO: 'APODERADO',
-  REPRESENTANTE: 'REPRESENTANTE',
-  PARTICIPANTE: 'PARTICIPANTE',
-  SOLICITANTE: 'SOLICITANTE',
-  CAUSANTE: 'CAUSANTE',
-  ADMINISTRADOR: 'ADMINISTRADOR',
+  DONATARIO: 'DONATARIO',
   HEREDERO: 'HEREDERO',
-  PROPIETARIO: 'PROPIETARIO'
+  OTORGANTE: 'OTORGANTE',
+  TESTADOR: 'TESTADOR',
+  PODERANTE: 'PODERANTE',
+  ASOCIADO: 'ASOCIADO'
 } as const
 
 export type ParticipantRole = (typeof ParticipantRole)[keyof typeof ParticipantRole]

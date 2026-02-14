@@ -8,7 +8,7 @@ export const SignInSchema = z.object({
 export const ParticipantSchema = z.object({
   nombre: z.string().min(1, 'El nombre no puede estar vacío').max(50, 'El nombre no puede exceder los 50 caracteres'),
   telefono: z.string().min(1, 'El teléfono no puede estar vacío').max(50, 'El teléfono no puede exceder los 50 caracteres'),
-  rol: z.string().min(1, 'El rol no puede estar vacío').max(50, 'El rol no puede exceder los 50 caracteres'),
+  role: z.string().min(1, 'El rol no puede estar vacío').max(50, 'El rol no puede exceder los 50 caracteres'),
 });
 
 export const EscrituraSchema = z.object({

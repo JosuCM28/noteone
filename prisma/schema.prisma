@@ -17,7 +17,7 @@ model User {
   updatedAt       DateTime   @updatedAt
   username        String?
   displayUsername String?
-  role            UserRole   @default(user)
+  role            UserRoles   @default(user)
   banned          Boolean    @default(false)
   sessions        Session[]
   accounts        Account[]
@@ -78,7 +78,7 @@ model Verification {
 }
 
 model Deed {
-  id            Int           @id @default(autoincrement())
+  id            String        @id @default(uuid())
   type          String
   folio         String
   deedNumber    String
@@ -92,6 +92,7 @@ model Deed {
   userId        String
   user          User          @relation(fields: [userId], references: [id], onDelete: Restrict)
   auditLogs     AuditLog[]
+  deedTax       DeedTax[]
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
@@ -102,12 +103,26 @@ model Deed {
   @@map("deed")
 }
 
+model DeedTax {
+  id        String   @id @default(uuid())
+  name      String
+  value     Decimal  @db.Decimal(12, 6)
+  deedId    String
+  deed      Deed     @relation(fields: [deedId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([deedId, name])
+  @@index([deedId])
+  @@map("deed_tax")
+}
+
 model Participant {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   name      String
   phone     String?
   role      String
-  deedId    Int
+  deedId    String
   deed      Deed     @relation(fields: [deedId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -118,10 +133,10 @@ model Participant {
 }
 
 model AuditLog {
-  id          Int         @id @default(autoincrement())
+  id          String      @id @default(uuid())
   userId      String?
   user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
-  deedId      Int?
+  deedId      String?
   deed        Deed?       @relation(fields: [deedId], references: [id], onDelete: SetNull)
   action      AuditAction
   details     String?
@@ -129,7 +144,7 @@ model AuditLog {
   deedNumber  String?
   createdAt   DateTime    @default(now())
   deletedAt   DateTime?
-  deletedById Int?
+  deletedById String?
   changes     Json?
 
   @@index([deedId, createdAt])
@@ -138,8 +153,9 @@ model AuditLog {
 }
 
 model Taxes {
-  id        Int      @id @default(autoincrement())
-  name      TaxType  @unique
+  id        String   @id @default(uuid())
+  name      String
+  type      String
   value     Decimal  @db.Decimal(12, 6)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -151,29 +167,29 @@ enum TaxType {
   TRASLADO
   DERECHO_REGISTRO
   CERTIFICADO_CATASTRAL
-  CONSTANCIAS_ADEUDOS
+  CONSTANCIAS_ADEUDO
+  AVISO
+  REGISTRO_ESCRITURA
+  GASTO_NOTARIAL
+  PAGO_ISR
+  HONORARIOS
 }
 
-enum UserRole {
+enum UserRoles {
   user
   admin
 }
 
 enum ParticipantRole {
-  TESTADOR
-  COMPRADOR
-  DONANTE
-  ACREEDOR
-  DEUDOR
-  OTORGANTE
-  APODERADO
-  REPRESENTANTE
-  PARTICIPANTE
-  SOLICITANTE
-  CAUSANTE
-  ADMINISTRADOR
-  HEREDERO
-  PROPIETARIO
+ VENDEDOR
+ COMPRADOR
+ DONANTE
+ DONATARIO
+ HEREDERO
+ OTORGANTE
+ TESTADOR
+ PODERANTE
+ ASOCIADO
 }
 
 enum DeedStatus {

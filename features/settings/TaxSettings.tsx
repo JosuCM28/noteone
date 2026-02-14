@@ -1,327 +1,257 @@
 "use client";
 
-import { useTransition, useMemo } from "react";
-import { Settings, Save, RotateCcw, Percent, DollarSign } from "lucide-react";
-import { useForm, Controller } from "react-hook-form";
-import { useRouter } from "next/navigation";
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useMemo, useState } from "react";
+import { Settings, Save, ChevronLeft, DollarSign } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { Tax } from "../shared/types";
-import { TaxSettingsSchema } from "../auth/schemas";
-import z from "zod";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { updateTax } from "./action";
-import { start } from "repl";
-import { Spinner } from "@/components/ui/spinner";
+import { useRouter } from "next/navigation";
 
-// 🔧 Ajusta estos imports/vars a tu app real
-// import { useTaxConfig } from "@/features/taxes/useTaxConfig";
-// import { Navigate } from "react-router-dom";
-const isAdmin = true as boolean;
+import { Controller, useForm } from "react-hook-form";
 
-interface TaxSettingsProps {
-  taxes: Tax[];
-}
+import {
+  TipoEscrituraKey,
+  TaxItemConfig,
+  TIPOS_ESCRITURA_LABELS,
+  TAX_ITEM_LABELS,
+} from "@/features/shared/types";
 
-export default function Impuestos({ taxes }: TaxSettingsProps) {
+import { Money } from "@/components/shared/Money";
 
-  const [isPending, startTrasition] = useTransition();
+type TaxConfigMap = Record<TipoEscrituraKey, TaxItemConfig>;
+
+export default function Impuestos() {
   const router = useRouter();
 
+  const [selectedTipo, setSelectedTipo] = useState<TipoEscrituraKey | null>(
+    null
+  );
 
-  const form = useForm<z.infer<typeof TaxSettingsSchema>>({
-    defaultValues: {
-      porcentaje: taxes.find((t) => t.name === "TRASLADO")?.value ?? 0,
-      derechoRegistro: taxes.find((t) => t.name === "DERECHO_REGISTRO")?.value ?? 0,
-      certificadoCatastral: taxes.find((t) => t.name === "CERTIFICADO_CATASTRAL")?.value ?? 0,
-      constanciaAdeudo: taxes.find((t) => t.name === "CONSTANCIAS_ADEUDOS")?.value ?? 0,
-    },
+  // ✅ Inicializa taxConfig con TODOS tus tipos
+  const createEmptyTaxConfig = (): TaxConfigMap => ({
+    testamento: {} as TaxItemConfig,
+    "cvgastos-urgentes": {} as TaxItemConfig,
+    compraventa: {} as TaxItemConfig,
+    donacion: {} as TaxItemConfig,
+    "adjudicacion-concepto-herencia": {} as TaxItemConfig,
+    "rectificacion-superficie": {} as TaxItemConfig,
+    "fusion-predios": {} as TaxItemConfig,
+    "cancelacion-usufructo-muerte": {} as TaxItemConfig,
+    "cancelacion-usufructo-voluntaria": {} as TaxItemConfig,
+    "servidumbre-paso": {} as TaxItemConfig,
+    "division-copropiedad": {} as TaxItemConfig,
+    "cancelacion-reserva-dominio": {} as TaxItemConfig,
+    "poder-notarial": {} as TaxItemConfig,
+    "constitucion-ac": {} as TaxItemConfig,
+    "inft-indistinto-nombre": {} as TaxItemConfig,
+    "inft-construccion-casahabitacion": {} as TaxItemConfig,
+  });
+
+  const [taxConfig, setTaxConfig] = useState<TaxConfigMap>(
+    createEmptyTaxConfig()
+  );
+
+  // ✅ Tipos y keys para render
+  const tipos = useMemo(
+    () => Object.keys(TIPOS_ESCRITURA_LABELS) as TipoEscrituraKey[],
+    []
+  );
+  const taxKeys = useMemo(
+    () => Object.keys(TAX_ITEM_LABELS) as (keyof TaxItemConfig)[],
+    []
+  );
+
+  // ✅ React Hook Form para el detalle
+  const form = useForm<TaxItemConfig>({
+    defaultValues: {} as TaxItemConfig,
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
-  const submitCount = form.formState.submitCount;
 
-  const { control, watch } = form;
-
-  function shouldShowError(fieldState: any, submitCount: number) {
-    return (fieldState.isTouched || submitCount > 0) && !!fieldState.error;
-  }
-
-  // Cuando llegue config desde backend/store, hidrata RHF
-
-  const values = watch();
-
-  const totalImpuestosFijos = useMemo(() => {
-    return (
-      (values.derechoRegistro || 0) +
-      (values.certificadoCatastral || 0) +
-      (values.constanciaAdeudo || 0)
-    );
-  }, [values.derechoRegistro, values.certificadoCatastral, values.constanciaAdeudo]);
-
-  const ejemploTraslado = useMemo(() => {
-    const pct = values.porcentaje || 0;
-    return (100000 * pct) / 100;
-  }, [values.porcentaje]);
-
-  const previewSubtotal = useMemo(() => {
-    const pct = values.porcentaje || 0;
-    const traslado = (1000000 * pct) / 100;
-    return 1000000 + traslado + totalImpuestosFijos;
-  }, [values.porcentaje, totalImpuestosFijos]);
-
-  const handleSubmit = async (data: z.infer<typeof TaxSettingsSchema>) => {
-    try {
-      await updateTax(data);
-      form.reset(data);
-      toast.success('Cambios guardados correctamente');
-      startTrasition(() => router.refresh());
-    } catch (error) {
-      console.log(error);
-      toast.error('Error al guardar cambios');
-    }
+  // ✅ Reemplazo de updateTaxConfigForType
+  const updateTaxConfigForType = (tipo: TipoEscrituraKey, d: TaxItemConfig) => {
+    setTaxConfig((prev) => ({
+      ...prev,
+      [tipo]: d,
+    }));
   };
 
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-serif font-semibold text-foreground flex items-center gap-2">
-          <Settings className="h-6 w-6 text-primary" />
-          Configuración de Impuestos
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Administra los porcentajes y montos fijos utilizados en el cálculo del presupuesto de escrituras.
-        </p>
-      </div>
-      <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <div className="grid gap-6 lg:grid-cols-2">
+  const handleSelect = (tipo: TipoEscrituraKey) => {
+    setSelectedTipo(tipo);
 
-          {/* Traslado */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Percent className="h-5 w-5 text-primary" />
-                Porcentaje de Traslado
-              </CardTitle>
-              <CardDescription>
-                Porcentaje aplicado sobre el valor base de la escritura para calcular el traslado de dominio.
-              </CardDescription>
-            </CardHeader>
+    // Carga valores actuales del tipo al form
+    form.reset({ ...(taxConfig[tipo] ?? ({} as TaxItemConfig)) });
+  };
 
-            <CardContent>
-              <div className="space-y-2">
-                <div className="relative">
+  const handleBack = () => {
+    setSelectedTipo(null);
+    form.reset({} as TaxItemConfig);
+  };
+
+  const handleSave = (values: TaxItemConfig) => {
+    if (!selectedTipo) return;
+
+    updateTaxConfigForType(selectedTipo, values);
+
+    toast.success(
+      `Impuestos de "${TIPOS_ESCRITURA_LABELS[selectedTipo]}" actualizados`
+    );
+  };
+
+  // Detail view
+  if (selectedTipo) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <Button type="button" variant="ghost" size="icon" onClick={handleBack}>
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+
+          <div>
+            <h1 className="text-2xl font-serif font-semibold text-foreground">
+              {TIPOS_ESCRITURA_LABELS[selectedTipo]}
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              Configura los impuestos para este tipo de escritura
+            </p>
+          </div>
+        </div>
+
+        <Card>
+          <CardContent className="pt-6 space-y-6">
+            <form
+              onSubmit={form.handleSubmit(handleSave)}
+              className="space-y-6"
+            >
+              <div className="grid gap-6">
+                {taxKeys.map((key) => (
                   <Controller
-                    name="porcentaje"
+                    key={String(key)}
+                    name={key as any}
                     control={form.control}
-                    render={({ field, fieldState }) => {
-                      const showError = shouldShowError(fieldState, submitCount);
-                      return (
-                        <Field data-invalid={showError}>
-                          <FieldLabel htmlFor="porcentaje">
-                            Porcentaje (%) <span className="text-red-500">*</span>
-                          </FieldLabel>
+                    render={({ field }) => (
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor={String(key)}
+                          className="text-sm font-medium text-foreground"
+                        >
+                          {TAX_ITEM_LABELS[key]}
+                        </Label>
+
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
+                            $
+                          </span>
+
                           <Input
-                            id="porcentaje"
+                            id={String(key)}
                             type="number"
-                            min={0}
-            
-                            step={0.1}
-                            value={field.value === 0 ? '' : String(field.value)}
-                            onChange={(e) => field.onChange(Number(e.target.value || 0))}
+                            min="0"
+                            step="0.01"
+                            value={field.value ?? 0}
+                            onChange={(e) => {
+                              const n = Number(e.target.value);
+                              field.onChange(Number.isFinite(n) ? n : 0);
+                            }}
                             onBlur={field.onBlur}
                             ref={field.ref}
-                            placeholder="0"
-                            className="pr-8"
-                            disabled={form.formState.isSubmitting || isPending}
+                            className="pl-7 text-base"
+                            placeholder="0.00"
                           />
-                          <h1></h1>
-                          {showError && <FieldError errors={[fieldState.error]} />}
-                        </Field>
-                      );
-                    }}
-                  />
-                </div>
-
-                <p className="text-xs text-muted-foreground">
-                  Ejemplo: Si el valor base es $100,000 y el traslado es {values.porcentaje || 0}%,
-                  el monto sería ${ejemploTraslado.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Impuestos Fijos */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <DollarSign className="h-5 w-5 text-primary" />
-                Impuestos Fijos
-              </CardTitle>
-              <CardDescription>Montos fijos que se suman al presupuesto de cada escritura.</CardDescription>
-            </CardHeader>
-
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="derechoRegistro">Derecho de Registro</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                  <Controller
-                    control={control}
-                    name="derechoRegistro"
-                    render={({ field }) => (
-                      <Input
-                        id="derechoRegistro"
-                        type="number"
-                        min={0}
-                        step={0.01}
-                        value={field.value === 0 ? '' : String(field.value)}
-                        onChange={(e) => field.onChange(Number(e.target.value || 0))}
-                        onBlur={field.onBlur}
-                        ref={field.ref}
-                        className="pl-7"
-                        placeholder="0"
-                        disabled={form.formState.isSubmitting || isPending}
-                      />
+                        </div>
+                      </div>
                     )}
                   />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="certificadoCatastral">Certificado Catastral</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                  <Controller
-                    control={control}
-                    name="certificadoCatastral"
-                    render={({ field }) => (
-                      <Input
-                        id="certificadoCatastral"
-                        type="number"
-                        min={0}
-                        step={0.01}
-                        value={field.value === 0 ? '' : String(field.value)}
-                        onChange={(e) => field.onChange(Number(e.target.value || 0))}
-                        onBlur={field.onBlur}
-                        ref={field.ref}
-                        className="pl-7"
-                        disabled={form.formState.isSubmitting || isPending}
-                        placeholder="0"
-                      />
-                    )}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="constanciasAdeudo">Constancias de No Adeudo</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                  <Controller
-                    control={control}
-                    name="constanciaAdeudo"
-                    render={({ field }) => (
-                      <Input
-                        id="constanciasAdeudo"
-                        type="number"
-                        min={0}
-                        step={0.01}
-                        value={field.value === 0 ? '' : String(field.value)}
-                        onChange={(e) => field.onChange(Number(e.target.value || 0))}
-                        onBlur={field.onBlur}
-                        ref={field.ref}
-                        className="pl-7"
-                        placeholder="0"
-                        disabled={form.formState.isSubmitting || isPending}
-                      />
-                    )}
-                  />
-                </div>
+                ))}
               </div>
 
               <Separator />
 
-              <div className="flex items-center justify-between py-2 px-3 bg-muted/50 rounded-lg">
-                <span className="font-medium">Total Impuestos Fijos</span>
-                <span className="font-semibold text-primary">
-                  ${totalImpuestosFijos.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
-                </span>
+              <div className="flex justify-end gap-3">
+                <Button type="button" variant="outline" onClick={handleBack}>
+                  Cancelar
+                </Button>
+
+                <Button type="submit" className="gap-2">
+                  <Save className="h-4 w-4" />
+                  Guardar Cambios
+                </Button>
               </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
-
-            </CardContent>
-          </Card>
+  // List view
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <Settings className="h-6 w-6 text-primary" />
+          <h1 className="text-3xl font-serif font-semibold text-foreground">
+            Configuración de Impuestos
+          </h1>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3 sm:justify-end pt-6">
-          <Button type="submit" className="gap-2 cursor-pointer" disabled={form.formState.isSubmitting || isPending || !form.formState.isDirty} >
-            {
-              isPending || form.formState.isSubmitting ? (
-                <Spinner className="size-4 " />
 
+        <p className="text-muted-foreground">
+          Administra los costos e impuestos para cada tipo de escritura. Haz clic
+          en una tarjeta para editar sus valores.
+        </p>
+      </div>
 
-              ) : (
-                <div className="flex gap-2 items-center">
-                  <Save className="size-4" />
-                  <span>Guardar Cambios</span>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {tipos.map((tipo) => {
+          const configuredCount = taxKeys.filter(
+            (k) => (taxConfig[tipo]?.[k] ?? 0) > 0
+          ).length;
+
+          return (
+            <Card
+              key={tipo}
+              className="group cursor-pointer hover:shadow-lg hover:border-primary/50 transition-all duration-200"
+              onClick={() => handleSelect(tipo)}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between gap-2">
+                  <CardTitle className="text-base font-semibold group-hover:text-primary transition-colors">
+                    {TIPOS_ESCRITURA_LABELS[tipo]}
+                  </CardTitle>
+
+                  <DollarSign className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
+                </div>
+              </CardHeader>
+
+              <CardContent className="space-y-3">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-primary">
+                    {configuredCount}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    impuestos configurados
+                  </span>
                 </div>
 
-              )
-            }
-          </Button>
-
-        </div>
-      </form>
-
-
-
-      <Card className="border-dashed">
-        <CardHeader>
-          <CardTitle className="text-base">Vista Previa del Cálculo</CardTitle>
-          <CardDescription>
-            Ejemplo de cómo se aplicarían estos valores en una escritura con valor base de $1,000,000
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Valor Base</span>
-              <span>$1,000,000.00</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Traslado ({values.porcentaje || 0}%)</span>
-              <span>${(1000000 * values.porcentaje / 100).toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Derecho de Registro</span>
-              <span>${values.derechoRegistro.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Certificado Catastral</span>
-              <span>${values.certificadoCatastral.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Constancias de No Adeudo</span>
-              <span>${values.constanciaAdeudo.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
-            </div>
-            <Separator className="my-2" />
-            <div className="flex justify-between font-semibold">
-              <span>Subtotal (sin honorarios)</span>
-              <span className="text-primary">
-                ${(1000000 + (1000000 * values.porcentaje / 100) + totalImpuestosFijos).toLocaleString('es-MX', { minimumFractionDigits: 4 })}
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div >
-
-
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full group-hover:border-primary/50"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSelect(tipo);
+                  }}
+                >
+                  Configurar
+                </Button>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
   );
 }

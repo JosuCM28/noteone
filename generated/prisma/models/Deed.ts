@@ -27,21 +27,19 @@ export type AggregateDeed = {
 }
 
 export type DeedAvgAggregateOutputType = {
-  id: number | null
   baseValue: runtime.Decimal | null
   propertyTax: runtime.Decimal | null
   estimated: runtime.Decimal | null
 }
 
 export type DeedSumAggregateOutputType = {
-  id: number | null
   baseValue: runtime.Decimal | null
   propertyTax: runtime.Decimal | null
   estimated: runtime.Decimal | null
 }
 
 export type DeedMinAggregateOutputType = {
-  id: number | null
+  id: string | null
   type: string | null
   folio: string | null
   deedNumber: string | null
@@ -57,7 +55,7 @@ export type DeedMinAggregateOutputType = {
 }
 
 export type DeedMaxAggregateOutputType = {
-  id: number | null
+  id: string | null
   type: string | null
   folio: string | null
   deedNumber: string | null
@@ -91,14 +89,12 @@ export type DeedCountAggregateOutputType = {
 
 
 export type DeedAvgAggregateInputType = {
-  id?: true
   baseValue?: true
   propertyTax?: true
   estimated?: true
 }
 
 export type DeedSumAggregateInputType = {
-  id?: true
   baseValue?: true
   propertyTax?: true
   estimated?: true
@@ -240,7 +236,7 @@ export type DeedGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 }
 
 export type DeedGroupByOutputType = {
-  id: number
+  id: string
   type: string
   folio: string
   deedNumber: string
@@ -279,7 +275,7 @@ export type DeedWhereInput = {
   AND?: Prisma.DeedWhereInput | Prisma.DeedWhereInput[]
   OR?: Prisma.DeedWhereInput[]
   NOT?: Prisma.DeedWhereInput | Prisma.DeedWhereInput[]
-  id?: Prisma.IntFilter<"Deed"> | number
+  id?: Prisma.StringFilter<"Deed"> | string
   type?: Prisma.StringFilter<"Deed"> | string
   folio?: Prisma.StringFilter<"Deed"> | string
   deedNumber?: Prisma.StringFilter<"Deed"> | string
@@ -295,6 +291,7 @@ export type DeedWhereInput = {
   participants?: Prisma.ParticipantListRelationFilter
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   auditLogs?: Prisma.AuditLogListRelationFilter
+  deedTax?: Prisma.DeedTaxListRelationFilter
 }
 
 export type DeedOrderByWithRelationInput = {
@@ -314,10 +311,11 @@ export type DeedOrderByWithRelationInput = {
   participants?: Prisma.ParticipantOrderByRelationAggregateInput
   user?: Prisma.UserOrderByWithRelationInput
   auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
+  deedTax?: Prisma.DeedTaxOrderByRelationAggregateInput
 }
 
 export type DeedWhereUniqueInput = Prisma.AtLeast<{
-  id?: number
+  id?: string
   userId_folio?: Prisma.DeedUserIdFolioCompoundUniqueInput
   userId_deedNumber?: Prisma.DeedUserIdDeedNumberCompoundUniqueInput
   AND?: Prisma.DeedWhereInput | Prisma.DeedWhereInput[]
@@ -338,6 +336,7 @@ export type DeedWhereUniqueInput = Prisma.AtLeast<{
   participants?: Prisma.ParticipantListRelationFilter
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   auditLogs?: Prisma.AuditLogListRelationFilter
+  deedTax?: Prisma.DeedTaxListRelationFilter
 }, "id" | "userId_folio" | "userId_deedNumber">
 
 export type DeedOrderByWithAggregationInput = {
@@ -365,7 +364,7 @@ export type DeedScalarWhereWithAggregatesInput = {
   AND?: Prisma.DeedScalarWhereWithAggregatesInput | Prisma.DeedScalarWhereWithAggregatesInput[]
   OR?: Prisma.DeedScalarWhereWithAggregatesInput[]
   NOT?: Prisma.DeedScalarWhereWithAggregatesInput | Prisma.DeedScalarWhereWithAggregatesInput[]
-  id?: Prisma.IntWithAggregatesFilter<"Deed"> | number
+  id?: Prisma.StringWithAggregatesFilter<"Deed"> | string
   type?: Prisma.StringWithAggregatesFilter<"Deed"> | string
   folio?: Prisma.StringWithAggregatesFilter<"Deed"> | string
   deedNumber?: Prisma.StringWithAggregatesFilter<"Deed"> | string
@@ -381,6 +380,7 @@ export type DeedScalarWhereWithAggregatesInput = {
 }
 
 export type DeedCreateInput = {
+  id?: string
   type: string
   folio: string
   deedNumber: string
@@ -395,10 +395,11 @@ export type DeedCreateInput = {
   participants?: Prisma.ParticipantCreateNestedManyWithoutDeedInput
   user: Prisma.UserCreateNestedOneWithoutDeedsInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutDeedInput
+  deedTax?: Prisma.DeedTaxCreateNestedManyWithoutDeedInput
 }
 
 export type DeedUncheckedCreateInput = {
-  id?: number
+  id?: string
   type: string
   folio: string
   deedNumber: string
@@ -413,9 +414,11 @@ export type DeedUncheckedCreateInput = {
   updatedAt?: Date | string
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutDeedInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutDeedInput
+  deedTax?: Prisma.DeedTaxUncheckedCreateNestedManyWithoutDeedInput
 }
 
 export type DeedUpdateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.StringFieldUpdateOperationsInput | string
   deedNumber?: Prisma.StringFieldUpdateOperationsInput | string
@@ -430,10 +433,11 @@ export type DeedUpdateInput = {
   participants?: Prisma.ParticipantUpdateManyWithoutDeedNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutDeedsNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutDeedNestedInput
+  deedTax?: Prisma.DeedTaxUpdateManyWithoutDeedNestedInput
 }
 
 export type DeedUncheckedUpdateInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.StringFieldUpdateOperationsInput | string
   deedNumber?: Prisma.StringFieldUpdateOperationsInput | string
@@ -448,10 +452,11 @@ export type DeedUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutDeedNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutDeedNestedInput
+  deedTax?: Prisma.DeedTaxUncheckedUpdateManyWithoutDeedNestedInput
 }
 
 export type DeedCreateManyInput = {
-  id?: number
+  id?: string
   type: string
   folio: string
   deedNumber: string
@@ -467,6 +472,7 @@ export type DeedCreateManyInput = {
 }
 
 export type DeedUpdateManyMutationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.StringFieldUpdateOperationsInput | string
   deedNumber?: Prisma.StringFieldUpdateOperationsInput | string
@@ -481,7 +487,7 @@ export type DeedUpdateManyMutationInput = {
 }
 
 export type DeedUncheckedUpdateManyInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.StringFieldUpdateOperationsInput | string
   deedNumber?: Prisma.StringFieldUpdateOperationsInput | string
@@ -533,7 +539,6 @@ export type DeedCountOrderByAggregateInput = {
 }
 
 export type DeedAvgOrderByAggregateInput = {
-  id?: Prisma.SortOrder
   baseValue?: Prisma.SortOrder
   propertyTax?: Prisma.SortOrder
   estimated?: Prisma.SortOrder
@@ -572,7 +577,6 @@ export type DeedMinOrderByAggregateInput = {
 }
 
 export type DeedSumOrderByAggregateInput = {
-  id?: Prisma.SortOrder
   baseValue?: Prisma.SortOrder
   propertyTax?: Prisma.SortOrder
   estimated?: Prisma.SortOrder
@@ -642,12 +646,18 @@ export type EnumDeedStatusFieldUpdateOperationsInput = {
   set?: $Enums.DeedStatus
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
+export type DeedCreateNestedOneWithoutDeedTaxInput = {
+  create?: Prisma.XOR<Prisma.DeedCreateWithoutDeedTaxInput, Prisma.DeedUncheckedCreateWithoutDeedTaxInput>
+  connectOrCreate?: Prisma.DeedCreateOrConnectWithoutDeedTaxInput
+  connect?: Prisma.DeedWhereUniqueInput
+}
+
+export type DeedUpdateOneRequiredWithoutDeedTaxNestedInput = {
+  create?: Prisma.XOR<Prisma.DeedCreateWithoutDeedTaxInput, Prisma.DeedUncheckedCreateWithoutDeedTaxInput>
+  connectOrCreate?: Prisma.DeedCreateOrConnectWithoutDeedTaxInput
+  upsert?: Prisma.DeedUpsertWithoutDeedTaxInput
+  connect?: Prisma.DeedWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DeedUpdateToOneWithWhereWithoutDeedTaxInput, Prisma.DeedUpdateWithoutDeedTaxInput>, Prisma.DeedUncheckedUpdateWithoutDeedTaxInput>
 }
 
 export type DeedCreateNestedOneWithoutParticipantsInput = {
@@ -681,6 +691,7 @@ export type DeedUpdateOneWithoutAuditLogsNestedInput = {
 }
 
 export type DeedCreateWithoutUserInput = {
+  id?: string
   type: string
   folio: string
   deedNumber: string
@@ -694,10 +705,11 @@ export type DeedCreateWithoutUserInput = {
   updatedAt?: Date | string
   participants?: Prisma.ParticipantCreateNestedManyWithoutDeedInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutDeedInput
+  deedTax?: Prisma.DeedTaxCreateNestedManyWithoutDeedInput
 }
 
 export type DeedUncheckedCreateWithoutUserInput = {
-  id?: number
+  id?: string
   type: string
   folio: string
   deedNumber: string
@@ -711,6 +723,7 @@ export type DeedUncheckedCreateWithoutUserInput = {
   updatedAt?: Date | string
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutDeedInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutDeedInput
+  deedTax?: Prisma.DeedTaxUncheckedCreateNestedManyWithoutDeedInput
 }
 
 export type DeedCreateOrConnectWithoutUserInput = {
@@ -743,7 +756,7 @@ export type DeedScalarWhereInput = {
   AND?: Prisma.DeedScalarWhereInput | Prisma.DeedScalarWhereInput[]
   OR?: Prisma.DeedScalarWhereInput[]
   NOT?: Prisma.DeedScalarWhereInput | Prisma.DeedScalarWhereInput[]
-  id?: Prisma.IntFilter<"Deed"> | number
+  id?: Prisma.StringFilter<"Deed"> | string
   type?: Prisma.StringFilter<"Deed"> | string
   folio?: Prisma.StringFilter<"Deed"> | string
   deedNumber?: Prisma.StringFilter<"Deed"> | string
@@ -758,7 +771,96 @@ export type DeedScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Deed"> | Date | string
 }
 
+export type DeedCreateWithoutDeedTaxInput = {
+  id?: string
+  type: string
+  folio: string
+  deedNumber: string
+  signatureDate?: Date | string | null
+  notes?: string | null
+  baseValue: runtime.Decimal | runtime.DecimalJsLike | number | string
+  propertyTax: runtime.Decimal | runtime.DecimalJsLike | number | string
+  estimated: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.DeedStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participants?: Prisma.ParticipantCreateNestedManyWithoutDeedInput
+  user: Prisma.UserCreateNestedOneWithoutDeedsInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutDeedInput
+}
+
+export type DeedUncheckedCreateWithoutDeedTaxInput = {
+  id?: string
+  type: string
+  folio: string
+  deedNumber: string
+  signatureDate?: Date | string | null
+  notes?: string | null
+  baseValue: runtime.Decimal | runtime.DecimalJsLike | number | string
+  propertyTax: runtime.Decimal | runtime.DecimalJsLike | number | string
+  estimated: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.DeedStatus
+  userId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutDeedInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutDeedInput
+}
+
+export type DeedCreateOrConnectWithoutDeedTaxInput = {
+  where: Prisma.DeedWhereUniqueInput
+  create: Prisma.XOR<Prisma.DeedCreateWithoutDeedTaxInput, Prisma.DeedUncheckedCreateWithoutDeedTaxInput>
+}
+
+export type DeedUpsertWithoutDeedTaxInput = {
+  update: Prisma.XOR<Prisma.DeedUpdateWithoutDeedTaxInput, Prisma.DeedUncheckedUpdateWithoutDeedTaxInput>
+  create: Prisma.XOR<Prisma.DeedCreateWithoutDeedTaxInput, Prisma.DeedUncheckedCreateWithoutDeedTaxInput>
+  where?: Prisma.DeedWhereInput
+}
+
+export type DeedUpdateToOneWithWhereWithoutDeedTaxInput = {
+  where?: Prisma.DeedWhereInput
+  data: Prisma.XOR<Prisma.DeedUpdateWithoutDeedTaxInput, Prisma.DeedUncheckedUpdateWithoutDeedTaxInput>
+}
+
+export type DeedUpdateWithoutDeedTaxInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  folio?: Prisma.StringFieldUpdateOperationsInput | string
+  deedNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  signatureDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  propertyTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  estimated?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumDeedStatusFieldUpdateOperationsInput | $Enums.DeedStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participants?: Prisma.ParticipantUpdateManyWithoutDeedNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutDeedsNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutDeedNestedInput
+}
+
+export type DeedUncheckedUpdateWithoutDeedTaxInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  folio?: Prisma.StringFieldUpdateOperationsInput | string
+  deedNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  signatureDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  propertyTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  estimated?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumDeedStatusFieldUpdateOperationsInput | $Enums.DeedStatus
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutDeedNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutDeedNestedInput
+}
+
 export type DeedCreateWithoutParticipantsInput = {
+  id?: string
   type: string
   folio: string
   deedNumber: string
@@ -772,10 +874,11 @@ export type DeedCreateWithoutParticipantsInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutDeedsInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutDeedInput
+  deedTax?: Prisma.DeedTaxCreateNestedManyWithoutDeedInput
 }
 
 export type DeedUncheckedCreateWithoutParticipantsInput = {
-  id?: number
+  id?: string
   type: string
   folio: string
   deedNumber: string
@@ -789,6 +892,7 @@ export type DeedUncheckedCreateWithoutParticipantsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutDeedInput
+  deedTax?: Prisma.DeedTaxUncheckedCreateNestedManyWithoutDeedInput
 }
 
 export type DeedCreateOrConnectWithoutParticipantsInput = {
@@ -808,6 +912,7 @@ export type DeedUpdateToOneWithWhereWithoutParticipantsInput = {
 }
 
 export type DeedUpdateWithoutParticipantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.StringFieldUpdateOperationsInput | string
   deedNumber?: Prisma.StringFieldUpdateOperationsInput | string
@@ -821,10 +926,11 @@ export type DeedUpdateWithoutParticipantsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutDeedsNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutDeedNestedInput
+  deedTax?: Prisma.DeedTaxUpdateManyWithoutDeedNestedInput
 }
 
 export type DeedUncheckedUpdateWithoutParticipantsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.StringFieldUpdateOperationsInput | string
   deedNumber?: Prisma.StringFieldUpdateOperationsInput | string
@@ -838,9 +944,11 @@ export type DeedUncheckedUpdateWithoutParticipantsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutDeedNestedInput
+  deedTax?: Prisma.DeedTaxUncheckedUpdateManyWithoutDeedNestedInput
 }
 
 export type DeedCreateWithoutAuditLogsInput = {
+  id?: string
   type: string
   folio: string
   deedNumber: string
@@ -854,10 +962,11 @@ export type DeedCreateWithoutAuditLogsInput = {
   updatedAt?: Date | string
   participants?: Prisma.ParticipantCreateNestedManyWithoutDeedInput
   user: Prisma.UserCreateNestedOneWithoutDeedsInput
+  deedTax?: Prisma.DeedTaxCreateNestedManyWithoutDeedInput
 }
 
 export type DeedUncheckedCreateWithoutAuditLogsInput = {
-  id?: number
+  id?: string
   type: string
   folio: string
   deedNumber: string
@@ -871,6 +980,7 @@ export type DeedUncheckedCreateWithoutAuditLogsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutDeedInput
+  deedTax?: Prisma.DeedTaxUncheckedCreateNestedManyWithoutDeedInput
 }
 
 export type DeedCreateOrConnectWithoutAuditLogsInput = {
@@ -890,6 +1000,7 @@ export type DeedUpdateToOneWithWhereWithoutAuditLogsInput = {
 }
 
 export type DeedUpdateWithoutAuditLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.StringFieldUpdateOperationsInput | string
   deedNumber?: Prisma.StringFieldUpdateOperationsInput | string
@@ -903,10 +1014,11 @@ export type DeedUpdateWithoutAuditLogsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.ParticipantUpdateManyWithoutDeedNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutDeedsNestedInput
+  deedTax?: Prisma.DeedTaxUpdateManyWithoutDeedNestedInput
 }
 
 export type DeedUncheckedUpdateWithoutAuditLogsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.StringFieldUpdateOperationsInput | string
   deedNumber?: Prisma.StringFieldUpdateOperationsInput | string
@@ -920,10 +1032,11 @@ export type DeedUncheckedUpdateWithoutAuditLogsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutDeedNestedInput
+  deedTax?: Prisma.DeedTaxUncheckedUpdateManyWithoutDeedNestedInput
 }
 
 export type DeedCreateManyUserInput = {
-  id?: number
+  id?: string
   type: string
   folio: string
   deedNumber: string
@@ -938,6 +1051,7 @@ export type DeedCreateManyUserInput = {
 }
 
 export type DeedUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.StringFieldUpdateOperationsInput | string
   deedNumber?: Prisma.StringFieldUpdateOperationsInput | string
@@ -951,10 +1065,11 @@ export type DeedUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.ParticipantUpdateManyWithoutDeedNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutDeedNestedInput
+  deedTax?: Prisma.DeedTaxUpdateManyWithoutDeedNestedInput
 }
 
 export type DeedUncheckedUpdateWithoutUserInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.StringFieldUpdateOperationsInput | string
   deedNumber?: Prisma.StringFieldUpdateOperationsInput | string
@@ -968,10 +1083,11 @@ export type DeedUncheckedUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutDeedNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutDeedNestedInput
+  deedTax?: Prisma.DeedTaxUncheckedUpdateManyWithoutDeedNestedInput
 }
 
 export type DeedUncheckedUpdateManyWithoutUserInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.StringFieldUpdateOperationsInput | string
   deedNumber?: Prisma.StringFieldUpdateOperationsInput | string
@@ -993,11 +1109,13 @@ export type DeedUncheckedUpdateManyWithoutUserInput = {
 export type DeedCountOutputType = {
   participants: number
   auditLogs: number
+  deedTax: number
 }
 
 export type DeedCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   participants?: boolean | DeedCountOutputTypeCountParticipantsArgs
   auditLogs?: boolean | DeedCountOutputTypeCountAuditLogsArgs
+  deedTax?: boolean | DeedCountOutputTypeCountDeedTaxArgs
 }
 
 /**
@@ -1024,6 +1142,13 @@ export type DeedCountOutputTypeCountAuditLogsArgs<ExtArgs extends runtime.Types.
   where?: Prisma.AuditLogWhereInput
 }
 
+/**
+ * DeedCountOutputType without action
+ */
+export type DeedCountOutputTypeCountDeedTaxArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DeedTaxWhereInput
+}
+
 
 export type DeedSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1042,6 +1167,7 @@ export type DeedSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   participants?: boolean | Prisma.Deed$participantsArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   auditLogs?: boolean | Prisma.Deed$auditLogsArgs<ExtArgs>
+  deedTax?: boolean | Prisma.Deed$deedTaxArgs<ExtArgs>
   _count?: boolean | Prisma.DeedCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["deed"]>
 
@@ -1100,6 +1226,7 @@ export type DeedInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   participants?: boolean | Prisma.Deed$participantsArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   auditLogs?: boolean | Prisma.Deed$auditLogsArgs<ExtArgs>
+  deedTax?: boolean | Prisma.Deed$deedTaxArgs<ExtArgs>
   _count?: boolean | Prisma.DeedCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DeedIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1115,9 +1242,10 @@ export type $DeedPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     participants: Prisma.$ParticipantPayload<ExtArgs>[]
     user: Prisma.$UserPayload<ExtArgs>
     auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
+    deedTax: Prisma.$DeedTaxPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    id: number
+    id: string
     type: string
     folio: string
     deedNumber: string
@@ -1527,6 +1655,7 @@ export interface Prisma__DeedClient<T, Null = never, ExtArgs extends runtime.Typ
   participants<T extends Prisma.Deed$participantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Deed$participantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   auditLogs<T extends Prisma.Deed$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Deed$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  deedTax<T extends Prisma.Deed$deedTaxArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Deed$deedTaxArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DeedTaxPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1556,7 +1685,7 @@ export interface Prisma__DeedClient<T, Null = never, ExtArgs extends runtime.Typ
  * Fields of the Deed model
  */
 export interface DeedFieldRefs {
-  readonly id: Prisma.FieldRef<"Deed", 'Int'>
+  readonly id: Prisma.FieldRef<"Deed", 'String'>
   readonly type: Prisma.FieldRef<"Deed", 'String'>
   readonly folio: Prisma.FieldRef<"Deed", 'String'>
   readonly deedNumber: Prisma.FieldRef<"Deed", 'String'>
@@ -2010,6 +2139,30 @@ export type Deed$auditLogsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.AuditLogScalarFieldEnum | Prisma.AuditLogScalarFieldEnum[]
+}
+
+/**
+ * Deed.deedTax
+ */
+export type Deed$deedTaxArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DeedTax
+   */
+  select?: Prisma.DeedTaxSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DeedTax
+   */
+  omit?: Prisma.DeedTaxOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DeedTaxInclude<ExtArgs> | null
+  where?: Prisma.DeedTaxWhereInput
+  orderBy?: Prisma.DeedTaxOrderByWithRelationInput | Prisma.DeedTaxOrderByWithRelationInput[]
+  cursor?: Prisma.DeedTaxWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DeedTaxScalarFieldEnum | Prisma.DeedTaxScalarFieldEnum[]
 }
 
 /**

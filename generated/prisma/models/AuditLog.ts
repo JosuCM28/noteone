@@ -20,48 +20,34 @@ export type AuditLogModel = runtime.Types.Result.DefaultSelection<Prisma.$AuditL
 
 export type AggregateAuditLog = {
   _count: AuditLogCountAggregateOutputType | null
-  _avg: AuditLogAvgAggregateOutputType | null
-  _sum: AuditLogSumAggregateOutputType | null
   _min: AuditLogMinAggregateOutputType | null
   _max: AuditLogMaxAggregateOutputType | null
 }
 
-export type AuditLogAvgAggregateOutputType = {
-  id: number | null
-  deedId: number | null
-  deletedById: number | null
-}
-
-export type AuditLogSumAggregateOutputType = {
-  id: number | null
-  deedId: number | null
-  deletedById: number | null
-}
-
 export type AuditLogMinAggregateOutputType = {
-  id: number | null
+  id: string | null
   userId: string | null
-  deedId: number | null
+  deedId: string | null
   action: $Enums.AuditAction | null
   details: string | null
   deedFolio: string | null
   deedNumber: string | null
   createdAt: Date | null
   deletedAt: Date | null
-  deletedById: number | null
+  deletedById: string | null
 }
 
 export type AuditLogMaxAggregateOutputType = {
-  id: number | null
+  id: string | null
   userId: string | null
-  deedId: number | null
+  deedId: string | null
   action: $Enums.AuditAction | null
   details: string | null
   deedFolio: string | null
   deedNumber: string | null
   createdAt: Date | null
   deletedAt: Date | null
-  deletedById: number | null
+  deletedById: string | null
 }
 
 export type AuditLogCountAggregateOutputType = {
@@ -79,18 +65,6 @@ export type AuditLogCountAggregateOutputType = {
   _all: number
 }
 
-
-export type AuditLogAvgAggregateInputType = {
-  id?: true
-  deedId?: true
-  deletedById?: true
-}
-
-export type AuditLogSumAggregateInputType = {
-  id?: true
-  deedId?: true
-  deletedById?: true
-}
 
 export type AuditLogMinAggregateInputType = {
   id?: true
@@ -171,18 +145,6 @@ export type AuditLogAggregateArgs<ExtArgs extends runtime.Types.Extensions.Inter
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: AuditLogAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: AuditLogSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: AuditLogMinAggregateInputType
@@ -213,27 +175,23 @@ export type AuditLogGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   _count?: AuditLogCountAggregateInputType | true
-  _avg?: AuditLogAvgAggregateInputType
-  _sum?: AuditLogSumAggregateInputType
   _min?: AuditLogMinAggregateInputType
   _max?: AuditLogMaxAggregateInputType
 }
 
 export type AuditLogGroupByOutputType = {
-  id: number
+  id: string
   userId: string | null
-  deedId: number | null
+  deedId: string | null
   action: $Enums.AuditAction
   details: string | null
   deedFolio: string | null
   deedNumber: string | null
   createdAt: Date
   deletedAt: Date | null
-  deletedById: number | null
+  deletedById: string | null
   changes: runtime.JsonValue | null
   _count: AuditLogCountAggregateOutputType | null
-  _avg: AuditLogAvgAggregateOutputType | null
-  _sum: AuditLogSumAggregateOutputType | null
   _min: AuditLogMinAggregateOutputType | null
   _max: AuditLogMaxAggregateOutputType | null
 }
@@ -257,16 +215,16 @@ export type AuditLogWhereInput = {
   AND?: Prisma.AuditLogWhereInput | Prisma.AuditLogWhereInput[]
   OR?: Prisma.AuditLogWhereInput[]
   NOT?: Prisma.AuditLogWhereInput | Prisma.AuditLogWhereInput[]
-  id?: Prisma.IntFilter<"AuditLog"> | number
+  id?: Prisma.StringFilter<"AuditLog"> | string
   userId?: Prisma.StringNullableFilter<"AuditLog"> | string | null
-  deedId?: Prisma.IntNullableFilter<"AuditLog"> | number | null
+  deedId?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   action?: Prisma.EnumAuditActionFilter<"AuditLog"> | $Enums.AuditAction
   details?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   deedFolio?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   deedNumber?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AuditLog"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"AuditLog"> | Date | string | null
-  deletedById?: Prisma.IntNullableFilter<"AuditLog"> | number | null
+  deletedById?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   changes?: Prisma.JsonNullableFilter<"AuditLog">
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   deed?: Prisma.XOR<Prisma.DeedNullableScalarRelationFilter, Prisma.DeedWhereInput> | null
@@ -289,19 +247,19 @@ export type AuditLogOrderByWithRelationInput = {
 }
 
 export type AuditLogWhereUniqueInput = Prisma.AtLeast<{
-  id?: number
+  id?: string
   AND?: Prisma.AuditLogWhereInput | Prisma.AuditLogWhereInput[]
   OR?: Prisma.AuditLogWhereInput[]
   NOT?: Prisma.AuditLogWhereInput | Prisma.AuditLogWhereInput[]
   userId?: Prisma.StringNullableFilter<"AuditLog"> | string | null
-  deedId?: Prisma.IntNullableFilter<"AuditLog"> | number | null
+  deedId?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   action?: Prisma.EnumAuditActionFilter<"AuditLog"> | $Enums.AuditAction
   details?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   deedFolio?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   deedNumber?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AuditLog"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"AuditLog"> | Date | string | null
-  deletedById?: Prisma.IntNullableFilter<"AuditLog"> | number | null
+  deletedById?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   changes?: Prisma.JsonNullableFilter<"AuditLog">
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   deed?: Prisma.XOR<Prisma.DeedNullableScalarRelationFilter, Prisma.DeedWhereInput> | null
@@ -320,119 +278,120 @@ export type AuditLogOrderByWithAggregationInput = {
   deletedById?: Prisma.SortOrderInput | Prisma.SortOrder
   changes?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.AuditLogCountOrderByAggregateInput
-  _avg?: Prisma.AuditLogAvgOrderByAggregateInput
   _max?: Prisma.AuditLogMaxOrderByAggregateInput
   _min?: Prisma.AuditLogMinOrderByAggregateInput
-  _sum?: Prisma.AuditLogSumOrderByAggregateInput
 }
 
 export type AuditLogScalarWhereWithAggregatesInput = {
   AND?: Prisma.AuditLogScalarWhereWithAggregatesInput | Prisma.AuditLogScalarWhereWithAggregatesInput[]
   OR?: Prisma.AuditLogScalarWhereWithAggregatesInput[]
   NOT?: Prisma.AuditLogScalarWhereWithAggregatesInput | Prisma.AuditLogScalarWhereWithAggregatesInput[]
-  id?: Prisma.IntWithAggregatesFilter<"AuditLog"> | number
+  id?: Prisma.StringWithAggregatesFilter<"AuditLog"> | string
   userId?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
-  deedId?: Prisma.IntNullableWithAggregatesFilter<"AuditLog"> | number | null
+  deedId?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
   action?: Prisma.EnumAuditActionWithAggregatesFilter<"AuditLog"> | $Enums.AuditAction
   details?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
   deedFolio?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
   deedNumber?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AuditLog"> | Date | string | null
-  deletedById?: Prisma.IntNullableWithAggregatesFilter<"AuditLog"> | number | null
+  deletedById?: Prisma.StringNullableWithAggregatesFilter<"AuditLog"> | string | null
   changes?: Prisma.JsonNullableWithAggregatesFilter<"AuditLog">
 }
 
 export type AuditLogCreateInput = {
+  id?: string
   action: $Enums.AuditAction
   details?: string | null
   deedFolio?: string | null
   deedNumber?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
-  deletedById?: number | null
+  deletedById?: string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user?: Prisma.UserCreateNestedOneWithoutAuditLogsInput
   deed?: Prisma.DeedCreateNestedOneWithoutAuditLogsInput
 }
 
 export type AuditLogUncheckedCreateInput = {
-  id?: number
+  id?: string
   userId?: string | null
-  deedId?: number | null
+  deedId?: string | null
   action: $Enums.AuditAction
   details?: string | null
   deedFolio?: string | null
   deedNumber?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
-  deletedById?: number | null
+  deletedById?: string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AuditLogUpdateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   action?: Prisma.EnumAuditActionFieldUpdateOperationsInput | $Enums.AuditAction
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deedFolio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deedNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user?: Prisma.UserUpdateOneWithoutAuditLogsNestedInput
   deed?: Prisma.DeedUpdateOneWithoutAuditLogsNestedInput
 }
 
 export type AuditLogUncheckedUpdateInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  deedId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deedId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action?: Prisma.EnumAuditActionFieldUpdateOperationsInput | $Enums.AuditAction
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deedFolio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deedNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AuditLogCreateManyInput = {
-  id?: number
+  id?: string
   userId?: string | null
-  deedId?: number | null
+  deedId?: string | null
   action: $Enums.AuditAction
   details?: string | null
   deedFolio?: string | null
   deedNumber?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
-  deletedById?: number | null
+  deletedById?: string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AuditLogUpdateManyMutationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   action?: Prisma.EnumAuditActionFieldUpdateOperationsInput | $Enums.AuditAction
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deedFolio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deedNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AuditLogUncheckedUpdateManyInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  deedId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deedId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action?: Prisma.EnumAuditActionFieldUpdateOperationsInput | $Enums.AuditAction
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deedFolio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deedNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
@@ -460,12 +419,6 @@ export type AuditLogCountOrderByAggregateInput = {
   changes?: Prisma.SortOrder
 }
 
-export type AuditLogAvgOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  deedId?: Prisma.SortOrder
-  deletedById?: Prisma.SortOrder
-}
-
 export type AuditLogMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -489,12 +442,6 @@ export type AuditLogMinOrderByAggregateInput = {
   deedNumber?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
-  deletedById?: Prisma.SortOrder
-}
-
-export type AuditLogSumOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  deedId?: Prisma.SortOrder
   deletedById?: Prisma.SortOrder
 }
 
@@ -586,36 +533,29 @@ export type EnumAuditActionFieldUpdateOperationsInput = {
   set?: $Enums.AuditAction
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type AuditLogCreateWithoutUserInput = {
+  id?: string
   action: $Enums.AuditAction
   details?: string | null
   deedFolio?: string | null
   deedNumber?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
-  deletedById?: number | null
+  deletedById?: string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deed?: Prisma.DeedCreateNestedOneWithoutAuditLogsInput
 }
 
 export type AuditLogUncheckedCreateWithoutUserInput = {
-  id?: number
-  deedId?: number | null
+  id?: string
+  deedId?: string | null
   action: $Enums.AuditAction
   details?: string | null
   deedFolio?: string | null
   deedNumber?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
-  deletedById?: number | null
+  deletedById?: string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
@@ -649,33 +589,34 @@ export type AuditLogScalarWhereInput = {
   AND?: Prisma.AuditLogScalarWhereInput | Prisma.AuditLogScalarWhereInput[]
   OR?: Prisma.AuditLogScalarWhereInput[]
   NOT?: Prisma.AuditLogScalarWhereInput | Prisma.AuditLogScalarWhereInput[]
-  id?: Prisma.IntFilter<"AuditLog"> | number
+  id?: Prisma.StringFilter<"AuditLog"> | string
   userId?: Prisma.StringNullableFilter<"AuditLog"> | string | null
-  deedId?: Prisma.IntNullableFilter<"AuditLog"> | number | null
+  deedId?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   action?: Prisma.EnumAuditActionFilter<"AuditLog"> | $Enums.AuditAction
   details?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   deedFolio?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   deedNumber?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AuditLog"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"AuditLog"> | Date | string | null
-  deletedById?: Prisma.IntNullableFilter<"AuditLog"> | number | null
+  deletedById?: Prisma.StringNullableFilter<"AuditLog"> | string | null
   changes?: Prisma.JsonNullableFilter<"AuditLog">
 }
 
 export type AuditLogCreateWithoutDeedInput = {
+  id?: string
   action: $Enums.AuditAction
   details?: string | null
   deedFolio?: string | null
   deedNumber?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
-  deletedById?: number | null
+  deletedById?: string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user?: Prisma.UserCreateNestedOneWithoutAuditLogsInput
 }
 
 export type AuditLogUncheckedCreateWithoutDeedInput = {
-  id?: number
+  id?: string
   userId?: string | null
   action: $Enums.AuditAction
   details?: string | null
@@ -683,7 +624,7 @@ export type AuditLogUncheckedCreateWithoutDeedInput = {
   deedNumber?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
-  deletedById?: number | null
+  deletedById?: string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
@@ -714,58 +655,59 @@ export type AuditLogUpdateManyWithWhereWithoutDeedInput = {
 }
 
 export type AuditLogCreateManyUserInput = {
-  id?: number
-  deedId?: number | null
+  id?: string
+  deedId?: string | null
   action: $Enums.AuditAction
   details?: string | null
   deedFolio?: string | null
   deedNumber?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
-  deletedById?: number | null
+  deletedById?: string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AuditLogUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   action?: Prisma.EnumAuditActionFieldUpdateOperationsInput | $Enums.AuditAction
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deedFolio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deedNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deed?: Prisma.DeedUpdateOneWithoutAuditLogsNestedInput
 }
 
 export type AuditLogUncheckedUpdateWithoutUserInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  deedId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  deedId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action?: Prisma.EnumAuditActionFieldUpdateOperationsInput | $Enums.AuditAction
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deedFolio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deedNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AuditLogUncheckedUpdateManyWithoutUserInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  deedId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  deedId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action?: Prisma.EnumAuditActionFieldUpdateOperationsInput | $Enums.AuditAction
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deedFolio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deedNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AuditLogCreateManyDeedInput = {
-  id?: number
+  id?: string
   userId?: string | null
   action: $Enums.AuditAction
   details?: string | null
@@ -773,24 +715,25 @@ export type AuditLogCreateManyDeedInput = {
   deedNumber?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
-  deletedById?: number | null
+  deletedById?: string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AuditLogUpdateWithoutDeedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   action?: Prisma.EnumAuditActionFieldUpdateOperationsInput | $Enums.AuditAction
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deedFolio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deedNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user?: Prisma.UserUpdateOneWithoutAuditLogsNestedInput
 }
 
 export type AuditLogUncheckedUpdateWithoutDeedInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action?: Prisma.EnumAuditActionFieldUpdateOperationsInput | $Enums.AuditAction
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -798,12 +741,12 @@ export type AuditLogUncheckedUpdateWithoutDeedInput = {
   deedNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AuditLogUncheckedUpdateManyWithoutDeedInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action?: Prisma.EnumAuditActionFieldUpdateOperationsInput | $Enums.AuditAction
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -811,7 +754,7 @@ export type AuditLogUncheckedUpdateManyWithoutDeedInput = {
   deedNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
@@ -900,16 +843,16 @@ export type $AuditLogPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     deed: Prisma.$DeedPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    id: number
+    id: string
     userId: string | null
-    deedId: number | null
+    deedId: string | null
     action: $Enums.AuditAction
     details: string | null
     deedFolio: string | null
     deedNumber: string | null
     createdAt: Date
     deletedAt: Date | null
-    deletedById: number | null
+    deletedById: string | null
     changes: runtime.JsonValue | null
   }, ExtArgs["result"]["auditLog"]>
   composites: {}
@@ -1336,16 +1279,16 @@ export interface Prisma__AuditLogClient<T, Null = never, ExtArgs extends runtime
  * Fields of the AuditLog model
  */
 export interface AuditLogFieldRefs {
-  readonly id: Prisma.FieldRef<"AuditLog", 'Int'>
+  readonly id: Prisma.FieldRef<"AuditLog", 'String'>
   readonly userId: Prisma.FieldRef<"AuditLog", 'String'>
-  readonly deedId: Prisma.FieldRef<"AuditLog", 'Int'>
+  readonly deedId: Prisma.FieldRef<"AuditLog", 'String'>
   readonly action: Prisma.FieldRef<"AuditLog", 'AuditAction'>
   readonly details: Prisma.FieldRef<"AuditLog", 'String'>
   readonly deedFolio: Prisma.FieldRef<"AuditLog", 'String'>
   readonly deedNumber: Prisma.FieldRef<"AuditLog", 'String'>
   readonly createdAt: Prisma.FieldRef<"AuditLog", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"AuditLog", 'DateTime'>
-  readonly deletedById: Prisma.FieldRef<"AuditLog", 'Int'>
+  readonly deletedById: Prisma.FieldRef<"AuditLog", 'String'>
   readonly changes: Prisma.FieldRef<"AuditLog", 'Json'>
 }
     
