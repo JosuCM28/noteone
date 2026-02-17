@@ -77,7 +77,6 @@ export interface Escritura {
   personaA: Persona;
   personaB?: Persona;
   presupuesto: Presupuesto;
-  adjuntos: Adjunto[];
   bitacora: BitacoraEntry[];
   reciboEnviado: boolean;
   fechaUltimoEnvio: Date | null;
@@ -160,8 +159,9 @@ export type TipoEscrituraKey =
   aviso: number;
   registroEscritura: number;
   gastosNotariales: number;
+  honorarios: number;
   pagoISR: number;
-  dobleHonorarios: number;
+  honorariosB: number;
 }
 
 export const TIPOS_ESCRITURA_LABELS: Record<TipoEscrituraKey, string> = {
@@ -179,8 +179,8 @@ export const TIPOS_ESCRITURA_LABELS: Record<TipoEscrituraKey, string> = {
   'cancelacion-reserva-dominio': 'Cancelación Reserva de Dominio',
   'poder-notarial': 'Poder Notarial',
   'constitucion-ac': 'Constitución A.C.',
-  'inft-indistinto-nombre': 'INFT Indistinto Nombre',
-  'inft-construccion-casahabitacion': 'INFT Construcción Casa Habitación',
+  'inft-indistinto-nombre': 'Informacion Testimonial Para Acreditar Uso Indistinto de Nombre',
+  'inft-construccion-casahabitacion': 'Información Testimonial Para Acreditar Construcción de Casa-Habitación',
 };
 
 export const TAX_ITEM_LABELS: Record<keyof TaxItemConfig, string> = {
@@ -192,6 +192,7 @@ export const TAX_ITEM_LABELS: Record<keyof TaxItemConfig, string> = {
   registroEscritura: 'Registro de Escritura',
   gastosNotariales: 'Gastos Notariales',
   pagoISR: 'Pago de ISR',
-  dobleHonorarios: 'Doble Honorarios',
+  honorarios: 'Honorarios',
+  honorariosB: 'Honorarios B',
 };
 

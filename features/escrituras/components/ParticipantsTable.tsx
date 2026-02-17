@@ -43,7 +43,7 @@ export function ParticipantsTable({
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium truncate">{p.nombre}</p>
               <p className="text-xs text-muted-foreground">
-                {p.rol} · {p.telefono}
+                {p.role} · {p.telefono}
               </p>
             </div>
 

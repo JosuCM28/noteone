@@ -1,58 +1,100 @@
+"use client";
+
+import { useMemo } from "react";
+import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calculator } from "lucide-react";
-import { TipoEscritura, Presupuesto } from "@/features/shared/types";
 import { Money } from "@/components/shared/Money";
 
-/** ✅ Config local (puedes ajustar valores por defecto) */
-export type TaxConfig = {
-  trasladoPorcentaje: number;
-  derechoRegistro: number;
-  certificadoCatastral: number;
-  constanciasAdeudo: number;
-};
+import {
+  DEFAULT_TAX_CONFIG,
+  PRESUPUESTO_RULES_BY_TIPO,
+  type TaxConfig,
+  type TaxKey,
+} from "@/features/shared/tax-rules";
 
-export const DEFAULT_TAX_CONFIG: TaxConfig = {
-  trasladoPorcentaje: 0,
-  derechoRegistro: 0,
-  certificadoCatastral: 0,
-  constanciasAdeudo: 0,
-};
+import { z } from "zod";
+import { EscrituraFormSchema } from "../schema"; // ✅ ajusta path si hace falta
+import type { TipoEscritura } from "@/features/shared/types";
 
-interface PresupuestoSectionProps {
-  tipo: TipoEscritura;
-  valorBase: number;
-  honorarios: number;
-  isr: number;
-  onValorBaseChange: (value: number) => void;
-  onHonorariosChange: (value: number) => void;
-  onIsrChange: (value: number) => void;
-
-  /** ✅ ya no se usa useTaxConfig: ahora lo recibes aquí */
-  taxConfig?: TaxConfig;
+function toNumber(v: unknown) {
+  const n = typeof v === "number" ? v : Number(v);
+  return Number.isFinite(n) ? n : 0;
 }
 
-export function PresupuestoSection({
-  tipo,
-  valorBase,
-  honorarios,
-  isr,
-  onValorBaseChange,
-  onHonorariosChange,
-  onIsrChange,
-  taxConfig = DEFAULT_TAX_CONFIG,
-}: PresupuestoSectionProps) {
-  const traslado = valorBase * (taxConfig.trasladoPorcentaje / 100);
-  const subtotal =
-    valorBase +
-    traslado +
-    taxConfig.derechoRegistro +
-    taxConfig.certificadoCatastral +
-    taxConfig.constanciasAdeudo;
+const PERSONA_B_KEYS: TaxKey[] = ["pagoISR", "honorariosB"];
 
-  const showIsr = tipo === "compraventa";
-  const totalFinal = subtotal + honorarios + (showIsr ? isr : 0);
+// ✅ Labels seguros para tus TaxKey (usa esto o reemplaza por tu TAX_ITEM_LABELS)
+const TAX_LABELS: Record<TaxKey, string> = {
+  traslado: "Traslado",
+  certificadoValorCatastral: "Certificado Valor Catastral",
+  constanciaNoAdeudo: "Constancia No Adeudo",
+  derechoRegistro: "Derecho de Registro",
+  aviso: "Aviso",
+  registroEscritura: "Registro de Escritura",
+  gastosNotariales: "Gastos Notariales",
+  pagoISR: "Pago ISR",
+  honorarios: "Honorarios",
+  honorariosB: "Honorarios B",
+};
+
+type FormInput = z.input<typeof EscrituraFormSchema>;
+
+type Props = {
+  tipo: TipoEscritura;
+  personaALabel?: string;
+  personaBLabel?: string;
+};
+
+export function PresupuestoSection({ tipo, personaALabel, personaBLabel }: Props) {
+  const { control, setValue } = useFormContext<FormInput>();
+
+  const rules = PRESUPUESTO_RULES_BY_TIPO[tipo];
+  const ruleKeys = rules?.taxes ?? [];
+
+  // ✅ RHF values
+  const baseValueRaw = useWatch({ control, name: "baseValue" });
+  const baseValue = toNumber(baseValueRaw ?? 0);
+
+  const taxesWatch = useWatch({ control, name: "taxes" }) as Partial<TaxConfig> | undefined;
+
+  // ✅ fallback (por si taxes aún no está)
+  const taxes = useMemo<TaxConfig>(() => {
+    return { ...DEFAULT_TAX_CONFIG, ...(taxesWatch ?? {}) };
+  }, [taxesWatch]);
+
+  const { taxesAKeys, taxesBKeys } = useMemo(() => {
+    const a: TaxKey[] = [];
+    const b: TaxKey[] = [];
+
+    for (const key of ruleKeys) {
+      if (PERSONA_B_KEYS.includes(key)) b.push(key);
+      else a.push(key);
+    }
+
+    return { taxesAKeys: a, taxesBKeys: b };
+  }, [ruleKeys]);
+
+  const totalA = useMemo(() => {
+    let s = baseValue;
+    for (const key of taxesAKeys) s += toNumber(taxes[key]);
+    return s;
+  }, [baseValue, taxesAKeys, taxes]);
+
+  const totalB = useMemo(() => {
+    let s = 0;
+    for (const key of taxesBKeys) s += toNumber(taxes[key]);
+    return s;
+  }, [taxesBKeys, taxes]);
+
+  // ✅ si quieres, puedes “guardar” los totales en el form para enviar a backend
+  // (solo si tu schema permite totalA/totalB)
+  // useEffect(() => {
+  //   setValue("totalA", totalA);
+  //   setValue("totalB", totalB);
+  // }, [totalA, totalB, setValue]);
 
   return (
     <Card>
@@ -64,124 +106,92 @@ export function PresupuestoSection({
       </CardHeader>
 
       <CardContent className="space-y-6">
+        {/* BaseValue */}
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
             <Label>Valor Base (MXN)</Label>
-            <Input
-              type="number"
-              value={valorBase || ""}
-              onChange={(e) => onValorBaseChange(Number(e.target.value))}
-              placeholder="0"
+            <Controller
+              control={control}
+              name="baseValue"
+              render={({ field }) => (
+                <Input
+                  type="number"
+                  value={field.value ?? ""}
+                  onChange={(e) => field.onChange(toNumber(e.target.value))}
+                  placeholder="0"
+                />
+              )}
             />
           </div>
-
-          <div>
-            <Label>Honorarios (MXN)</Label>
-            <Input
-              type="number"
-              value={honorarios || ""}
-              onChange={(e) => onHonorariosChange(Number(e.target.value))}
-              placeholder="0"
-            />
-          </div>
-
-          {showIsr && (
-            <div>
-              <Label>ISR (MXN)</Label>
-              <Input
-                type="number"
-                value={isr || ""}
-                onChange={(e) => onIsrChange(Number(e.target.value))}
-                placeholder="0"
-              />
-              <p className="mt-1 text-xs text-muted-foreground">
-                Solo aplica al vendedor
-              </p>
-            </div>
-          )}
         </div>
 
-        {/* Summary */}
-        <div className="space-y-2 rounded-lg bg-muted/30 p-4 text-sm">
-          <div className="flex justify-between">
-            <span>Valor Base</span>
-            <Money amount={valorBase} />
-          </div>
+        {/* Persona A / General */}
+        <div className="space-y-3 rounded-lg bg-muted/30 p-4 text-sm">
+          <p className="text-sm font-semibold">
+            Pagos generales / {personaALabel ?? "Persona A"}
+          </p>
 
           <div className="flex justify-between">
-            <span>Traslado ({taxConfig.trasladoPorcentaje}%)</span>
-            <Money amount={traslado} />
+            <span className="text-muted-foreground">Valor Base</span>
+            <Money amount={baseValue} />
           </div>
 
-          <div className="flex justify-between text-muted-foreground">
-            <span>Derecho de Registro</span>
-            <Money amount={taxConfig.derechoRegistro} />
-          </div>
+          {taxesAKeys.map((key) => (
+            <div key={key} className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:items-center">
+              <span className="text-muted-foreground">{TAX_LABELS[key]}</span>
 
-          <div className="flex justify-between text-muted-foreground">
-            <span>Certificado Catastral</span>
-            <Money amount={taxConfig.certificadoCatastral} />
-          </div>
-
-          <div className="flex justify-between text-muted-foreground">
-            <span>Constancias de Adeudo</span>
-            <Money amount={taxConfig.constanciasAdeudo} />
-          </div>
-
-          <div className="flex justify-between border-t pt-2">
-            <span>Subtotal</span>
-            <Money amount={subtotal} />
-          </div>
-
-          <div className="flex justify-between">
-            <span>Honorarios</span>
-            <Money amount={honorarios} />
-          </div>
-
-          {showIsr && (
-            <div className="flex justify-between">
-              <span>ISR</span>
-              <Money amount={isr} />
+              <Controller
+                control={control}
+                name={`taxes.${key}` as const}
+                render={({ field }) => (
+                  <Input
+                    type="number"
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(toNumber(e.target.value))}
+                    placeholder="0"
+                  />
+                )}
+              />
             </div>
-          )}
+          ))}
 
           <div className="flex justify-between border-t pt-2 text-base font-bold">
-            <span>Total Final</span>
-            <Money amount={totalFinal} className="text-primary" />
+            <span>Total ({personaALabel ?? "Persona A"})</span>
+            <Money amount={totalA} className="text-primary" />
           </div>
         </div>
+
+        {/* Persona B */}
+        {taxesBKeys.length > 0 && (
+          <div className="space-y-3 rounded-lg bg-muted/30 p-4 text-sm mt-10">
+            <p className="text-sm font-semibold">Pagos de {personaBLabel ?? "Persona B"}</p>
+
+            {taxesBKeys.map((key) => (
+              <div key={key} className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:items-center">
+                <span className="text-muted-foreground">{TAX_LABELS[key]}</span>
+
+                <Controller
+                  control={control}
+                  name={`taxes.${key}` as const}
+                  render={({ field }) => (
+                    <Input
+                      type="number"
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(toNumber(e.target.value))}
+                      placeholder="0"
+                    />
+                  )}
+                />
+              </div>
+            ))}
+
+            <div className="flex justify-between border-t pt-2 text-base font-bold">
+              <span>Total ({personaBLabel ?? "Persona B"})</span>
+              <Money amount={totalB} className="text-primary" />
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
-}
-
-export function calcularPresupuesto(
-  tipo: TipoEscritura,
-  valorBase: number,
-  honorarios: number,
-  isr: number,
-  taxConfig: TaxConfig
-): Presupuesto {
-  const traslado = valorBase * (taxConfig.trasladoPorcentaje / 100);
-  const subtotal =
-    valorBase +
-    traslado +
-    taxConfig.derechoRegistro +
-    taxConfig.certificadoCatastral +
-    taxConfig.constanciasAdeudo;
-
-  const isrFinal = tipo === "compraventa" ? isr : 0;
-  const totalFinal = subtotal + honorarios + isrFinal;
-
-  return {
-    valorBase,
-    traslado,
-    derechoRegistro: taxConfig.derechoRegistro,
-    certificadoCatastral: taxConfig.certificadoCatastral,
-    constanciasAdeudo: taxConfig.constanciasAdeudo,
-    subtotalPresupuesto: subtotal,
-    honorarios,
-    isr: isrFinal,
-    totalFinal,
-  };
 }

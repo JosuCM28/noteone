@@ -3,25 +3,13 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Save } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { TipoSelector } from "../components/TipoSelector";
-import { DatosGeneralesSection } from "../components/DatosGeneralesSection";
-import { ParticipantesManager } from "../components/ParticipantesManager";
-import {
-  PresupuestoSection,
-  calcularPresupuesto,
-  DEFAULT_TAX_CONFIG,
-  type TaxConfig,
-} from "../components/PresupuestoSection";
-import { WhatsAppModal } from "../components/WhatsAppModal";
-import { TIPOS_ESCRITURA } from "@/features/shared/data/mock-data";
-import {
-  TipoEscritura,
-  EstatusEscritura,
-  Escritura,
-} from "@/features/shared/types";
 import { toast } from "sonner";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useFieldArray, useForm, type SubmitHandler } from "react-hook-form";
+import { Form } from "@/components/ui/form";
 
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -31,15 +19,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-type Side = "A" | "B";
+import { TipoSelector } from "../components/TipoSelector";
+import { DatosGeneralesSection } from "../components/DatosGeneralesSection";
+import { ParticipantesManager } from "../components/ParticipantesManager";
+import { PresupuestoSection } from "../components/PresupuestoSection";
+import { WhatsAppModal } from "../components/WhatsAppModal";
 
-type Participante = {
-  id: string;
-  rol: string;
-  nombre: string;
-  telefono: string;
-  side?: Side;
-};
+import { TIPOS_ESCRITURA } from "@/features/shared/data/mock-data";
+import type { TipoEscritura, Escritura, EstatusEscritura } from "@/features/shared/types";
+import { DEFAULT_TAX_CONFIG, type TaxConfig } from "@/features/shared/tax-rules";
+import { calcularPresupuesto } from "@/features/shared/calcular-presupuesto";
+
+import { EscrituraFormSchema } from "../schema";
 
 function createId() {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -48,35 +39,41 @@ function createId() {
 export default function EscrituraNueva() {
   const router = useRouter();
 
-  const [tipo, setTipo] = useState<TipoEscritura | null>(null);
-  const [folioInterno, setFolioInterno] = useState("");
-  const [numeroEscritura, setNumeroEscritura] = useState("");
-  const [fechaFirma, setFechaFirma] = useState("");
-  const [notas, setNotas] = useState("");
-  const [estatus, setEstatus] = useState<EstatusEscritura>("por-liquidar");
-  const [valorBase, setValorBase] = useState(0);
-  const [honorarios, setHonorarios] = useState(0);
-  const [isr, setIsr] = useState(0);
+  type FormInput = z.input<typeof EscrituraFormSchema>;
+  type FormOutput = z.output<typeof EscrituraFormSchema>;
 
-  const taxConfig: TaxConfig = DEFAULT_TAX_CONFIG;
+  const form = useForm<FormInput>({
+    resolver: zodResolver(EscrituraFormSchema),
+    mode: "onChange",
+    defaultValues: {
+      type: "",
+      typeLabel: "",
+      folio: "",
+      deedNumber: null,
+      notes: null,
 
-  const [participantes, setParticipantes] = useState<Participante[]>([]);
+      baseValue: null,
+      totalA: null,
+      totalB: null,
 
-  // Modal state
-  const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
-  const [savedEscritura, setSavedEscritura] = useState<Escritura | null>(null);
+      status: "POR_LIQUIDAR",
 
-  // Confirm change tipo
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [pendingTipo, setPendingTipo] = useState<TipoEscritura | null>(null);
+      participants: [{ name: "", phone: null, role: "", side: "A" }],
 
-  // Get tipo config
+      taxes: DEFAULT_TAX_CONFIG,
+    },
+  });
+
+  const { fields, append, update, remove } = useFieldArray({
+    control: form.control,
+    name: "participants",
+  });
+
+  const tipo = form.watch("type") as TipoEscritura | "";
   const tipoConfig = useMemo(
-    () => TIPOS_ESCRITURA.find((t) => t.value === tipo),
+    () => TIPOS_ESCRITURA.find((t) => t.value === (tipo || null)),
     [tipo]
   );
-
-  const requiresB = !!tipoConfig?.personaBLabel;
 
   const rolesDisponibles = useMemo(() => {
     if (!tipoConfig) return ["Participante"];
@@ -86,88 +83,61 @@ export default function EscrituraNueva() {
     ];
   }, [tipoConfig]);
 
-  const participantesA = useMemo(() => {
-    const labelA = tipoConfig?.personaALabel;
-    return participantes.filter(
-      (p) => p.side === "A" || (labelA && p.rol === labelA)
-    );
-  }, [participantes, tipoConfig]);
+  // Modal state
+  const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
+  const [savedEscritura, setSavedEscritura] = useState<Escritura | null>(null);
 
-  const participantesB = useMemo(() => {
-    const labelB = tipoConfig?.personaBLabel;
-    return participantes.filter(
-      (p) => p.side === "B" || (labelB && p.rol === labelB)
-    );
-  }, [participantes, tipoConfig]);
+  // Confirm change tipo
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingTipo, setPendingTipo] = useState<TipoEscritura | null>(null);
 
-  /**
-   * ¿Hay datos ingresados "abajo" que se perderían?
-   * (ajusta esta heurística si quieres)
-   */
-  const hasUnsavedDraft = useMemo(() => {
-    return (
-      folioInterno.trim() ||
-      numeroEscritura.trim() ||
-      fechaFirma.trim() ||
-      notas.trim() ||
-      participantes.length > 0 ||
-      valorBase > 0 ||
-      honorarios > 0 ||
-      isr > 0
-    );
-  }, [
-    folioInterno,
-    numeroEscritura,
-    fechaFirma,
-    notas,
-    participantes.length,
-    valorBase,
-    honorarios,
-    isr,
-  ]);
+  // ✅ draft: solo isDirty
+  const hasUnsavedDraft = form.formState.isDirty;
 
-  const resetDraft = () => {
-    setFolioInterno("");
-    setNumeroEscritura("");
-    setFechaFirma("");
-    setNotas("");
-    setEstatus("por-liquidar");
-    setValorBase(0);
-    setHonorarios(0);
-    setIsr(0);
-    setParticipantes([]);
+  const resetDraftKeepingTipo = (keepTipo: string) => {
+    form.reset({
+      type: keepTipo,
+      typeLabel: (() => {
+        const cfg = TIPOS_ESCRITURA.find((x) => x.value === (keepTipo as any));
+        return cfg?.label ?? keepTipo;
+      })(),
+      folio: "",
+      deedNumber: null,
+      notes: null,
+      baseValue: null,
+      totalA: null,
+      totalB: null,
+      status: "POR_LIQUIDAR",
+      participants: [{ name: "", phone: null, role: "", side: "A" }],
+      taxes: DEFAULT_TAX_CONFIG,
+    });
+
     setSavedEscritura(null);
     setShowWhatsAppModal(false);
   };
 
-  /**
-   * Intercepta cambio de tipo desde TipoSelector
-   */
   const handleTipoChange = (next: TipoEscritura | null) => {
-    // Selección inicial o mismo tipo
     if (!next || next === tipo) {
-      setTipo(next);
+      form.setValue("type", (next ?? "") as any, { shouldDirty: true });
       return;
     }
 
-    // Si no hay datos, cambia directo
     if (!hasUnsavedDraft) {
-      setTipo(next);
+      form.setValue("type", next as any, { shouldDirty: true });
+      const cfg = TIPOS_ESCRITURA.find((x) => x.value === next);
+      form.setValue("typeLabel", cfg?.label ?? next, { shouldDirty: true });
       return;
     }
 
-    // Si hay datos, pide confirmación
     setPendingTipo(next);
     setConfirmOpen(true);
   };
 
   const confirmChangeTipo = () => {
-    if (!pendingTipo) {
-      setConfirmOpen(false);
-      return;
-    }
-    resetDraft();
-    setTipo(pendingTipo);
+    if (!pendingTipo) return setConfirmOpen(false);
+
+    resetDraftKeepingTipo(pendingTipo);
+
     setPendingTipo(null);
     setConfirmOpen(false);
     toast.message("Se reinició el borrador al cambiar el tipo de escritura");
@@ -178,275 +148,158 @@ export default function EscrituraNueva() {
     setConfirmOpen(false);
   };
 
-  /**
-   * Participantes handlers (compatibles con varias firmas)
-   */
-  const handleAddParticipante = (...args: any[]) => {
-    const maybe = args[0];
+  const canSubmit = form.formState.isValid && !form.formState.isSubmitting;
 
-    if (maybe && typeof maybe === "object" && !Array.isArray(maybe)) {
-      const p = maybe as Participante;
-      setParticipantes((prev) => [...prev, { ...p, id: p.id ?? createId() }]);
-      return;
-    }
+  // ✅ Correcto para RHF: SubmitHandler<FormInput>
+  const onSubmit: SubmitHandler<FormInput> = (values) => {
+    // ✅ aplica defaults de zod (status, side, etc.)
+    const data: FormOutput = EscrituraFormSchema.parse(values);
 
-    const hasA = participantesA.length >= 1;
-    const hasB = participantesB.length >= 1;
-
-    const side: Side = !hasA ? "A" : requiresB && !hasB ? "B" : "A";
-    const rolDefault =
-      side === "A"
-        ? tipoConfig?.personaALabel ?? "Participante"
-        : tipoConfig?.personaBLabel ?? "Participante";
-
-    setParticipantes((prev) => [
-      ...prev,
-      { id: createId(), rol: rolDefault, nombre: "", telefono: "", side },
-    ]);
-  };
-
-  const handleUpdateParticipante = (...args: any[]) => {
-    if (args.length === 1 && Array.isArray(args[0])) {
-      setParticipantes(args[0] as Participante[]);
-      return;
-    }
-
-    if (args.length === 1 && args[0] && typeof args[0] === "object") {
-      const p = args[0] as Partial<Participante> & { id?: string };
-      if (!p.id) return;
-      setParticipantes((prev) =>
-        prev.map((x) => (x.id === p.id ? { ...x, ...p } : x))
-      );
-      return;
-    }
-
-    if (args.length === 2 && typeof args[0] === "string" && args[1]) {
-      const id = args[0] as string;
-      const patch = args[1] as Partial<Participante>;
-      setParticipantes((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, ...patch } : p))
-      );
-      return;
-    }
-
-    if (args.length === 2 && typeof args[0] === "number" && args[1]) {
-      const index = args[0] as number;
-      const patch = args[1] as Partial<Participante>;
-      setParticipantes((prev) =>
-        prev.map((p, i) => (i === index ? { ...p, ...patch } : p))
-      );
-      return;
-    }
-  };
-
-  const handleRemoveParticipante = (...args: any[]) => {
-    if (args.length === 1 && typeof args[0] === "string") {
-      const id = args[0] as string;
-      setParticipantes((prev) => prev.filter((p) => p.id !== id));
-      return;
-    }
-    if (args.length === 1 && typeof args[0] === "number") {
-      const index = args[0] as number;
-      setParticipantes((prev) => prev.filter((_, i) => i !== index));
-      return;
-    }
-  };
-
-  // Validation: requiere A siempre, y B si el tipo lo define
-  const isValid = useMemo(() => {
-    const baseOk =
-      !!tipo &&
-      folioInterno.trim().length > 0 &&
-      numeroEscritura.trim().length > 0;
-
-    const aOk = participantesA.length >= 1;
-    const bOk = !requiresB || participantesB.length >= 1;
-
-    return baseOk && aOk && bOk;
-  }, [
-    tipo,
-    folioInterno,
-    numeroEscritura,
-    participantesA.length,
-    participantesB.length,
-    requiresB,
-  ]);
-
-  const handleSubmit = () => {
-    if (!isValid || !tipo) {
-      toast.error("Por favor completa todos los campos requeridos");
-      return;
-    }
+    const tipoOk = data.type as TipoEscritura;
 
     const presupuesto = calcularPresupuesto(
-      tipo,
-      valorBase,
-      honorarios,
-      isr,
-      taxConfig
+      tipoOk,
+      Number(data.baseValue ?? 0),
+      data.taxes as TaxConfig
     );
-
-    const pA =
-      participantes.find(
-        (p) => p.side === "A" || p.rol === tipoConfig?.personaALabel
-      ) ?? null;
-
-    const pB =
-      participantes.find(
-        (p) => p.side === "B" || p.rol === tipoConfig?.personaBLabel
-      ) ?? null;
-
-    const personaA = pA
-      ? { rolLabel: pA.rol, nombre: pA.nombre, telefono: pA.telefono }
-      : { rolLabel: "", nombre: "", telefono: "" };
-
-    const personaB = pB
-      ? { rolLabel: pB.rol, nombre: pB.nombre, telefono: pB.telefono }
-      : undefined;
 
     const escritura: Escritura = {
       id: createId(),
-      numeroEscritura,
-      folioInterno,
-      tipo,
-      estatus,
-      fechaFirma: fechaFirma ? new Date(fechaFirma) : null,
-      notas: notas || null,
-      participantes,
-      personaA,
-      personaB,
+      numeroEscritura: data.deedNumber ?? "",
+      folioInterno: data.folio,
+      tipo: tipoOk,
+      estatus: "por-liquidar" as EstatusEscritura,
+      fechaFirma: null,
+      notas: data.notes ?? null,
+
+      participantes: data.participants.map((p) => ({
+        id: createId(),
+        rol: p.role,
+        nombre: p.name,
+        telefono: p.phone ?? "",
+        side: p.side,
+      })) as any,
+
+      personaA: { rolLabel: "", nombre: "", telefono: "" } as any,
+      personaB: undefined,
       presupuesto,
-      adjuntos: [],
       reciboEnviado: false,
       fechaUltimoEnvio: null,
-    } as unknown as Escritura;
+    } as any;
 
     toast.success("Escritura creada correctamente");
     setSavedEscritura(escritura);
     setShowWhatsAppModal(true);
   };
 
-  const goToDetalle = (id: string) => router.push(`/escrituras/${id}`);
-
-  const handleSendWhatsApp = () => {
-    toast.success("Recibo enviado por WhatsApp");
-    setShowWhatsAppModal(false);
-    if (savedEscritura) goToDetalle(savedEscritura.id);
-  };
-
-  const handleSkipWhatsApp = () => {
-    setShowWhatsAppModal(false);
-    if (savedEscritura) goToDetalle(savedEscritura.id);
-  };
-
   return (
-    <div className="max-w-5xl mx-auto space-y-6 animate-fade-in pb-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => router.push("/escrituras")}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="font-serif text-2xl font-bold">Nueva Escritura</h1>
-        </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="max-w-5xl mx-auto space-y-6 animate-fade-in pb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => router.push("/escrituras")}
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <h1 className="font-serif text-2xl font-bold">Nueva Escritura</h1>
+            </div>
 
-        <Button onClick={handleSubmit} disabled={!isValid} className="btn-accent">
-          <Save className="h-4 w-4 mr-2" />
-          Guardar Escritura
-        </Button>
-      </div>
+            <Button type="submit" disabled={!canSubmit} className="btn-accent">
+              <Save className="h-4 w-4 mr-2" />
+              Guardar Escritura
+            </Button>
+          </div>
 
-      {/* Form Sections */}
-      <div className="space-y-6">
-        {/* Tipo de Escritura */}
-        <TipoSelector selectedTipo={tipo} onSelect={handleTipoChange} />
+          <div className="space-y-6">
+            <TipoSelector
+              selectedTipo={tipo ? (tipo as TipoEscritura) : null}
+              onSelect={handleTipoChange}
+            />
 
-        {/* Datos Generales */}
-        <DatosGeneralesSection
-          folioInterno={folioInterno}
-          numeroEscritura={numeroEscritura}
-          fechaFirma={fechaFirma}
-          notas={notas}
-          estatus={estatus}
-          onFolioInternoChange={setFolioInterno}
-          onNumeroEscrituraChange={setNumeroEscritura}
-          onFechaFirmaChange={setFechaFirma}
-          onNotasChange={setNotas}
-          onEstatusChange={setEstatus}
-        />
+            <DatosGeneralesSection />
 
-        {/* Participantes */}
-        <ParticipantesManager
-          participantes={participantes as any}
-          rolesDisponibles={rolesDisponibles}
-          onAdd={handleAddParticipante as any}
-          onUpdate={handleUpdateParticipante as any}
-          onRemove={handleRemoveParticipante as any}
-          minParticipantes={1}
-        />
+            <ParticipantesManager
+              participantes={fields as any}
+              rolesDisponibles={rolesDisponibles}
+              onAdd={() =>
+                append({
+                  name: "",
+                  phone: null,
+                  role: rolesDisponibles[0] ?? "Participante",
+                  side: "A",
+                })
+              }
+              onUpdate={(id: string, patch: any) => {
+                const index = fields.findIndex((f) => f.id === id);
+                if (index === -1) return;
+                update(index, { ...(fields[index] as any), ...patch });
+              }}
+              onRemove={(id: string) => {
+                const index = fields.findIndex((f) => f.id === id);
+                if (index === -1) return;
+                remove(index);
+              }}
+              minParticipantes={1}
+            />
 
-        {/* Presupuesto */}
-        {tipo && (
-          <PresupuestoSection
-            tipo={tipo}
-            valorBase={valorBase}
-            honorarios={honorarios}
-            isr={isr}
-            onValorBaseChange={setValorBase}
-            onHonorariosChange={setHonorarios}
-            onIsrChange={setIsr}
-            taxConfig={taxConfig}
-          />
-        )}
-      </div>
+            {!!tipo && (
+              <PresupuestoSection
+                tipo={tipo as TipoEscritura}
+                personaALabel={tipoConfig?.personaALabel}
+                personaBLabel={tipoConfig?.personaBLabel}
+              />
+            )}
+          </div>
 
-      {/* Footer Actions */}
-      <div className="flex justify-between pt-4 border-t">
-        <Button variant="outline" onClick={() => router.push("/escrituras")}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Cancelar
-        </Button>
-
-        <Button onClick={handleSubmit} disabled={!isValid} className="btn-accent">
-          <Save className="h-4 w-4 mr-2" />
-          Guardar Escritura
-        </Button>
-      </div>
-
-      {/* WhatsApp Modal */}
-      <WhatsAppModal
-        open={showWhatsAppModal}
-        onOpenChange={setShowWhatsAppModal}
-        escritura={savedEscritura}
-        onSend={handleSendWhatsApp}
-        onSkip={handleSkipWhatsApp}
-      />
-
-      {/* Confirm change tipo */}
-      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>¿Cambiar tipo de escritura?</DialogTitle>
-            <DialogDescription>
-              Tienes datos capturados. Si cambias el tipo, se borrarán los datos
-              ingresados (participantes, valores y campos del formulario).
-            </DialogDescription>
-          </DialogHeader>
-
-          <DialogFooter className="gap-2 sm:gap-0 cursor-pointer">
-            <Button type="button" variant="outline" onClick={cancelChangeTipo}>
+          <div className="flex justify-between pt-4 border-t">
+            <Button type="button" variant="outline" onClick={() => router.push("/escrituras")}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
               Cancelar
             </Button>
-            <Button type="button" className="btn-accent cursor-pointer" onClick={confirmChangeTipo}>
-              Sí, cambiar y borrar
+
+            <Button type="submit" disabled={!canSubmit} className="btn-accent">
+              <Save className="h-4 w-4 mr-2" />
+              Guardar Escritura
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+          </div>
+
+          <WhatsAppModal
+            open={showWhatsAppModal}
+            onOpenChange={setShowWhatsAppModal}
+            escritura={savedEscritura}
+            onSend={() => {
+              toast.success("Recibo enviado por WhatsApp");
+              setShowWhatsAppModal(false);
+            }}
+            onSkip={() => setShowWhatsAppModal(false)}
+          />
+
+          <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>¿Cambiar tipo de escritura?</DialogTitle>
+                <DialogDescription>
+                  Tienes datos capturados. Si cambias el tipo, se borrarán los datos ingresados.
+                </DialogDescription>
+              </DialogHeader>
+
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button type="button" variant="outline" onClick={cancelChangeTipo}>
+                  Cancelar
+                </Button>
+                <Button type="button" className="btn-accent" onClick={confirmChangeTipo}>
+                  Sí, cambiar y borrar
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </form>
+    </Form>
   );
 }

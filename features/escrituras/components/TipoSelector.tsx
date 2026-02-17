@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { TipoEscritura } from "@/features/shared/types";
 import { TIPOS_ESCRITURA } from "@/features/shared/data/mock-data";
 import { cn } from "@/lib/utils";
+import { useFormContext } from "react-hook-form";
 
 interface TipoSelectorProps {
   selectedTipo: TipoEscritura | null;
@@ -36,6 +37,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 const PAGE_SIZE = 9;
+// const form = useFormContext<FormValues>();
 
 export function TipoSelector({ selectedTipo, onSelect }: TipoSelectorProps) {
   const [page, setPage] = useState(0);
