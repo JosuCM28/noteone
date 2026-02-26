@@ -23,16 +23,20 @@ export function DatosGeneralesSection() {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="flex justify-between items-center gap-2">
           {/* folioInterno -> folio */}
           <FormField
+
             control={control}
             name="folio"
+
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex-1">
                 <FormLabel>Folio Interno *</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="FI-2024-XXX" />
+                  <Input {...field}
+                    readOnly
+                    placeholder="FI-2024-XXX" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -44,7 +48,7 @@ export function DatosGeneralesSection() {
             control={control}
             name="deedNumber"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex-1">
                 <FormLabel>Número de Escritura *</FormLabel>
                 <FormControl>
                   <Input
@@ -89,11 +93,11 @@ export function DatosGeneralesSection() {
             control={control}
             name="status"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex-1">
                 <FormLabel>Estatus Inicial</FormLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                   </FormControl>

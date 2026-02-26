@@ -37,7 +37,7 @@ export type TaxesSumAggregateOutputType = {
 export type TaxesMinAggregateOutputType = {
   id: string | null
   name: string | null
-  type: string | null
+  key: string | null
   value: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -46,7 +46,7 @@ export type TaxesMinAggregateOutputType = {
 export type TaxesMaxAggregateOutputType = {
   id: string | null
   name: string | null
-  type: string | null
+  key: string | null
   value: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -55,7 +55,7 @@ export type TaxesMaxAggregateOutputType = {
 export type TaxesCountAggregateOutputType = {
   id: number
   name: number
-  type: number
+  key: number
   value: number
   createdAt: number
   updatedAt: number
@@ -74,7 +74,7 @@ export type TaxesSumAggregateInputType = {
 export type TaxesMinAggregateInputType = {
   id?: true
   name?: true
-  type?: true
+  key?: true
   value?: true
   createdAt?: true
   updatedAt?: true
@@ -83,7 +83,7 @@ export type TaxesMinAggregateInputType = {
 export type TaxesMaxAggregateInputType = {
   id?: true
   name?: true
-  type?: true
+  key?: true
   value?: true
   createdAt?: true
   updatedAt?: true
@@ -92,7 +92,7 @@ export type TaxesMaxAggregateInputType = {
 export type TaxesCountAggregateInputType = {
   id?: true
   name?: true
-  type?: true
+  key?: true
   value?: true
   createdAt?: true
   updatedAt?: true
@@ -188,7 +188,7 @@ export type TaxesGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type TaxesGroupByOutputType = {
   id: string
   name: string
-  type: string
+  key: string
   value: runtime.Decimal
   createdAt: Date
   updatedAt: Date
@@ -220,7 +220,7 @@ export type TaxesWhereInput = {
   NOT?: Prisma.TaxesWhereInput | Prisma.TaxesWhereInput[]
   id?: Prisma.StringFilter<"Taxes"> | string
   name?: Prisma.StringFilter<"Taxes"> | string
-  type?: Prisma.StringFilter<"Taxes"> | string
+  key?: Prisma.StringFilter<"Taxes"> | string
   value?: Prisma.DecimalFilter<"Taxes"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Taxes"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Taxes"> | Date | string
@@ -229,7 +229,7 @@ export type TaxesWhereInput = {
 export type TaxesOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  type?: Prisma.SortOrder
+  key?: Prisma.SortOrder
   value?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -237,20 +237,21 @@ export type TaxesOrderByWithRelationInput = {
 
 export type TaxesWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  key_name?: Prisma.TaxesKeyNameCompoundUniqueInput
   AND?: Prisma.TaxesWhereInput | Prisma.TaxesWhereInput[]
   OR?: Prisma.TaxesWhereInput[]
   NOT?: Prisma.TaxesWhereInput | Prisma.TaxesWhereInput[]
   name?: Prisma.StringFilter<"Taxes"> | string
-  type?: Prisma.StringFilter<"Taxes"> | string
+  key?: Prisma.StringFilter<"Taxes"> | string
   value?: Prisma.DecimalFilter<"Taxes"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Taxes"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Taxes"> | Date | string
-}, "id">
+}, "id" | "key_name">
 
 export type TaxesOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  type?: Prisma.SortOrder
+  key?: Prisma.SortOrder
   value?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -267,7 +268,7 @@ export type TaxesScalarWhereWithAggregatesInput = {
   NOT?: Prisma.TaxesScalarWhereWithAggregatesInput | Prisma.TaxesScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Taxes"> | string
   name?: Prisma.StringWithAggregatesFilter<"Taxes"> | string
-  type?: Prisma.StringWithAggregatesFilter<"Taxes"> | string
+  key?: Prisma.StringWithAggregatesFilter<"Taxes"> | string
   value?: Prisma.DecimalWithAggregatesFilter<"Taxes"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Taxes"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Taxes"> | Date | string
@@ -276,7 +277,7 @@ export type TaxesScalarWhereWithAggregatesInput = {
 export type TaxesCreateInput = {
   id?: string
   name: string
-  type: string
+  key: string
   value: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -285,7 +286,7 @@ export type TaxesCreateInput = {
 export type TaxesUncheckedCreateInput = {
   id?: string
   name: string
-  type: string
+  key: string
   value: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -294,7 +295,7 @@ export type TaxesUncheckedCreateInput = {
 export type TaxesUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -303,7 +304,7 @@ export type TaxesUpdateInput = {
 export type TaxesUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -312,7 +313,7 @@ export type TaxesUncheckedUpdateInput = {
 export type TaxesCreateManyInput = {
   id?: string
   name: string
-  type: string
+  key: string
   value: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -321,7 +322,7 @@ export type TaxesCreateManyInput = {
 export type TaxesUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -330,16 +331,21 @@ export type TaxesUpdateManyMutationInput = {
 export type TaxesUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type TaxesKeyNameCompoundUniqueInput = {
+  key: string
+  name: string
+}
+
 export type TaxesCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  type?: Prisma.SortOrder
+  key?: Prisma.SortOrder
   value?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -352,7 +358,7 @@ export type TaxesAvgOrderByAggregateInput = {
 export type TaxesMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  type?: Prisma.SortOrder
+  key?: Prisma.SortOrder
   value?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -361,7 +367,7 @@ export type TaxesMaxOrderByAggregateInput = {
 export type TaxesMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  type?: Prisma.SortOrder
+  key?: Prisma.SortOrder
   value?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -376,7 +382,7 @@ export type TaxesSumOrderByAggregateInput = {
 export type TaxesSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  type?: boolean
+  key?: boolean
   value?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -385,7 +391,7 @@ export type TaxesSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type TaxesSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  type?: boolean
+  key?: boolean
   value?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -394,7 +400,7 @@ export type TaxesSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type TaxesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  type?: boolean
+  key?: boolean
   value?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -403,13 +409,13 @@ export type TaxesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type TaxesSelectScalar = {
   id?: boolean
   name?: boolean
-  type?: boolean
+  key?: boolean
   value?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TaxesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "type" | "value" | "createdAt" | "updatedAt", ExtArgs["result"]["taxes"]>
+export type TaxesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "key" | "value" | "createdAt" | "updatedAt", ExtArgs["result"]["taxes"]>
 
 export type $TaxesPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Taxes"
@@ -417,7 +423,7 @@ export type $TaxesPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
-    type: string
+    key: string
     value: runtime.Decimal
     createdAt: Date
     updatedAt: Date
@@ -846,7 +852,7 @@ export interface Prisma__TaxesClient<T, Null = never, ExtArgs extends runtime.Ty
 export interface TaxesFieldRefs {
   readonly id: Prisma.FieldRef<"Taxes", 'String'>
   readonly name: Prisma.FieldRef<"Taxes", 'String'>
-  readonly type: Prisma.FieldRef<"Taxes", 'String'>
+  readonly key: Prisma.FieldRef<"Taxes", 'String'>
   readonly value: Prisma.FieldRef<"Taxes", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"Taxes", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Taxes", 'DateTime'>

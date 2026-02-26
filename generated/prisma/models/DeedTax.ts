@@ -27,36 +27,42 @@ export type AggregateDeedTax = {
 }
 
 export type DeedTaxAvgAggregateOutputType = {
-  value: runtime.Decimal | null
+  amount: runtime.Decimal | null
 }
 
 export type DeedTaxSumAggregateOutputType = {
-  value: runtime.Decimal | null
+  amount: runtime.Decimal | null
 }
 
 export type DeedTaxMinAggregateOutputType = {
   id: string | null
-  name: string | null
-  value: runtime.Decimal | null
   deedId: string | null
+  key: string | null
+  name: string | null
+  amount: runtime.Decimal | null
+  side: $Enums.DeedSide | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type DeedTaxMaxAggregateOutputType = {
   id: string | null
-  name: string | null
-  value: runtime.Decimal | null
   deedId: string | null
+  key: string | null
+  name: string | null
+  amount: runtime.Decimal | null
+  side: $Enums.DeedSide | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type DeedTaxCountAggregateOutputType = {
   id: number
-  name: number
-  value: number
   deedId: number
+  key: number
+  name: number
+  amount: number
+  side: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -64,36 +70,42 @@ export type DeedTaxCountAggregateOutputType = {
 
 
 export type DeedTaxAvgAggregateInputType = {
-  value?: true
+  amount?: true
 }
 
 export type DeedTaxSumAggregateInputType = {
-  value?: true
+  amount?: true
 }
 
 export type DeedTaxMinAggregateInputType = {
   id?: true
-  name?: true
-  value?: true
   deedId?: true
+  key?: true
+  name?: true
+  amount?: true
+  side?: true
   createdAt?: true
   updatedAt?: true
 }
 
 export type DeedTaxMaxAggregateInputType = {
   id?: true
-  name?: true
-  value?: true
   deedId?: true
+  key?: true
+  name?: true
+  amount?: true
+  side?: true
   createdAt?: true
   updatedAt?: true
 }
 
 export type DeedTaxCountAggregateInputType = {
   id?: true
-  name?: true
-  value?: true
   deedId?: true
+  key?: true
+  name?: true
+  amount?: true
+  side?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -187,9 +199,11 @@ export type DeedTaxGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type DeedTaxGroupByOutputType = {
   id: string
-  name: string
-  value: runtime.Decimal
   deedId: string
+  key: string
+  name: string
+  amount: runtime.Decimal
+  side: $Enums.DeedSide | null
   createdAt: Date
   updatedAt: Date
   _count: DeedTaxCountAggregateOutputType | null
@@ -219,9 +233,11 @@ export type DeedTaxWhereInput = {
   OR?: Prisma.DeedTaxWhereInput[]
   NOT?: Prisma.DeedTaxWhereInput | Prisma.DeedTaxWhereInput[]
   id?: Prisma.StringFilter<"DeedTax"> | string
-  name?: Prisma.StringFilter<"DeedTax"> | string
-  value?: Prisma.DecimalFilter<"DeedTax"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   deedId?: Prisma.StringFilter<"DeedTax"> | string
+  key?: Prisma.StringFilter<"DeedTax"> | string
+  name?: Prisma.StringFilter<"DeedTax"> | string
+  amount?: Prisma.DecimalFilter<"DeedTax"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: Prisma.EnumDeedSideNullableFilter<"DeedTax"> | $Enums.DeedSide | null
   createdAt?: Prisma.DateTimeFilter<"DeedTax"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DeedTax"> | Date | string
   deed?: Prisma.XOR<Prisma.DeedScalarRelationFilter, Prisma.DeedWhereInput>
@@ -229,9 +245,11 @@ export type DeedTaxWhereInput = {
 
 export type DeedTaxOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  value?: Prisma.SortOrder
   deedId?: Prisma.SortOrder
+  key?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  amount?: Prisma.SortOrder
+  side?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deed?: Prisma.DeedOrderByWithRelationInput
@@ -239,23 +257,27 @@ export type DeedTaxOrderByWithRelationInput = {
 
 export type DeedTaxWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  deedId_name?: Prisma.DeedTaxDeedIdNameCompoundUniqueInput
+  deedId_key?: Prisma.DeedTaxDeedIdKeyCompoundUniqueInput
   AND?: Prisma.DeedTaxWhereInput | Prisma.DeedTaxWhereInput[]
   OR?: Prisma.DeedTaxWhereInput[]
   NOT?: Prisma.DeedTaxWhereInput | Prisma.DeedTaxWhereInput[]
-  name?: Prisma.StringFilter<"DeedTax"> | string
-  value?: Prisma.DecimalFilter<"DeedTax"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   deedId?: Prisma.StringFilter<"DeedTax"> | string
+  key?: Prisma.StringFilter<"DeedTax"> | string
+  name?: Prisma.StringFilter<"DeedTax"> | string
+  amount?: Prisma.DecimalFilter<"DeedTax"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: Prisma.EnumDeedSideNullableFilter<"DeedTax"> | $Enums.DeedSide | null
   createdAt?: Prisma.DateTimeFilter<"DeedTax"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DeedTax"> | Date | string
   deed?: Prisma.XOR<Prisma.DeedScalarRelationFilter, Prisma.DeedWhereInput>
-}, "id" | "deedId_name">
+}, "id" | "deedId_key">
 
 export type DeedTaxOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  value?: Prisma.SortOrder
   deedId?: Prisma.SortOrder
+  key?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  amount?: Prisma.SortOrder
+  side?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.DeedTaxCountOrderByAggregateInput
@@ -270,17 +292,21 @@ export type DeedTaxScalarWhereWithAggregatesInput = {
   OR?: Prisma.DeedTaxScalarWhereWithAggregatesInput[]
   NOT?: Prisma.DeedTaxScalarWhereWithAggregatesInput | Prisma.DeedTaxScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"DeedTax"> | string
-  name?: Prisma.StringWithAggregatesFilter<"DeedTax"> | string
-  value?: Prisma.DecimalWithAggregatesFilter<"DeedTax"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   deedId?: Prisma.StringWithAggregatesFilter<"DeedTax"> | string
+  key?: Prisma.StringWithAggregatesFilter<"DeedTax"> | string
+  name?: Prisma.StringWithAggregatesFilter<"DeedTax"> | string
+  amount?: Prisma.DecimalWithAggregatesFilter<"DeedTax"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: Prisma.EnumDeedSideNullableWithAggregatesFilter<"DeedTax"> | $Enums.DeedSide | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"DeedTax"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"DeedTax"> | Date | string
 }
 
 export type DeedTaxCreateInput = {
   id?: string
+  key: string
   name: string
-  value: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: $Enums.DeedSide | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deed: Prisma.DeedCreateNestedOneWithoutDeedTaxInput
@@ -288,17 +314,21 @@ export type DeedTaxCreateInput = {
 
 export type DeedTaxUncheckedCreateInput = {
   id?: string
-  name: string
-  value: runtime.Decimal | runtime.DecimalJsLike | number | string
   deedId: string
+  key: string
+  name: string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: $Enums.DeedSide | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type DeedTaxUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: Prisma.NullableEnumDeedSideFieldUpdateOperationsInput | $Enums.DeedSide | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deed?: Prisma.DeedUpdateOneRequiredWithoutDeedTaxNestedInput
@@ -306,35 +336,43 @@ export type DeedTaxUpdateInput = {
 
 export type DeedTaxUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   deedId?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: Prisma.NullableEnumDeedSideFieldUpdateOperationsInput | $Enums.DeedSide | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type DeedTaxCreateManyInput = {
   id?: string
-  name: string
-  value: runtime.Decimal | runtime.DecimalJsLike | number | string
   deedId: string
+  key: string
+  name: string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: $Enums.DeedSide | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type DeedTaxUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: Prisma.NullableEnumDeedSideFieldUpdateOperationsInput | $Enums.DeedSide | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type DeedTaxUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   deedId?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: Prisma.NullableEnumDeedSideFieldUpdateOperationsInput | $Enums.DeedSide | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -349,44 +387,50 @@ export type DeedTaxOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type DeedTaxDeedIdNameCompoundUniqueInput = {
+export type DeedTaxDeedIdKeyCompoundUniqueInput = {
   deedId: string
-  name: string
+  key: string
 }
 
 export type DeedTaxCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  value?: Prisma.SortOrder
   deedId?: Prisma.SortOrder
+  key?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  amount?: Prisma.SortOrder
+  side?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type DeedTaxAvgOrderByAggregateInput = {
-  value?: Prisma.SortOrder
+  amount?: Prisma.SortOrder
 }
 
 export type DeedTaxMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  value?: Prisma.SortOrder
   deedId?: Prisma.SortOrder
+  key?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  amount?: Prisma.SortOrder
+  side?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type DeedTaxMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  value?: Prisma.SortOrder
   deedId?: Prisma.SortOrder
+  key?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  amount?: Prisma.SortOrder
+  side?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type DeedTaxSumOrderByAggregateInput = {
-  value?: Prisma.SortOrder
+  amount?: Prisma.SortOrder
 }
 
 export type DeedTaxCreateNestedManyWithoutDeedInput = {
@@ -431,18 +475,34 @@ export type DeedTaxUncheckedUpdateManyWithoutDeedNestedInput = {
   deleteMany?: Prisma.DeedTaxScalarWhereInput | Prisma.DeedTaxScalarWhereInput[]
 }
 
+export type DecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
+export type NullableEnumDeedSideFieldUpdateOperationsInput = {
+  set?: $Enums.DeedSide | null
+}
+
 export type DeedTaxCreateWithoutDeedInput = {
   id?: string
+  key: string
   name: string
-  value: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: $Enums.DeedSide | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type DeedTaxUncheckedCreateWithoutDeedInput = {
   id?: string
+  key: string
   name: string
-  value: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: $Enums.DeedSide | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -478,41 +538,51 @@ export type DeedTaxScalarWhereInput = {
   OR?: Prisma.DeedTaxScalarWhereInput[]
   NOT?: Prisma.DeedTaxScalarWhereInput | Prisma.DeedTaxScalarWhereInput[]
   id?: Prisma.StringFilter<"DeedTax"> | string
-  name?: Prisma.StringFilter<"DeedTax"> | string
-  value?: Prisma.DecimalFilter<"DeedTax"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   deedId?: Prisma.StringFilter<"DeedTax"> | string
+  key?: Prisma.StringFilter<"DeedTax"> | string
+  name?: Prisma.StringFilter<"DeedTax"> | string
+  amount?: Prisma.DecimalFilter<"DeedTax"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: Prisma.EnumDeedSideNullableFilter<"DeedTax"> | $Enums.DeedSide | null
   createdAt?: Prisma.DateTimeFilter<"DeedTax"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DeedTax"> | Date | string
 }
 
 export type DeedTaxCreateManyDeedInput = {
   id?: string
+  key: string
   name: string
-  value: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: $Enums.DeedSide | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type DeedTaxUpdateWithoutDeedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: Prisma.NullableEnumDeedSideFieldUpdateOperationsInput | $Enums.DeedSide | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type DeedTaxUncheckedUpdateWithoutDeedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: Prisma.NullableEnumDeedSideFieldUpdateOperationsInput | $Enums.DeedSide | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type DeedTaxUncheckedUpdateManyWithoutDeedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  value?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  side?: Prisma.NullableEnumDeedSideFieldUpdateOperationsInput | $Enums.DeedSide | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -521,9 +591,11 @@ export type DeedTaxUncheckedUpdateManyWithoutDeedInput = {
 
 export type DeedTaxSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  name?: boolean
-  value?: boolean
   deedId?: boolean
+  key?: boolean
+  name?: boolean
+  amount?: boolean
+  side?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deed?: boolean | Prisma.DeedDefaultArgs<ExtArgs>
@@ -531,9 +603,11 @@ export type DeedTaxSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 
 export type DeedTaxSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  name?: boolean
-  value?: boolean
   deedId?: boolean
+  key?: boolean
+  name?: boolean
+  amount?: boolean
+  side?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deed?: boolean | Prisma.DeedDefaultArgs<ExtArgs>
@@ -541,9 +615,11 @@ export type DeedTaxSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
 
 export type DeedTaxSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  name?: boolean
-  value?: boolean
   deedId?: boolean
+  key?: boolean
+  name?: boolean
+  amount?: boolean
+  side?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deed?: boolean | Prisma.DeedDefaultArgs<ExtArgs>
@@ -551,14 +627,16 @@ export type DeedTaxSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
 
 export type DeedTaxSelectScalar = {
   id?: boolean
-  name?: boolean
-  value?: boolean
   deedId?: boolean
+  key?: boolean
+  name?: boolean
+  amount?: boolean
+  side?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type DeedTaxOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "value" | "deedId" | "createdAt" | "updatedAt", ExtArgs["result"]["deedTax"]>
+export type DeedTaxOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "deedId" | "key" | "name" | "amount" | "side" | "createdAt" | "updatedAt", ExtArgs["result"]["deedTax"]>
 export type DeedTaxInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   deed?: boolean | Prisma.DeedDefaultArgs<ExtArgs>
 }
@@ -576,9 +654,11 @@ export type $DeedTaxPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    name: string
-    value: runtime.Decimal
     deedId: string
+    key: string
+    name: string
+    amount: runtime.Decimal
+    side: $Enums.DeedSide | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["deedTax"]>
@@ -1006,9 +1086,11 @@ export interface Prisma__DeedTaxClient<T, Null = never, ExtArgs extends runtime.
  */
 export interface DeedTaxFieldRefs {
   readonly id: Prisma.FieldRef<"DeedTax", 'String'>
-  readonly name: Prisma.FieldRef<"DeedTax", 'String'>
-  readonly value: Prisma.FieldRef<"DeedTax", 'Decimal'>
   readonly deedId: Prisma.FieldRef<"DeedTax", 'String'>
+  readonly key: Prisma.FieldRef<"DeedTax", 'String'>
+  readonly name: Prisma.FieldRef<"DeedTax", 'String'>
+  readonly amount: Prisma.FieldRef<"DeedTax", 'Decimal'>
+  readonly side: Prisma.FieldRef<"DeedTax", 'DeedSide'>
   readonly createdAt: Prisma.FieldRef<"DeedTax", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"DeedTax", 'DateTime'>
 }

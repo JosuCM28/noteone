@@ -14,7 +14,7 @@ export const signIn = async (values: SignInForm) => {
         }
 
     })
-return res;
+    return res;
 }
 
 export const signUp = async (values: SignUpForm) => {
@@ -28,4 +28,17 @@ export const signUp = async (values: SignUpForm) => {
         }
     })
     return res;
+}
+
+export async function getAuthUserId() {
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+
+    if (!session) {
+        throw new Error("No autenticado");
+    }
+
+    const userId = session.user.id;
+    return userId;
 }

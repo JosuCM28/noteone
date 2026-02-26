@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Settings, Save, ChevronLeft, DollarSign } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,105 +8,142 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
-import { Controller, useForm } from "react-hook-form";
+import {
+  Controller,
+  useForm,
+  type FieldPath,
+  type FieldPathValue,
+} from "react-hook-form";
 
 import {
   TipoEscrituraKey,
+  TipoEscritura, // si no existe en tu types, quítalo y deja el cast en getRuleKeys
   TaxItemConfig,
   TIPOS_ESCRITURA_LABELS,
   TAX_ITEM_LABELS,
 } from "@/features/shared/types";
 
-import { Money } from "@/components/shared/Money";
+import {
+  DEFAULT_TAX_CONFIG,
+  PRESUPUESTO_RULES_BY_TIPO,
+  type TaxKey,
+} from "@/features/shared/tax-rules"; // ajusta ruta
+import { getTaxes, updateTax } from "./action";
 
 type TaxConfigMap = Record<TipoEscrituraKey, TaxItemConfig>;
+type FormValues = TaxConfigMap;
 
-export default function Impuestos() {
-  const router = useRouter();
+/**
+ * ✅ Path tipado para RHF:
+ * "tipo.taxKey" como FieldPath<FormValues>
+ */
+const makeTaxPath = <T extends TipoEscrituraKey, K extends TaxKey>(
+  tipo: T,
+  key: K
+) => `${tipo}.${key}` as FieldPath<FormValues>;
 
+type taxSettingsConfigProps = {
+  taxes: Awaited<ReturnType<typeof getTaxes>>;
+}
+
+export default function Impuestos({ taxes }: taxSettingsConfigProps) {
   const [selectedTipo, setSelectedTipo] = useState<TipoEscrituraKey | null>(
     null
   );
 
-  // ✅ Inicializa taxConfig con TODOS tus tipos
-  const createEmptyTaxConfig = (): TaxConfigMap => ({
-    testamento: {} as TaxItemConfig,
-    "cvgastos-urgentes": {} as TaxItemConfig,
-    compraventa: {} as TaxItemConfig,
-    donacion: {} as TaxItemConfig,
-    "adjudicacion-concepto-herencia": {} as TaxItemConfig,
-    "rectificacion-superficie": {} as TaxItemConfig,
-    "fusion-predios": {} as TaxItemConfig,
-    "cancelacion-usufructo-muerte": {} as TaxItemConfig,
-    "cancelacion-usufructo-voluntaria": {} as TaxItemConfig,
-    "servidumbre-paso": {} as TaxItemConfig,
-    "division-copropiedad": {} as TaxItemConfig,
-    "cancelacion-reserva-dominio": {} as TaxItemConfig,
-    "poder-notarial": {} as TaxItemConfig,
-    "constitucion-ac": {} as TaxItemConfig,
-    "inft-indistinto-nombre": {} as TaxItemConfig,
-    "inft-construccion-casahabitacion": {} as TaxItemConfig,
-  });
+  const createDefaultTaxConfigMap = (): TaxConfigMap =>
+  ({
+    testamento: { ...DEFAULT_TAX_CONFIG, ...taxes["testamento"] },
+    "cvgastos-urgentes": { ...DEFAULT_TAX_CONFIG, ...taxes["cvgastos-urgentes"] },
+    compraventa: { ...DEFAULT_TAX_CONFIG  , ...taxes["compraventa"]},
+    donacion: { ...DEFAULT_TAX_CONFIG  , ...taxes["donacion"]},
+    "adjudicacion-concepto-herencia": { ...DEFAULT_TAX_CONFIG  , ...taxes["adjudicacion-concepto-herencia"]},
+    "rectificacion-superficie": { ...DEFAULT_TAX_CONFIG  , ...taxes["rectificacion-superficie"]},
+    "fusion-predios": { ...DEFAULT_TAX_CONFIG  , ...taxes["fusion-predios"]},
+    "cancelacion-usufructo-muerte": { ...DEFAULT_TAX_CONFIG  , ...taxes["cancelacion-usufructo-muerte"]},
+    "cancelacion-usufructo-voluntaria": { ...DEFAULT_TAX_CONFIG  , ...taxes["cancelacion-usufructo-voluntaria"]},
+    "servidumbre-paso": { ...DEFAULT_TAX_CONFIG  , ...taxes["servidumbre-paso"]},
+    "division-copropiedad": { ...DEFAULT_TAX_CONFIG  , ...taxes["division-copropiedad"]},
+    "cancelacion-reserva-dominio": { ...DEFAULT_TAX_CONFIG  , ...taxes["cancelacion-reserva-dominio"]},
+    "poder-notarial": { ...DEFAULT_TAX_CONFIG  , ...taxes["poder-notarial"]},
+    "constitucion-ac": { ...DEFAULT_TAX_CONFIG  , ...taxes["constitucion-ac"]},
+    "inft-indistinto-nombre": { ...DEFAULT_TAX_CONFIG  , ...taxes["inft-indistinto-nombre"]},
+    "inft-construccion-casahabitacion": { ...DEFAULT_TAX_CONFIG  , ...taxes["inft-construccion-casahabitacion"]},
+  } satisfies TaxConfigMap);
 
-  const [taxConfig, setTaxConfig] = useState<TaxConfigMap>(
-    createEmptyTaxConfig()
-  );
-
-  // ✅ Tipos y keys para render
   const tipos = useMemo(
     () => Object.keys(TIPOS_ESCRITURA_LABELS) as TipoEscrituraKey[],
     []
   );
-  const taxKeys = useMemo(
-    () => Object.keys(TAX_ITEM_LABELS) as (keyof TaxItemConfig)[],
-    []
-  );
 
-  // ✅ React Hook Form para el detalle
-  const form = useForm<TaxItemConfig>({
-    defaultValues: {} as TaxItemConfig,
+
+  const form = useForm<FormValues>({
+    defaultValues: createDefaultTaxConfigMap(),
     mode: "onSubmit",
     reValidateMode: "onChange",
+    shouldUnregister: false,
   });
+  const allValues = form.watch();
 
-  // ✅ Reemplazo de updateTaxConfigForType
-  const updateTaxConfigForType = (tipo: TipoEscrituraKey, d: TaxItemConfig) => {
-    setTaxConfig((prev) => ({
-      ...prev,
-      [tipo]: d,
-    }));
+  const getRuleKeys = (tipo: TipoEscrituraKey): TaxKey[] => {
+    // Si no tienes TipoEscritura en tus types, usa esto:
+    // return (PRESUPUESTO_RULES_BY_TIPO as any)[tipo].taxes as TaxKey[];
+
+    return PRESUPUESTO_RULES_BY_TIPO[tipo as unknown as TipoEscritura].taxes;
   };
 
-  const handleSelect = (tipo: TipoEscrituraKey) => {
-    setSelectedTipo(tipo);
-
-    // Carga valores actuales del tipo al form
-    form.reset({ ...(taxConfig[tipo] ?? ({} as TaxItemConfig)) });
-  };
-
-  const handleBack = () => {
-    setSelectedTipo(null);
-    form.reset({} as TaxItemConfig);
-  };
-
-  const handleSave = (values: TaxItemConfig) => {
+  const handleSaveTipo = async () => {
     if (!selectedTipo) return;
 
-    updateTaxConfigForType(selectedTipo, values);
+    const ruleKeys = getRuleKeys(selectedTipo); // de PRESUPUESTO_RULES_BY_TIPO
+    const valuesForTipo = form.getValues(selectedTipo); // TaxItemConfig
 
-    toast.success(
-      `Impuestos de "${TIPOS_ESCRITURA_LABELS[selectedTipo]}" actualizados`
-    );
+    const rows = ruleKeys.map((taxKey) => ({
+      key: selectedTipo,                 // tipo escritura
+      name: taxKey,                      // taxKey
+      value: Number(valuesForTipo?.[taxKey] ?? 0),
+    }));
+    try {
+      await updateTax(selectedTipo, rows);
+      toast.success(`Impuestos de "${TIPOS_ESCRITURA_LABELS[selectedTipo]}" guardados`);
+    }
+    catch (e) {
+      toast.error("Error al guardar los impuestos");
+    }
+
   };
+
+
+  useEffect(() => {
+    if (!selectedTipo) return;
+
+    const subscription = form.watch((values, info) => {
+      // info.name te dice exactamente qué campo cambió: "testamento.traslado"
+      const changedPath = info?.name;
+
+      if (typeof changedPath === "string" && changedPath.startsWith(`${selectedTipo}.`)) {
+        console.log("✅ Changed field:", changedPath);
+        console.log("📌 Current tipo values:", values[selectedTipo]);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, selectedTipo]);
 
   // Detail view
   if (selectedTipo) {
+    const ruleKeys = getRuleKeys(selectedTipo);
+
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-3">
-          <Button type="button" variant="ghost" size="icon" onClick={handleBack}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => setSelectedTipo(null)}
+          >
             <ChevronLeft className="h-5 w-5" />
           </Button>
 
@@ -123,55 +160,74 @@ export default function Impuestos() {
         <Card>
           <CardContent className="pt-6 space-y-6">
             <form
-              onSubmit={form.handleSubmit(handleSave)}
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSaveTipo();
+              }}
               className="space-y-6"
             >
               <div className="grid gap-6">
-                {taxKeys.map((key) => (
-                  <Controller
-                    key={String(key)}
-                    name={key as any}
-                    control={form.control}
-                    render={({ field }) => (
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor={String(key)}
-                          className="text-sm font-medium text-foreground"
-                        >
-                          {TAX_ITEM_LABELS[key]}
-                        </Label>
+                {ruleKeys.map((key) => {
+                  const name = makeTaxPath(selectedTipo, key);
 
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
-                            $
-                          </span>
+                  return (
+                    <Controller<FormValues, typeof name>
+                      key={String(key)}
+                      name={name}
+                      control={form.control}
+                      render={({ field }) => {
+                        // ✅ Garantiza que value sea number para <input/>
+                        const value =
+                          (field.value ??
+                            0) as FieldPathValue<FormValues, typeof name>;
 
-                          <Input
-                            id={String(key)}
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={field.value ?? 0}
-                            onChange={(e) => {
-                              const n = Number(e.target.value);
-                              field.onChange(Number.isFinite(n) ? n : 0);
-                            }}
-                            onBlur={field.onBlur}
-                            ref={field.ref}
-                            className="pl-7 text-base"
-                            placeholder="0.00"
-                          />
-                        </div>
-                      </div>
-                    )}
-                  />
-                ))}
+                        return (
+                          <div className="space-y-2">
+                            <Label
+                              htmlFor={`${selectedTipo}.${String(key)}`}
+                              className="text-sm font-medium text-foreground"
+                            >
+                              {TAX_ITEM_LABELS[key]}
+                            </Label>
+
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
+                                $
+                              </span>
+
+                              <Input
+                                id={`${selectedTipo}.${String(key)}`}
+                                type="number"
+                                min="0"
+                                step="0.000001"
+                                maxLength={12}
+                                value={Number(value) || ""}
+                                onChange={(e) => {
+                                  const n = Number(e.target.value);
+                                  field.onChange(Number.isFinite(n) ? n : 0);
+                                }}
+                                onBlur={field.onBlur}
+                                ref={field.ref}
+                                className="pl-7 text-base"
+                                placeholder="0.00"
+                              />
+                            </div>
+                          </div>
+                        );
+                      }}
+                    />
+                  );
+                })}
               </div>
 
               <Separator />
 
               <div className="flex justify-end gap-3">
-                <Button type="button" variant="outline" onClick={handleBack}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setSelectedTipo(null)}
+                >
                   Cancelar
                 </Button>
 
@@ -206,15 +262,18 @@ export default function Impuestos() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {tipos.map((tipo) => {
-          const configuredCount = taxKeys.filter(
-            (k) => (taxConfig[tipo]?.[k] ?? 0) > 0
+          const allowed = getRuleKeys(tipo);
+          const tipoValues = allValues?.[tipo] ?? ({} as TaxItemConfig);
+
+          const configuredCount = allowed.filter(
+            (k) => (tipoValues?.[k] ?? 0) > 0
           ).length;
 
           return (
             <Card
               key={tipo}
               className="group cursor-pointer hover:shadow-lg hover:border-primary/50 transition-all duration-200"
-              onClick={() => handleSelect(tipo)}
+              onClick={() => setSelectedTipo(tipo)}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-2">
@@ -242,7 +301,7 @@ export default function Impuestos() {
                   className="w-full group-hover:border-primary/50"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleSelect(tipo);
+                    setSelectedTipo(tipo);
                   }}
                 >
                   Configurar

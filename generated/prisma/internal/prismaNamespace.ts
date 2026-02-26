@@ -1182,13 +1182,13 @@ export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[k
 export const DeedScalarFieldEnum = {
   id: 'id',
   type: 'type',
+  typeLabel: 'typeLabel',
   folio: 'folio',
   deedNumber: 'deedNumber',
-  signatureDate: 'signatureDate',
   notes: 'notes',
   baseValue: 'baseValue',
-  propertyTax: 'propertyTax',
-  estimated: 'estimated',
+  totalA: 'totalA',
+  totalB: 'totalB',
   status: 'status',
   userId: 'userId',
   createdAt: 'createdAt',
@@ -1200,9 +1200,11 @@ export type DeedScalarFieldEnum = (typeof DeedScalarFieldEnum)[keyof typeof Deed
 
 export const DeedTaxScalarFieldEnum = {
   id: 'id',
-  name: 'name',
-  value: 'value',
   deedId: 'deedId',
+  key: 'key',
+  name: 'name',
+  amount: 'amount',
+  side: 'side',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1216,6 +1218,7 @@ export const ParticipantScalarFieldEnum = {
   phone: 'phone',
   role: 'role',
   deedId: 'deedId',
+  side: 'side',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1243,7 +1246,7 @@ export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typ
 export const TaxesScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  type: 'type',
+  key: 'key',
   value: 'value',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1373,6 +1376,20 @@ export type EnumDeedStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Prism
  * Reference to a field of type 'DeedStatus[]'
  */
 export type ListEnumDeedStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeedStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DeedSide'
+ */
+export type EnumDeedSideFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeedSide'>
+    
+
+
+/**
+ * Reference to a field of type 'DeedSide[]'
+ */
+export type ListEnumDeedSideFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeedSide[]'>
     
 
 

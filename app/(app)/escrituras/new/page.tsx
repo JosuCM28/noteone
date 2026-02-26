@@ -1,13 +1,12 @@
 'use server';
 import { EscrituraNueva } from '@/features/escrituras'
-import { getTaxes } from '@/features/escrituras/actions';
+import { getTaxes } from '@/features/settings/action'
 
 const EscrituraNuevaPage = async () => {
   const taxes = await getTaxes();
-  const taxesUI = taxes.map((t) => ({ ...t, value: Number(t.value) }));
   console.log(taxes);
   return (
-    <EscrituraNueva taxes={taxesUI} />
+    <EscrituraNueva taxes={taxes} />
   )
 }
 

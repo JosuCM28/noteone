@@ -1,9 +1,15 @@
 import { Pencil, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { DraftParticipant } from "@/features/shared/types";
 
-
+export type DraftParticipant = {
+  id: string;
+  role: string;
+  name: string;
+  phone: string | null;
+  email?: string | null;
+  side?: "A" | "B";
+};
 
 type ParticipantsTableProps = {
   title: string;
@@ -34,16 +40,23 @@ export function ParticipantsTable({
         className={cn(
           "divide-y divide-border/50",
           enableScroll && "max-h-[168px] overflow-y-auto"
-          // si ya tienes .no-scrollbar en globals.css:
-          // enableScroll && "max-h-[168px] overflow-y-auto no-scrollbar"
         )}
       >
         {items.map((p) => (
           <div key={p.id} className="flex items-center gap-3 px-3 py-2">
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium truncate">{p.nombre}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-medium truncate">{p.name}</p>
+                {p.side && (
+                  <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                    {p.side}
+                  </span>
+                )}
+              </div>
+
               <p className="text-xs text-muted-foreground">
-                {p.role} · {p.telefono}
+                {p.role} · {p.phone ?? "—"}
+                {p.email ? ` • ${p.email}` : ""}
               </p>
             </div>
 

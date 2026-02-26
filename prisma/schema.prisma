@@ -78,23 +78,23 @@ model Verification {
 }
 
 model Deed {
-  id            String        @id @default(uuid())
-  type          String
-  typeLabel     String
-  folio         String
-  deedNumber    String?
-  notes         String?
-  participants  Participant[]
-  baseValue     Decimal?       @db.Decimal(12, 2)
-  totalA        Decimal?       @db.Decimal(12, 2)
-  totalB        Decimal?       @db.Decimal(12, 2)
-  status        DeedStatus    @default(POR_LIQUIDAR)
-  userId        String
-  user          User          @relation(fields: [userId], references: [id], onDelete: Restrict)
-  auditLogs     AuditLog[]
-  deedTax       DeedTax[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id           String        @id @default(uuid())
+  type         String
+  typeLabel    String
+  folio        String
+  deedNumber   String?
+  notes        String?
+  participants Participant[]
+  baseValue    Decimal?      @db.Decimal(12, 2)
+  totalA       Decimal?      @db.Decimal(12, 2)
+  totalB       Decimal?      @db.Decimal(12, 2)
+  status       DeedStatus    @default(POR_LIQUIDAR)
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  auditLogs    AuditLog[]
+  deedTax      DeedTax[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
   @@unique([userId, folio])
   @@unique([userId, deedNumber])
@@ -103,23 +103,23 @@ model Deed {
 }
 
 model DeedTax {
-  id        String      @id @default(uuid())
+  id String @id @default(uuid())
 
-  deedId    String
-  deed      Deed        @relation(fields: [deedId], references: [id], onDelete: Restrict)
+  deedId String
+  deed   Deed   @relation(fields: [deedId], references: [id], onDelete: Restrict)
 
-  key       String      // clave estable: "derechoRegistro", "pagoISR", "HonorariosB", etc.
-  name      String      // label para PDF: "Derecho de Registro", "ISR", "Honorarios B"
-  amount    Decimal     @db.Decimal(12, 2)
+  key    String // clave estable: "derechoRegistro", "pagoISR", "HonorariosB", etc.
+  name   String // label para PDF: "Derecho de Registro", "ISR", "Honorarios B"
+  amount Decimal @db.Decimal(12, 2) 
 
-  side      DeedSide? @default(A)
+  side DeedSide? @default(A)
 
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@unique([deedId, key]) 
+  @@unique([deedId, key])
   @@index([deedId])
-  @@index([deedId, side])   
+  @@index([deedId, side])
   @@map("deed_tax")
 }
 
@@ -138,7 +138,6 @@ model Participant {
   side      DeedSide @default(A)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
 
   @@unique([deedId, name])
   @@index([deedId, side])
@@ -169,10 +168,12 @@ model Taxes {
   id        String   @id @default(uuid())
   name      String
   key       String
-  value     Decimal  @db.Decimal(12, 6)
+  value     Decimal  @db.Decimal(12, 7)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([key, name])
+  @@index([key])
   @@map("taxes")
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -77,9 +77,12 @@ export function PresupuestoSection({ tipo, personaALabel, personaBLabel }: Props
     return { taxesAKeys: a, taxesBKeys: b };
   }, [ruleKeys]);
 
+
+
   const totalA = useMemo(() => {
-    let s = baseValue;
-    for (const key of taxesAKeys) s += toNumber(taxes[key]);
+    const TraslateValue = (baseValue * (Number(taxes["traslado"]) / 100));
+    let s = 0;
+    for (const key of taxesAKeys) s += key === "traslado" ? TraslateValue : toNumber(taxes[key]);
     return s;
   }, [baseValue, taxesAKeys, taxes]);
 
@@ -89,12 +92,10 @@ export function PresupuestoSection({ tipo, personaALabel, personaBLabel }: Props
     return s;
   }, [taxesBKeys, taxes]);
 
-  // ✅ si quieres, puedes “guardar” los totales en el form para enviar a backend
-  // (solo si tu schema permite totalA/totalB)
-  // useEffect(() => {
-  //   setValue("totalA", totalA);
-  //   setValue("totalB", totalB);
-  // }, [totalA, totalB, setValue]);
+  useEffect(() => {
+    setValue("totalA", totalA);
+    setValue("totalB", totalB);
+  }, [totalA, totalB, setValue]);
 
   return (
     <Card>
@@ -109,14 +110,14 @@ export function PresupuestoSection({ tipo, personaALabel, personaBLabel }: Props
         {/* BaseValue */}
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
-            <Label>Valor Base (MXN)</Label>
+            <Label className="mb-2">Valor Base (MXN) </Label>
             <Controller
               control={control}
               name="baseValue"
               render={({ field }) => (
                 <Input
                   type="number"
-                  value={field.value ?? ""}
+                  value={field.value ? field.value == 0 ? '20' : field.value : ''}
                   onChange={(e) => field.onChange(toNumber(e.target.value))}
                   placeholder="0"
                 />
@@ -138,15 +139,23 @@ export function PresupuestoSection({ tipo, personaALabel, personaBLabel }: Props
 
           {taxesAKeys.map((key) => (
             <div key={key} className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:items-center">
-              <span className="text-muted-foreground">{TAX_LABELS[key]}</span>
-
+              <div className="flex gap-2 items-center">
+                <span className="text-muted-foreground">{TAX_LABELS[key]}</span>
+                {
+                  key === "traslado" && (
+                    <span className="text-xs text-muted-foreground">
+                      ({taxes["traslado"]}%)
+                    </span>
+                  )
+                }
+              </div>
               <Controller
                 control={control}
                 name={`taxes.${key}` as const}
                 render={({ field }) => (
                   <Input
                     type="number"
-                    value={field.value ?? ""}
+                    value={ field.value === 0 ? "" : field.value}
                     onChange={(e) => field.onChange(toNumber(e.target.value))}
                     placeholder="0"
                   />
@@ -176,7 +185,7 @@ export function PresupuestoSection({ tipo, personaALabel, personaBLabel }: Props
                   render={({ field }) => (
                     <Input
                       type="number"
-                      value={field.value ?? ""}
+                      value={field.value === 0 ? "" : field.value}
                       onChange={(e) => field.onChange(toNumber(e.target.value))}
                       placeholder="0"
                     />

@@ -5,17 +5,18 @@ export type TaxKey = keyof TaxItemConfig;
 export type TaxConfig = Record<TaxKey, number>;
 
 export const DEFAULT_TAX_CONFIG: TaxConfig = {
-  traslado: 5,
+  traslado: 0,
   certificadoValorCatastral: 0,
   constanciaNoAdeudo: 0,
-  derechoRegistro: 100,
-  aviso: 112,
-  registroEscritura: 10,
-  gastosNotariales: 200,
-  pagoISR: 1000,
+  derechoRegistro: 0,
+  aviso: 0,
+  registroEscritura: 0,
+  gastosNotariales: 0,
+  pagoISR: 0,
   honorarios: 0,
   honorariosB: 0,
 };
+
 
 export type PresupuestoRules = {
   taxes: TaxKey[]; // orden exacto en que se mostrarán
@@ -32,7 +33,7 @@ export const PRESUPUESTO_RULES_BY_TIPO: Record<TipoEscritura, PresupuestoRules> 
   },
 
   compraventa: {
-    taxes: ["traslado", "certificadoValorCatastral", "constanciaNoAdeudo", "derechoRegistro", "aviso", "registroEscritura", "gastosNotariales","honorarios", "pagoISR", ],
+    taxes: ["traslado", "certificadoValorCatastral", "constanciaNoAdeudo", "derechoRegistro", "aviso", "registroEscritura", "gastosNotariales","honorarios", "pagoISR", "honorariosB"], 
   },
 
   donacion: {

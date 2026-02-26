@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Save } from "lucide-react";
 import { toast } from "sonner";
@@ -31,12 +31,22 @@ import { DEFAULT_TAX_CONFIG, type TaxConfig } from "@/features/shared/tax-rules"
 import { calcularPresupuesto } from "@/features/shared/calcular-presupuesto";
 
 import { EscrituraFormSchema } from "../schema";
+import { effect } from "better-auth/react";
+import { se } from "date-fns/locale";
+import { getTaxes } from "@/features/settings/action";
+import { get } from "http";
+import { getRandomFolio } from "@/lib/utils";
+import { postEscritura } from "../action";
 
 function createId() {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-export default function EscrituraNueva() {
+type EscrituraNuevaProps = {
+  taxes: Awaited<ReturnType<typeof getTaxes>>;
+}
+
+export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
   const router = useRouter();
 
   type FormInput = z.input<typeof EscrituraFormSchema>;
@@ -48,7 +58,7 @@ export default function EscrituraNueva() {
     defaultValues: {
       type: "",
       typeLabel: "",
-      folio: "",
+      folio: getRandomFolio(),
       deedNumber: null,
       notes: null,
 
@@ -56,13 +66,16 @@ export default function EscrituraNueva() {
       totalA: null,
       totalB: null,
 
-      status: "POR_LIQUIDAR",
+      status: "por-liquidar" as EstatusEscritura,
 
-      participants: [{ name: "", phone: null, role: "", side: "A" }],
+      participants: [],
 
       taxes: DEFAULT_TAX_CONFIG,
     },
   });
+
+
+
 
   const { fields, append, update, remove } = useFieldArray({
     control: form.control,
@@ -74,6 +87,13 @@ export default function EscrituraNueva() {
     () => TIPOS_ESCRITURA.find((t) => t.value === (tipo || null)),
     [tipo]
   );
+  useEffect(() => {
+
+    form.setValue("taxes", {
+      ...DEFAULT_TAX_CONFIG,
+      ...(taxes?.[tipo] ?? {}),
+    });
+  }, [tipo]);
 
   const rolesDisponibles = useMemo(() => {
     if (!tipoConfig) return ["Participante"];
@@ -101,14 +121,14 @@ export default function EscrituraNueva() {
         const cfg = TIPOS_ESCRITURA.find((x) => x.value === (keepTipo as any));
         return cfg?.label ?? keepTipo;
       })(),
-      folio: "",
+      folio: getRandomFolio(),
       deedNumber: null,
       notes: null,
       baseValue: null,
       totalA: null,
       totalB: null,
-      status: "POR_LIQUIDAR",
-      participants: [{ name: "", phone: null, role: "", side: "A" }],
+      status: "por-liquidar" as EstatusEscritura,
+      participants: [],
       taxes: DEFAULT_TAX_CONFIG,
     });
 
@@ -151,7 +171,7 @@ export default function EscrituraNueva() {
   const canSubmit = form.formState.isValid && !form.formState.isSubmitting;
 
   // ✅ Correcto para RHF: SubmitHandler<FormInput>
-  const onSubmit: SubmitHandler<FormInput> = (values) => {
+  const onSubmit: SubmitHandler<FormInput> = async (values) => {
     // ✅ aplica defaults de zod (status, side, etc.)
     const data: FormOutput = EscrituraFormSchema.parse(values);
 
@@ -186,11 +206,25 @@ export default function EscrituraNueva() {
       reciboEnviado: false,
       fechaUltimoEnvio: null,
     } as any;
+    
+    await postEscritura(data);
+
+
 
     toast.success("Escritura creada correctamente");
     setSavedEscritura(escritura);
     setShowWhatsAppModal(true);
+
+
   };
+
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      console.log("RHF LIVE:", value);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   return (
     <Form {...form}>
@@ -224,26 +258,41 @@ export default function EscrituraNueva() {
             <DatosGeneralesSection />
 
             <ParticipantesManager
-              participantes={fields as any}
+              // ✅ mapea fields -> lo que tu manager espera (inglés)
+              participantes={fields.map((f) => ({
+                id: f.id,
+                name: (f as any).name ?? "",
+                phone: (f as any).phone ?? null,
+                role: (f as any).role ?? "",
+                side: (f as any).side ?? "A",
+                email: (f as any).email ?? null,
+              })) as any}
               rolesDisponibles={rolesDisponibles}
-              onAdd={() =>
+
+              // ✅ ahora sí recibes lo que el usuario capturó en el manager
+              onAdd={(p: any) => {
                 append({
-                  name: "",
-                  phone: null,
-                  role: rolesDisponibles[0] ?? "Participante",
-                  side: "A",
-                })
-              }
+                  name: p.name,
+                  phone: p.phone ?? null,
+                  role: p.role,
+                  side: p.side ?? "A",
+                  email: p.email ?? null,
+                } as any);
+              }}
+
+              // ✅ update directo (patch viene en inglés)
               onUpdate={(id: string, patch: any) => {
                 const index = fields.findIndex((f) => f.id === id);
                 if (index === -1) return;
-                update(index, { ...(fields[index] as any), ...patch });
+                update(index, { ...(fields[index] as any), ...patch } as any);
               }}
+
               onRemove={(id: string) => {
                 const index = fields.findIndex((f) => f.id === id);
                 if (index === -1) return;
                 remove(index);
               }}
+
               minParticipantes={1}
             />
 
@@ -288,11 +337,11 @@ export default function EscrituraNueva() {
                 </DialogDescription>
               </DialogHeader>
 
-              <DialogFooter className="gap-2 sm:gap-0">
-                <Button type="button" variant="outline" onClick={cancelChangeTipo}>
+              <DialogFooter className="gap-2">
+                <Button className="cursor-pointer" type="button" variant="outline" onClick={cancelChangeTipo}>
                   Cancelar
                 </Button>
-                <Button type="button" className="btn-accent" onClick={confirmChangeTipo}>
+                <Button type="button" className="btn-accent cursor-pointer" onClick={confirmChangeTipo}>
                   Sí, cambiar y borrar
                 </Button>
               </DialogFooter>

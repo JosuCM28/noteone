@@ -30,6 +30,7 @@ export type ParticipantMinAggregateOutputType = {
   phone: string | null
   role: string | null
   deedId: string | null
+  side: $Enums.DeedSide | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -40,6 +41,7 @@ export type ParticipantMaxAggregateOutputType = {
   phone: string | null
   role: string | null
   deedId: string | null
+  side: $Enums.DeedSide | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -50,6 +52,7 @@ export type ParticipantCountAggregateOutputType = {
   phone: number
   role: number
   deedId: number
+  side: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -62,6 +65,7 @@ export type ParticipantMinAggregateInputType = {
   phone?: true
   role?: true
   deedId?: true
+  side?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -72,6 +76,7 @@ export type ParticipantMaxAggregateInputType = {
   phone?: true
   role?: true
   deedId?: true
+  side?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -82,6 +87,7 @@ export type ParticipantCountAggregateInputType = {
   phone?: true
   role?: true
   deedId?: true
+  side?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -165,6 +171,7 @@ export type ParticipantGroupByOutputType = {
   phone: string | null
   role: string
   deedId: string
+  side: $Enums.DeedSide
   createdAt: Date
   updatedAt: Date
   _count: ParticipantCountAggregateOutputType | null
@@ -196,6 +203,7 @@ export type ParticipantWhereInput = {
   phone?: Prisma.StringNullableFilter<"Participant"> | string | null
   role?: Prisma.StringFilter<"Participant"> | string
   deedId?: Prisma.StringFilter<"Participant"> | string
+  side?: Prisma.EnumDeedSideFilter<"Participant"> | $Enums.DeedSide
   createdAt?: Prisma.DateTimeFilter<"Participant"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Participant"> | Date | string
   deed?: Prisma.XOR<Prisma.DeedScalarRelationFilter, Prisma.DeedWhereInput>
@@ -207,6 +215,7 @@ export type ParticipantOrderByWithRelationInput = {
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
   deedId?: Prisma.SortOrder
+  side?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deed?: Prisma.DeedOrderByWithRelationInput
@@ -222,6 +231,7 @@ export type ParticipantWhereUniqueInput = Prisma.AtLeast<{
   phone?: Prisma.StringNullableFilter<"Participant"> | string | null
   role?: Prisma.StringFilter<"Participant"> | string
   deedId?: Prisma.StringFilter<"Participant"> | string
+  side?: Prisma.EnumDeedSideFilter<"Participant"> | $Enums.DeedSide
   createdAt?: Prisma.DateTimeFilter<"Participant"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Participant"> | Date | string
   deed?: Prisma.XOR<Prisma.DeedScalarRelationFilter, Prisma.DeedWhereInput>
@@ -233,6 +243,7 @@ export type ParticipantOrderByWithAggregationInput = {
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
   deedId?: Prisma.SortOrder
+  side?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ParticipantCountOrderByAggregateInput
@@ -249,6 +260,7 @@ export type ParticipantScalarWhereWithAggregatesInput = {
   phone?: Prisma.StringNullableWithAggregatesFilter<"Participant"> | string | null
   role?: Prisma.StringWithAggregatesFilter<"Participant"> | string
   deedId?: Prisma.StringWithAggregatesFilter<"Participant"> | string
+  side?: Prisma.EnumDeedSideWithAggregatesFilter<"Participant"> | $Enums.DeedSide
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Participant"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Participant"> | Date | string
 }
@@ -258,6 +270,7 @@ export type ParticipantCreateInput = {
   name: string
   phone?: string | null
   role: string
+  side?: $Enums.DeedSide
   createdAt?: Date | string
   updatedAt?: Date | string
   deed: Prisma.DeedCreateNestedOneWithoutParticipantsInput
@@ -269,6 +282,7 @@ export type ParticipantUncheckedCreateInput = {
   phone?: string | null
   role: string
   deedId: string
+  side?: $Enums.DeedSide
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -278,6 +292,7 @@ export type ParticipantUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.StringFieldUpdateOperationsInput | string
+  side?: Prisma.EnumDeedSideFieldUpdateOperationsInput | $Enums.DeedSide
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deed?: Prisma.DeedUpdateOneRequiredWithoutParticipantsNestedInput
@@ -289,6 +304,7 @@ export type ParticipantUncheckedUpdateInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.StringFieldUpdateOperationsInput | string
   deedId?: Prisma.StringFieldUpdateOperationsInput | string
+  side?: Prisma.EnumDeedSideFieldUpdateOperationsInput | $Enums.DeedSide
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -299,6 +315,7 @@ export type ParticipantCreateManyInput = {
   phone?: string | null
   role: string
   deedId: string
+  side?: $Enums.DeedSide
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -308,6 +325,7 @@ export type ParticipantUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.StringFieldUpdateOperationsInput | string
+  side?: Prisma.EnumDeedSideFieldUpdateOperationsInput | $Enums.DeedSide
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -318,6 +336,7 @@ export type ParticipantUncheckedUpdateManyInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.StringFieldUpdateOperationsInput | string
   deedId?: Prisma.StringFieldUpdateOperationsInput | string
+  side?: Prisma.EnumDeedSideFieldUpdateOperationsInput | $Enums.DeedSide
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -343,6 +362,7 @@ export type ParticipantCountOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   role?: Prisma.SortOrder
   deedId?: Prisma.SortOrder
+  side?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -353,6 +373,7 @@ export type ParticipantMaxOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   role?: Prisma.SortOrder
   deedId?: Prisma.SortOrder
+  side?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -363,6 +384,7 @@ export type ParticipantMinOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   role?: Prisma.SortOrder
   deedId?: Prisma.SortOrder
+  side?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -409,11 +431,16 @@ export type ParticipantUncheckedUpdateManyWithoutDeedNestedInput = {
   deleteMany?: Prisma.ParticipantScalarWhereInput | Prisma.ParticipantScalarWhereInput[]
 }
 
+export type EnumDeedSideFieldUpdateOperationsInput = {
+  set?: $Enums.DeedSide
+}
+
 export type ParticipantCreateWithoutDeedInput = {
   id?: string
   name: string
   phone?: string | null
   role: string
+  side?: $Enums.DeedSide
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -423,6 +450,7 @@ export type ParticipantUncheckedCreateWithoutDeedInput = {
   name: string
   phone?: string | null
   role: string
+  side?: $Enums.DeedSide
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -462,6 +490,7 @@ export type ParticipantScalarWhereInput = {
   phone?: Prisma.StringNullableFilter<"Participant"> | string | null
   role?: Prisma.StringFilter<"Participant"> | string
   deedId?: Prisma.StringFilter<"Participant"> | string
+  side?: Prisma.EnumDeedSideFilter<"Participant"> | $Enums.DeedSide
   createdAt?: Prisma.DateTimeFilter<"Participant"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Participant"> | Date | string
 }
@@ -471,6 +500,7 @@ export type ParticipantCreateManyDeedInput = {
   name: string
   phone?: string | null
   role: string
+  side?: $Enums.DeedSide
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -480,6 +510,7 @@ export type ParticipantUpdateWithoutDeedInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.StringFieldUpdateOperationsInput | string
+  side?: Prisma.EnumDeedSideFieldUpdateOperationsInput | $Enums.DeedSide
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -489,6 +520,7 @@ export type ParticipantUncheckedUpdateWithoutDeedInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.StringFieldUpdateOperationsInput | string
+  side?: Prisma.EnumDeedSideFieldUpdateOperationsInput | $Enums.DeedSide
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -498,6 +530,7 @@ export type ParticipantUncheckedUpdateManyWithoutDeedInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.StringFieldUpdateOperationsInput | string
+  side?: Prisma.EnumDeedSideFieldUpdateOperationsInput | $Enums.DeedSide
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -510,6 +543,7 @@ export type ParticipantSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   phone?: boolean
   role?: boolean
   deedId?: boolean
+  side?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deed?: boolean | Prisma.DeedDefaultArgs<ExtArgs>
@@ -521,6 +555,7 @@ export type ParticipantSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   phone?: boolean
   role?: boolean
   deedId?: boolean
+  side?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deed?: boolean | Prisma.DeedDefaultArgs<ExtArgs>
@@ -532,6 +567,7 @@ export type ParticipantSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   phone?: boolean
   role?: boolean
   deedId?: boolean
+  side?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deed?: boolean | Prisma.DeedDefaultArgs<ExtArgs>
@@ -543,11 +579,12 @@ export type ParticipantSelectScalar = {
   phone?: boolean
   role?: boolean
   deedId?: boolean
+  side?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ParticipantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "phone" | "role" | "deedId" | "createdAt" | "updatedAt", ExtArgs["result"]["participant"]>
+export type ParticipantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "phone" | "role" | "deedId" | "side" | "createdAt" | "updatedAt", ExtArgs["result"]["participant"]>
 export type ParticipantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   deed?: boolean | Prisma.DeedDefaultArgs<ExtArgs>
 }
@@ -569,6 +606,7 @@ export type $ParticipantPayload<ExtArgs extends runtime.Types.Extensions.Interna
     phone: string | null
     role: string
     deedId: string
+    side: $Enums.DeedSide
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["participant"]>
@@ -1000,6 +1038,7 @@ export interface ParticipantFieldRefs {
   readonly phone: Prisma.FieldRef<"Participant", 'String'>
   readonly role: Prisma.FieldRef<"Participant", 'String'>
   readonly deedId: Prisma.FieldRef<"Participant", 'String'>
+  readonly side: Prisma.FieldRef<"Participant", 'DeedSide'>
   readonly createdAt: Prisma.FieldRef<"Participant", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Participant", 'DateTime'>
 }

@@ -9,6 +9,14 @@
 * 🟢 You can import this file directly.
 */
 
+export const DeedSide = {
+  A: 'A',
+  B: 'B'
+} as const
+
+export type DeedSide = (typeof DeedSide)[keyof typeof DeedSide]
+
+
 export const TaxType = {
   TRASLADO: 'TRASLADO',
   DERECHO_REGISTRO: 'DERECHO_REGISTRO',

@@ -22,15 +22,21 @@ export const iconMap: Record<string, any> = {
   'file-edit': FileEdit,
 };
 
-const UI_TO_ENUM ={
-certificadoCatastral: 'CERTIFICADO_CATASTRAL',
-constanciaAdeudo: 'CONSTANCIAS_ADEUDOS',
-derechoRegistro: 'DERECHO_REGISTRO',
-porcentaje: 'TRASLADO'
+const UI_TO_ENUM = {
+  certificadoCatastral: 'CERTIFICADO_CATASTRAL',
+  constanciaAdeudo: 'CONSTANCIAS_ADEUDOS',
+  derechoRegistro: 'DERECHO_REGISTRO',
+  porcentaje: 'TRASLADO'
 }
 export type UI_TYPES = keyof typeof UI_TO_ENUM
 
 export function getTaxType(name: UI_TYPES) {
   return UI_TO_ENUM[name]
+}
+
+export const getRandomFolio = () => {
+  const year = new Date().getFullYear();
+  const random = crypto.getRandomValues(new Uint32Array(1))[0] % 900000 + 100000;
+  return `FI-${year}-${random}`;
 }
 

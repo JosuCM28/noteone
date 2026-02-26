@@ -1,13 +1,14 @@
 import React from 'react'
 import TaxSettings from '@/features/settings/TaxSettings'
-import { getTaxes } from '@/features/escrituras/actions';
+import { getTaxes } from '@/features/settings/action'
 
 
 const SettingsPage = async () => {
   const taxes = await getTaxes();
-  const taxesUI = taxes.map((t) => ({ ...t, value: Number(t.value) }));
+
+  console.log(taxes);
   return (
-    <TaxSettings taxes={taxesUI} />
+    <TaxSettings taxes={taxes} />
   )
 }
 
