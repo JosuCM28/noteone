@@ -154,10 +154,10 @@ model AuditLog {
   details     String?
   deedFolio   String?
   deedNumber  String?
+  changes     Json?
+  deletedById String?
   createdAt   DateTime    @default(now())
   deletedAt   DateTime?
-  deletedById String?
-  changes     Json?
 
   @@index([deedId, createdAt])
   @@index([userId, createdAt])

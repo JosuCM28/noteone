@@ -11,7 +11,7 @@ import { ESTATUS_CONFIG } from "@/features/shared/data/mock-data";
 
 // ✅ Ajusta el type si quieres, pero con RHF basta `any` aquí si no estás exportando el tipo del form.
 export function DatosGeneralesSection() {
-  const { control } = useFormContext<any>();
+  const { control, getValues } = useFormContext<any>();
 
   return (
     <Card>
@@ -95,7 +95,7 @@ export function DatosGeneralesSection() {
             render={({ field }) => (
               <FormItem className="flex-1">
                 <FormLabel>Estatus Inicial</FormLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select value={field.value} onValueChange={field.onChange} defaultValue={getValues("status")}>
                   <FormControl>
                     <SelectTrigger className="w-full">
                       <SelectValue />
@@ -103,7 +103,7 @@ export function DatosGeneralesSection() {
                   </FormControl>
                   <SelectContent>
                     {ESTATUS_CONFIG.map((s) => (
-                      <SelectItem key={s.value} value={s.value}>
+                      <SelectItem key={s.value} value={s.value} >
                         {s.label}
                       </SelectItem>
                     ))}

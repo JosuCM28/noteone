@@ -3,11 +3,11 @@ import { z } from "zod";
 
 export const DeedSideSchema = z.enum(["A", "B"]);
 export const DeedStatusSchema = z.enum([
-  "por-liquidar",
+  "por_liquidar",
   "liquidado",
-  "proceso-pago",
+  "proceso_pago",
   "registro",
-  "proceso-entrega",
+  "proceso_entrega",
   "entregado",
   "cancelado",
 ]);
@@ -52,7 +52,7 @@ export const EscrituraFormSchema = z
     totalA: DecimalInputSchema.optional().nullable(),
     totalB: DecimalInputSchema.optional().nullable(),
 
-    status: DeedStatusSchema.default("por-liquidar"),
+    status: DeedStatusSchema.default("por_liquidar"),
     userId: z.string().uuid().optional(), // idealmente NO viene del form
 
     participants: z.array(ParticipantInputSchema).min(1, "Por favor agrega al menos un participante"),

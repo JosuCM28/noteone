@@ -28,19 +28,11 @@ import { WhatsAppModal } from "../components/WhatsAppModal";
 import { TIPOS_ESCRITURA } from "@/features/shared/data/mock-data";
 import type { TipoEscritura, Escritura, EstatusEscritura } from "@/features/shared/types";
 import { DEFAULT_TAX_CONFIG, type TaxConfig } from "@/features/shared/tax-rules";
-import { calcularPresupuesto } from "@/features/shared/calcular-presupuesto";
 
 import { EscrituraFormSchema } from "../schema";
-import { effect } from "better-auth/react";
-import { se } from "date-fns/locale";
 import { getTaxes } from "@/features/settings/action";
-import { get } from "http";
 import { getRandomFolio } from "@/lib/utils";
 import { postEscritura } from "../action";
-
-function createId() {
-  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-}
 
 type EscrituraNuevaProps = {
   taxes: Awaited<ReturnType<typeof getTaxes>>;
@@ -66,15 +58,13 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
       totalA: null,
       totalB: null,
 
-      status: "por-liquidar" as EstatusEscritura,
+      status: "por_liquidar" as EstatusEscritura,
 
       participants: [],
 
       taxes: DEFAULT_TAX_CONFIG,
     },
   });
-
-
 
 
   const { fields, append, update, remove } = useFieldArray({
@@ -103,14 +93,9 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
     ];
   }, [tipoConfig]);
 
-  // Modal state
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
-  const [savedEscritura, setSavedEscritura] = useState<Escritura | null>(null);
-
-  // Confirm change tipo
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingTipo, setPendingTipo] = useState<TipoEscritura | null>(null);
-
   // ✅ draft: solo isDirty
   const hasUnsavedDraft = form.formState.isDirty;
 
@@ -127,12 +112,11 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
       baseValue: null,
       totalA: null,
       totalB: null,
-      status: "por-liquidar" as EstatusEscritura,
+      status: "por_liquidar" as EstatusEscritura,
       participants: [],
       taxes: DEFAULT_TAX_CONFIG,
     });
 
-    setSavedEscritura(null);
     setShowWhatsAppModal(false);
   };
 
@@ -167,65 +151,29 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
     setPendingTipo(null);
     setConfirmOpen(false);
   };
-
   const canSubmit = form.formState.isValid && !form.formState.isSubmitting;
 
-  // ✅ Correcto para RHF: SubmitHandler<FormInput>
   const onSubmit: SubmitHandler<FormInput> = async (values) => {
-    // ✅ aplica defaults de zod (status, side, etc.)
     const data: FormOutput = EscrituraFormSchema.parse(values);
+    console.log(data);
+    try {
+      await postEscritura(data);
+      toast.success("Escritura creada correctamente");
+      setShowWhatsAppModal(true);
 
-    const tipoOk = data.type as TipoEscritura;
+    }
+    catch (error) {
+      if (error instanceof Error) {
+        if (error.message === "ESCRITURANUMBER_TAKEN") {
+          toast.error("El número de escritura ya está en uso");
+          return;
+        }
+      }
+      toast.error("Error al crear la escritura");
 
-    const presupuesto = calcularPresupuesto(
-      tipoOk,
-      Number(data.baseValue ?? 0),
-      data.taxes as TaxConfig
-    );
-
-    const escritura: Escritura = {
-      id: createId(),
-      numeroEscritura: data.deedNumber ?? "",
-      folioInterno: data.folio,
-      tipo: tipoOk,
-      estatus: "por-liquidar" as EstatusEscritura,
-      fechaFirma: null,
-      notas: data.notes ?? null,
-
-      participantes: data.participants.map((p) => ({
-        id: createId(),
-        rol: p.role,
-        nombre: p.name,
-        telefono: p.phone ?? "",
-        side: p.side,
-      })) as any,
-
-      personaA: { rolLabel: "", nombre: "", telefono: "" } as any,
-      personaB: undefined,
-      presupuesto,
-      reciboEnviado: false,
-      fechaUltimoEnvio: null,
-    } as any;
-    
-    await postEscritura(data);
-
-
-
-    toast.success("Escritura creada correctamente");
-    setSavedEscritura(escritura);
-    setShowWhatsAppModal(true);
-
+    }
 
   };
-
-  useEffect(() => {
-    const subscription = form.watch((value) => {
-      console.log("RHF LIVE:", value);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [form]);
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -320,12 +268,17 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
           <WhatsAppModal
             open={showWhatsAppModal}
             onOpenChange={setShowWhatsAppModal}
-            escritura={savedEscritura}
             onSend={() => {
               toast.success("Recibo enviado por WhatsApp");
+              router.push("/escrituras");
               setShowWhatsAppModal(false);
             }}
-            onSkip={() => setShowWhatsAppModal(false)}
+            onSkip={() => {
+              setShowWhatsAppModal(false);
+              router.push("/escrituras");
+            }
+
+            }
           />
 
           <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>

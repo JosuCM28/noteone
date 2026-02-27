@@ -1,5 +1,6 @@
 // Domain Types for Notaría App
 
+import { Prisma } from "@/generated/prisma/client";
 import { Decimal } from "@prisma/client/runtime/client";
 
 export type TipoEscritura =
@@ -21,11 +22,11 @@ export type TipoEscritura =
   | 'inft-construccion-casahabitacion';
 
 export type EstatusEscritura =
-  | 'por-liquidar'
+  | 'por_liquidar'
   | 'liquidado'
-  | 'proceso-pago'
+  | 'proceso_pago'
   | 'registro'
-  | 'proceso-entrega'
+  | 'proceso_entrega'
   | 'entregado';
 
 export type UserRole = 'admin' | 'user';
@@ -196,3 +197,28 @@ export const TAX_ITEM_LABELS: Record<keyof TaxItemConfig, string> = {
   honorariosB: 'Honorarios B',
 };
 
+const deedRawTableSelect = {
+  id: true,
+  typeLabel: true,
+  folio: true,
+  deedNumber: true,
+  participants: {
+    select: {
+      name: true,
+      phone: true,
+      side: true,
+    },
+  },
+  baseValue: true,
+  status: true,
+  createdAt: true,
+
+} satisfies Prisma.DeedSelect;
+
+export type DeedRawTable = Prisma.DeedGetPayload<{
+  select: typeof deedRawTableSelect;
+}>;
+
+export type DeedTable = Omit<DeedRawTable, "baseValue"> & {
+  baseValue: number | null;
+};

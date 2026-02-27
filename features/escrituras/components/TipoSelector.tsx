@@ -17,11 +17,11 @@ import { Button } from "@/components/ui/button";
 import { TipoEscritura } from "@/features/shared/types";
 import { TIPOS_ESCRITURA } from "@/features/shared/data/mock-data";
 import { cn } from "@/lib/utils";
-import { useFormContext } from "react-hook-form";
 
 interface TipoSelectorProps {
   selectedTipo: TipoEscritura | null;
   onSelect: (tipo: TipoEscritura) => void;
+  isEditing?: boolean; // ✅ nuevo prop
 }
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -37,18 +37,26 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 const PAGE_SIZE = 9;
-// const form = useFormContext<FormValues>();
 
-export function TipoSelector({ selectedTipo, onSelect }: TipoSelectorProps) {
+export function TipoSelector({
+  selectedTipo,
+  onSelect,
+  isEditing = false, // ✅ default false
+}: TipoSelectorProps) {
   const [page, setPage] = useState(0);
 
   const total = TIPOS_ESCRITURA.length;
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
+  // ✅ Si está editando, solo mostrar el seleccionado
   const items = useMemo(() => {
+    if (isEditing && selectedTipo) {
+      return TIPOS_ESCRITURA.filter((t) => t.value === selectedTipo);
+    }
+
     const start = page * PAGE_SIZE;
     return TIPOS_ESCRITURA.slice(start, start + PAGE_SIZE);
-  }, [page]);
+  }, [page, isEditing, selectedTipo]);
 
   const canPrev = page > 0;
   const canNext = page < pageCount - 1;
@@ -57,13 +65,13 @@ export function TipoSelector({ selectedTipo, onSelect }: TipoSelectorProps) {
   const goNext = () => setPage((p) => Math.min(pageCount - 1, p + 1));
 
   return (
-    <Card>
+    <Card >
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between gap-3">
           <CardTitle className="text-lg">Tipo de Escritura *</CardTitle>
 
-          {/* Controles tipo carrusel */}
-          {pageCount > 1 && (
+          {/* ❌ Ocultar paginación si está editando */}
+          {!isEditing && pageCount > 1 && (
             <div className="flex items-center gap-2">
               <Button
                 type="button"
@@ -72,7 +80,6 @@ export function TipoSelector({ selectedTipo, onSelect }: TipoSelectorProps) {
                 onClick={goPrev}
                 disabled={!canPrev}
                 aria-label="Anterior"
-                className="cursor-pointer"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -88,7 +95,6 @@ export function TipoSelector({ selectedTipo, onSelect }: TipoSelectorProps) {
                 onClick={goNext}
                 disabled={!canNext}
                 aria-label="Siguiente"
-                className="cursor-pointer"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -98,7 +104,7 @@ export function TipoSelector({ selectedTipo, onSelect }: TipoSelectorProps) {
       </CardHeader>
 
       <CardContent>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 ">
           {items.map((t) => {
             const Icon = iconMap[t.icon] || Scroll;
 
@@ -106,12 +112,13 @@ export function TipoSelector({ selectedTipo, onSelect }: TipoSelectorProps) {
               <button
                 key={t.value}
                 type="button"
-                onClick={() => onSelect(t.value)}
+                onClick={() => !isEditing && onSelect(t.value)} // ✅ bloquear cambio en edición
                 className={cn(
-                  "p-4 rounded-xl border-2 text-left transition-all hover:border-primary/50 cursor-pointer",
+                  "p-4 rounded-xl border-2 text-left transition-all ",
                   selectedTipo === t.value
                     ? "border-primary bg-primary/5"
-                    : "border-border"
+                    : "border-border",
+                  isEditing && "cursor-pointer col-span-full "
                 )}
               >
                 <Icon className="h-5 w-5 mb-2 text-primary" />
@@ -124,8 +131,8 @@ export function TipoSelector({ selectedTipo, onSelect }: TipoSelectorProps) {
           })}
         </div>
 
-        {/* Footer opcional (indicador + hint) */}
-        {pageCount > 1 && (
+        {/* ❌ Ocultar hint si está editando */}
+        {!isEditing && pageCount > 1 && (
           <div className="mt-4 flex items-center justify-end text-xs text-muted-foreground">
             <span>Usa las flechas para ver más tipos</span>
           </div>

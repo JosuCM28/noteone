@@ -39,4 +39,3 @@ export const getRandomFolio = () => {
   const random = crypto.getRandomValues(new Uint32Array(1))[0] % 900000 + 100000;
   return `FI-${year}-${random}`;
 }
-
