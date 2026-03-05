@@ -1,5 +1,4 @@
 import { EscriturasLista } from '@/features/escrituras'
-import { MOCK_ESCRITURAS } from '@/features/shared/data/mock-data'
 import { DataTableDeed } from './data-table'
 import { columnsList } from './columns'
 import { getEscriturasForTable } from '@/features/escrituras/action'

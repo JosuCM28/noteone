@@ -130,12 +130,15 @@ export async function updateEscritura(
           id: true,
           folio: true,
           deedNumber: true,
+          status: true,
+          notes: true,
         },
       });
 
       if (!existing) {
         throw new Error("ESCRITURA_NOT_FOUND");
       }
+
 
       const escritura = await tx.deed.update({
         where: {
@@ -197,6 +200,35 @@ export async function updateEscritura(
           deedNumber: escritura.deedNumber,
         },
       });
+
+      if (existing?.status !== escritura?.status) {
+        await tx.auditLog.create({
+          data: {
+            userId,
+            deedId: escritura.id,
+            action: "STATUS_CHANGE",
+            details: `El usuario ${user?.name ?? "desconocido"} cambió el estatus de la escritura.`,
+            deedFolio: escritura.folio,
+            deedNumber: escritura.deedNumber,
+          },
+        });
+      }
+
+      if (existing?.notes !== escritura?.notes) {
+        await tx.auditLog.create({
+          data: {
+            userId,
+            deedId: escritura.id,
+            action: "NOTE_CHANGE",
+            details: `El usuario ${user?.name ?? "desconocido"} cambió las notas de la escritura.`,
+            deedFolio: escritura.folio,
+            deedNumber: escritura.deedNumber,
+          },
+        });
+      }
+
+
+
     });
   } catch (error) {
     if (isPrismaUniqueError(error)) {
@@ -242,7 +274,7 @@ export async function getEscritura(id: string) {
       role: p.role,
       side: p.side,
     })),
-    taxes:taxes,
+    DeedTax: taxes,
   };
 }
 
@@ -267,4 +299,136 @@ export async function getEscriturasForTable() {
   });
 
   return escrituras;
+}
+
+export async function deleteEscritura(id: string) {
+  const escritura = await prisma.deed.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!escritura) {
+    throw new Error("ESCRITURA_NO_ENCONTRADA");
+  }
+
+  await prisma.deed.delete({
+    where: {
+      id: escritura.id,
+    },
+  });
+}
+
+
+export async function updateEscrituraStatus(id: string, status: EstatusEscritura) {
+  const userId = await getAuthUserId();
+  await prisma.$transaction(async (tx) => {
+    const escritura = await tx.deed.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!escritura) {
+      throw new Error("ESCRITURA NO ENCONTRADA");
+    }
+
+    await tx.deed.update({
+      where: {
+        id: escritura.id,
+      },
+      data: {
+        status: status.toUpperCase() as DeedStatus,
+      },
+    });
+    const user = await tx.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        name: true,
+      },
+    })
+
+    await tx.auditLog.create({
+      data: {
+        userId,
+        deedId: escritura.id,
+        action: "STATUS_CHANGE",
+        details: `El usuario ${user?.name ?? "desconocido"} cambió el estatus de la escritura.`,
+        deedFolio: escritura.folio,
+        deedNumber: escritura.deedNumber,
+      },
+    });
+  });
+
+}
+
+export async function getEscrituraForView(id: string) {
+
+  const escritura = await prisma.deed.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      participants: {
+        select: {
+          name: true,
+          phone: true,
+          role: true,
+          side: true,
+        },
+      },
+      deedTax: {
+        select: {
+          key: true,
+          name: true,
+          amount: true,
+          side: true,
+        },
+      },
+      auditLogs: {
+        select: {
+          details: true,
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      }
+    },
+  });
+
+  if (!escritura) {
+    throw new Error("ESCRITURA_NOT_FOUND");
+  }
+
+  const safeTaxes = escritura.deedTax.map((tax) => ({
+    ...tax,
+    amount: tax.amount.toNumber() ?? 0,
+  }));
+
+  return {
+    id: escritura.id,
+    type: escritura.type,
+    typeLabel: escritura.typeLabel,
+    folio: escritura.folio,
+    deedNumber: escritura.deedNumber,
+    notes: escritura.notes,
+    baseValue: escritura.baseValue?.toNumber() ?? 0,
+    totalA: escritura.totalA?.toNumber() ?? 0,
+    totalB: escritura.totalB?.toNumber() ?? 0,
+    status: escritura.status.toLocaleLowerCase() as EstatusEscritura,
+    participants: escritura.participants.map((p) => ({
+      name: p.name,
+      phone: p.phone,
+      role: p.role,
+      side: p.side,
+    })),
+    deedTax: safeTaxes,
+    auditLogs: escritura.auditLogs.map((l) => ({
+      details: l.details,
+      createdAt: l.createdAt,
+    })),
+  };
 }

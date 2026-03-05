@@ -9,12 +9,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { getEscritura } from "../action";
+
+type Escritura = Awaited<ReturnType<typeof getEscritura>>;
 
 interface WhatsAppModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSend: () => void;
   onSkip: () => void;
+  escritura?: Escritura;
+  isResend?: boolean;
 }
 
 export function WhatsAppModal({

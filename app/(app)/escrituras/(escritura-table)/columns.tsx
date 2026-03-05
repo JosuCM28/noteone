@@ -9,8 +9,22 @@ import { cn } from "@/lib/utils";
 // Usa tu badge real si ya lo tienes:
 import { StatusBadge } from "@/features/escrituras/components/StatusBadge";
 import type { DeedTable } from "@/features/shared/types";
+import { deleteEscritura } from "@/features/escrituras/action";
+import { toast } from "sonner";
+import { useRouter } from 'next/navigation';
+import { ro } from "date-fns/locale";
+
+
+export const deleteDeed = async (id: string) => {
+    try {
+        await deleteEscritura(id);
+    } catch (error) {
+        console.error('Error deleting deed', error);
+    }
+};
 
 export const columnsList: ColumnDef<DeedTable>[] = [
+
     {
         accessorKey: "folio",
         header: () => <span>Folio / Número</span>,
@@ -44,6 +58,7 @@ export const columnsList: ColumnDef<DeedTable>[] = [
         },
         cell: ({ row }) => (
             <div className="text-sm text-foreground">{row.getValue("typeLabel") as string}</div>
+
         ),
     },
 
@@ -94,7 +109,7 @@ export const columnsList: ColumnDef<DeedTable>[] = [
 
     {
         accessorKey: "baseValue",
-         header: ({ column }) => {
+        header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
@@ -121,7 +136,7 @@ export const columnsList: ColumnDef<DeedTable>[] = [
 
     {
         accessorKey: "status",
-         header: ({ column }) => {
+        header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
@@ -172,8 +187,9 @@ export const columnsList: ColumnDef<DeedTable>[] = [
         id: "actions",
         header: () => <span className="sr-only">Acciones</span>,
         meta: { thClassName: "text-right", tdClassName: "text-right" },
-        cell: ({ row }) => {
-            const id = row.original.id;
+        cell: ({ row, table }) => {
+            const deed = row.original; // <- aquí ya tienes la fila completa
+            const id = deed.id;
 
             return (
                 <div className="flex items-center justify-end gap-1">
@@ -184,18 +200,24 @@ export const columnsList: ColumnDef<DeedTable>[] = [
                     </Button>
 
                     <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/escrituras/${id}/editar`}>
+                        <Link href={`/escrituras/${id}/edit`}>
                             <Pencil className="h-4 w-4" />
                         </Link>
                     </Button>
-
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="text-destructive hover:text-destructive"
+                        className="text-destructive hover:text-destructive cursor-pointer"
                         onClick={() => {
-                            // aquí abres tu AlertDialog con setDeleteId(id)
-                            console.log("delete", id);
+                            (table.options.meta as any)?.confirm?.({
+                                title: "¿Eliminar escritura?",
+                                description: `Se eliminará la escritura #${(deed as DeedTable).folio ?? "sin número"
+                                    }. Esta acción no se puede deshacer.`,
+                                onConfirm: async () => {
+                                    await deleteDeed((deed as any).id);
+                                    toast.success("Escritura eliminada");
+                                },
+                            });
                         }}
                     >
                         <Trash2 className="h-4 w-4" />

@@ -1,7 +1,8 @@
 // Domain Types for Notaría App
 
-import { Prisma } from "@/generated/prisma/client";
+import { DeedSide, Prisma } from "@/generated/prisma/client";
 import { Decimal } from "@prisma/client/runtime/client";
+import { TaxConfig, TaxKey } from "./tax-rules";
 
 export type TipoEscritura =
   | 'testamento'
@@ -56,14 +57,17 @@ export interface BitacoraEntry {
 
 export interface Presupuesto {
   valorBase: number;
-  traslado: number;
-  derechoRegistro: number;
-  certificadoCatastral: number;
-  constanciasAdeudo: number;
-  subtotalPresupuesto: number;
-  honorarios: number;
-  isr: number;
-  totalFinal: number;
+  totalA: number;
+  totalB: number;
+  taxes: TaxConfig;
+}
+
+export interface PresupuestoView {
+  baseValue: number;
+  totalA: number;
+  totalB: number;
+  rolesDisponibles: string[];
+  taxes: { key: string; name: string; amount: number, side?: DeedSide | null  }[];
 }
 
 export interface Escritura {
@@ -152,7 +156,7 @@ export type TipoEscrituraKey =
   | 'inft-indistinto-nombre'
   | 'inft-construccion-casahabitacion';
 
-  export interface TaxItemConfig {
+export interface TaxItemConfig {
   traslado: number;
   certificadoValorCatastral: number;
   constanciaNoAdeudo: number;
@@ -222,3 +226,5 @@ export type DeedRawTable = Prisma.DeedGetPayload<{
 export type DeedTable = Omit<DeedRawTable, "baseValue"> & {
   baseValue: number | null;
 };
+
+

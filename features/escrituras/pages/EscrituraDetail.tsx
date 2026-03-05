@@ -1,12 +1,21 @@
-'use client'
-import { useState } from 'react';
+'use client';
+
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { 
-  ArrowLeft, Pencil, Trash2, User, Phone, 
-  FileText, MessageSquare, Paperclip, History,
-  MessageCircle, CheckCircle
+import { useRouter, useParams } from 'next/navigation';
+import {
+  ArrowLeft,
+  Pencil,
+  Trash2,
+  User,
+  Phone,
+  FileText,
+  MessageSquare,
+  MessageCircle,
+  CheckCircle,
+  LucideHistory,
 } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -26,31 +35,73 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+
+import { toast } from 'sonner';
+
 import { StatusBadge } from '../components/StatusBadge';
 import { BudgetBreakdown } from '../components/BudgetBreakdown';
-import { AuditTimeline } from '../components/AuditTimeline';
-import { AttachmentList } from '../components/AttachmentList';
 import { WhatsAppModal } from '../components/WhatsAppModal';
-import { TIPOS_ESCRITURA, ESTATUS_CONFIG } from '@/features/shared/data/mock-data';
-import { Escritura, EstatusEscritura } from '@/features/shared/types';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { toast } from 'sonner';
-import { useRouter } from 'next/router';
+
+import { ESTATUS_CONFIG, TIPOS_ESCRITURA } from '@/features/shared/data/mock-data';
+import type { EstatusEscritura } from '@/features/shared/types';
+import { getEscrituraForView, updateEscrituraStatus } from '../action';
+import { getStatusLabel } from '@/lib/utils';
+
+type Escritura = Awaited<ReturnType<typeof getEscrituraForView>>;
 
 type EscrituraDetailProps = {
-  escritura: Escritura;
+  escritura: Escritura | null;
 };
 
-export default function EscrituraDetail(
-  { escritura }: EscrituraDetailProps
-) {
-  const { id } = useParams<{ id: string }>();
+export default function EscrituraDetail({ escritura }: EscrituraDetailProps) {
+  const _params = useParams<{ id: string }>();
   const router = useRouter();
+
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
 
+  // ✅ Dialog controlado solo para abrir/cerrar
+  const [showAuditDialog, setShowAuditDialog] = useState(false);
 
+  // ------- Normalización de datos -------
+  const participants = useMemo(() => (escritura?.participants ?? []), [escritura]);
+  const a = useMemo(() => participants.filter((p) => p.side === 'A') ?? [], [participants]);
+  const b = useMemo(() => participants.filter((p) => p.side === 'B') ?? [], [participants]);
+
+  const reciboEnviado = false;
+
+  // ✅ NO regreses {} en un componente de React
+  if (!escritura) return null;
+
+  const tipoConfig = useMemo(
+    () => TIPOS_ESCRITURA.find((t) => t.value === (escritura.type || null)),
+    [escritura.type]
+  );
+
+  const rolesDisponibles = useMemo(() => {
+    if (!tipoConfig) return ['Participante'];
+    return [
+      tipoConfig.personaALabel,
+      ...(tipoConfig.personaBLabel ? [tipoConfig.personaBLabel] : []),
+    ];
+  }, [tipoConfig]);
+
+  // Si no existe, pantalla 404 friendly
   if (!escritura) {
     return (
       <div className="flex flex-col items-center justify-center py-16">
@@ -66,45 +117,27 @@ export default function EscrituraDetail(
     );
   }
 
-  const tipoConfig = TIPOS_ESCRITURA.find(t => t.value === escritura.tipo);
-  
-  // Check if receipt needs to be sent (not sent or has been edited since last send)
-  // const hasBeenEdited = escritura.bitacora.some(
-  //   b => b.action === 'Edición de escritura' && 
-  //   (!escritura.fechaUltimoEnvio || new Date(b.at) > new Date(escritura.fechaUltimoEnvio))
-  // );
-  const showResendButton = !escritura.reciboEnviado;
+  const showSendButton = !reciboEnviado;
 
-  const handleStatusChange = (newStatus: EstatusEscritura) => {
-    // const statusLabel = ESTATUS_CONFIG.find(s => s.value === newStatus)?.label;
-    // updateEscritura(escritura.id, { estatus: newStatus });
-    // addBitacoraEntry(
-    //   escritura.id,
-    //   'Cambio de estatus',
-    //   `Estatus actualizado a: ${statusLabel}`
-    // );
-    toast.success(`Estatus actualizado a: Pagado`);
+  const handleStatusChange = async (newStatus: EstatusEscritura) => {
+    await updateEscrituraStatus(escritura.id, newStatus);
+    router.refresh();
+    toast.success(`Estatus actualizado a: ${getStatusLabel(newStatus)}`);
   };
 
-  const handleDelete = () => {
-    // deleteEscritura(escritura.id);
+  const handleDelete = async () => {
     toast.success('Escritura eliminada correctamente');
     router.push('/escrituras');
   };
 
-  const handleSendWhatsApp = () => {
-    // updateEscritura(escritura.id, { 
-    //   reciboEnviado: true, 
-    //   fechaUltimoEnvio: new Date() 
-    // });
-    // addBitacoraEntry(
-    //   escritura.id,
-    //   'Recibo enviado por WhatsApp',
-    //   `Recibo enviado a ${escritura.personaA.nombre} (${escritura.personaA.telefono})`
-    // );
+  const handleSendWhatsApp = async () => {
     toast.success('Recibo enviado por WhatsApp');
     setShowWhatsAppModal(false);
+    router.refresh();
   };
+
+  // ✅ Datos para la tabla: vienen DIRECTO de tu nueva action getEscrituraForView
+  const auditRows = (escritura as any).auditLogs ?? [];
 
   return (
     <div className="space-y-4 sm:space-y-6 animate-fade-in px-4 sm:px-6 max-w-screen-2xl mx-auto">
@@ -116,35 +149,39 @@ export default function EscrituraDetail(
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
+
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <h1 className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight truncate">
-                {escritura.folioInterno}
+                {escritura.folio}
               </h1>
-              <StatusBadge status={escritura.estatus} />
-              {escritura.reciboEnviado && !escritura.reciboEnviado && (
+
+              <StatusBadge status={escritura.status} />
+
+              {reciboEnviado ? (
                 <span className="inline-flex items-center gap-1 text-xs text-success bg-success/10 px-2 py-1 rounded-full border border-success/20">
                   <CheckCircle className="h-3 w-3" />
                   Recibo enviado
                 </span>
-              )}
+              ) : null}
             </div>
+
             <p className="text-sm sm:text-base text-muted-foreground mt-1 truncate">
-              Escritura #{escritura.numeroEscritura} • {tipoConfig?.label}
+              Escritura #{escritura.deedNumber ?? 'en proceso'} • {escritura.typeLabel}
             </p>
           </div>
         </div>
 
         {/* Actions */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <Select value={escritura.estatus} onValueChange={handleStatusChange}>
-            <SelectTrigger className="w-full sm:w-45">
+          <Select value={escritura.status} onValueChange={handleStatusChange}>
+            <SelectTrigger className="w-full sm:w-52">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {ESTATUS_CONFIG.map(status => (
-                <SelectItem key={status.value} value={status.value}>
-                  {status.label}
+              {ESTATUS_CONFIG.map((s) => (
+                <SelectItem key={s.value} value={s.value}>
+                  {s.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -152,39 +189,92 @@ export default function EscrituraDetail(
 
           <div className="flex-1 min-w-0" />
 
-          {showResendButton && (
+          {showSendButton ? (
             <Button
               variant="outline"
-              className="text-success border-success hover:bg-success/10 hover:text-success w-full sm:w-auto"
+              className="cursor-pointer text-success border-success hover:bg-success/10 hover:text-success w-full sm:w-auto"
               onClick={() => setShowWhatsAppModal(true)}
             >
               <MessageCircle className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">{escritura.reciboEnviado ? 'Reenviar recibo' : 'Enviar recibo'}</span>
+              <span className="hidden sm:inline">
+                {reciboEnviado ? 'Reenviar recibo' : 'Enviar recibo'}
+              </span>
               <span className="sm:hidden">Recibo</span>
             </Button>
-          )}
+          ) : null}
 
-          <Button variant="outline" asChild className="w-full sm:w-auto">
-            <Link href={`/escrituras/${escritura.id}/editar`}>
+          {/* ✅ Dialog Bitácora (usa escritura.auditLogs) */}
+          <Dialog open={showAuditDialog} onOpenChange={setShowAuditDialog}>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full sm:w-auto hover:bg-primary/10 cursor-pointer hover:text-black"
+              >
+                <LucideHistory className="h-4 w-4 mr-2" />
+                Bitácora
+              </Button>
+            </DialogTrigger>
+
+            <DialogContent className="max-w-3xl">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 font-serif">
+                  <LucideHistory className="h-5 w-5 text-primary" />
+                  Bitácora de Actividad
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="rounded-md border max-h-[60vh] overflow-y-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Detalle</TableHead>
+                      <TableHead className="whitespace-nowrap">Fecha</TableHead>
+                    </TableRow>
+                  </TableHeader>
+
+                  <TableBody>
+                    {auditRows.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={2} className="text-center text-muted-foreground">
+                          No hay registros
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      auditRows.map((r: any, i: number) => (
+                        <TableRow key={`${String(r.createdAt)}-${i}`}>
+                          <TableCell className="whitespace-pre-wrap">{r.details ?? '—'}</TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {new Date(r.createdAt).toLocaleString('es-MX')}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Button variant="outline" asChild className="w-full sm:w-auto cursor-pointer">
+            <Link href={`/escrituras/${escritura.id}/edit`}>
               <Pencil className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Editar</span>
-              <span className="sm:hidden">Editar</span>
+              Editar
             </Link>
           </Button>
+
           <Button
             variant="outline"
-            className="text-destructive hover:text-destructive hover:bg-destructive/10 w-full sm:w-auto"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10 w-full sm:w-auto cursor-pointer"
             onClick={() => setShowDeleteDialog(true)}
           >
             <Trash2 className="h-4 w-4 mr-2" />
-            <span className="hidden sm:inline">Eliminar</span>
-            <span className="sm:hidden">Eliminar</span>
+            Eliminar
           </Button>
         </div>
       </div>
 
       <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
-        {/* Main Content */}
+        {/* Main */}
         <div className="lg:col-span-2 space-y-6">
           {/* Datos Generales */}
           <Card className="shadow-premium">
@@ -194,37 +284,31 @@ export default function EscrituraDetail(
                 Datos Generales
               </CardTitle>
             </CardHeader>
+
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <div>
-                <p className="text-sm text-muted-foreground">Folio Interno</p>
-                <p className="font-medium">{escritura.folioInterno}</p>
+                <p className="text-sm text-muted-foreground">Folio</p>
+                <p className="font-medium">{escritura.folio}</p>
               </div>
+
               <div>
                 <p className="text-sm text-muted-foreground">Número de Escritura</p>
-                <p className="font-medium">{escritura.numeroEscritura}</p>
+                <p className="font-medium">{escritura.deedNumber}</p>
               </div>
+
               <div>
                 <p className="text-sm text-muted-foreground">Tipo</p>
-                <p className="font-medium">{tipoConfig?.label}</p>
+                <p className="font-medium">{escritura.typeLabel}</p>
               </div>
+
               <div>
-                <p className="text-sm text-muted-foreground">Fecha de Creación</p>
-                <p className="font-medium">
-                  {format(escritura.fechaCreacion, "dd 'de' MMMM 'de' yyyy", { locale: es })}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Fecha de Firma</p>
-                <p className="font-medium">
-                  {escritura.fechaFirma
-                    ? format(escritura.fechaFirma, "dd 'de' MMMM 'de' yyyy", { locale: es })
-                    : 'Pendiente'}
-                </p>
+                <p className="text-sm text-muted-foreground">Estatus</p>
+                <p className="font-medium">{getStatusLabel(escritura.status)}</p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Personas Involucradas */}
+          {/* Personas */}
           <Card className="shadow-premium">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 font-serif">
@@ -232,35 +316,63 @@ export default function EscrituraDetail(
                 Personas Involucradas
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-lg border p-4">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
-                  {escritura.personaA.rolLabel}
+
+            <CardContent className="grid gap-4 sm:grid-cols-4">
+              {Math.max(a.length, b.length) === 0 ? (
+                <p className="sm:col-span-4 text-sm text-muted-foreground text-center">
+                  No se encontraron participantes
                 </p>
-                <p className="font-semibold">{escritura.personaA.nombre}</p>
-                <p className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
-                  <Phone className="h-3 w-3" />
-                  {escritura.personaA.telefono}
-                </p>
-              </div>
-              
-              {escritura.personaB && (
-                <div className="rounded-lg border p-4">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
-                    {escritura.personaB.rolLabel}
-                  </p>
-                  <p className="font-semibold">{escritura.personaB.nombre}</p>
-                  <p className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
-                    <Phone className="h-3 w-3" />
-                    {escritura.personaB.telefono}
-                  </p>
-                </div>
+              ) : (
+                Array.from({ length: Math.max(a.length, b.length) }).map((_, i) => {
+                  const pa = a[i];
+                  const pb = b[i];
+
+                  return (
+                    <div key={i} className="contents">
+                      {/* A */}
+                      <div className="rounded-lg border p-4 sm:col-span-2 sm:col-start-1 flex flex-col">
+                        {pa ? (
+                          <>
+                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
+                              {pa.role ?? 'Parte A'}
+                            </p>
+                            <p className="font-semibold">{pa.name ?? '—'}</p>
+                            <p className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
+                              <Phone className="h-3 w-3" />
+                              {pa.phone ?? '—'}
+                            </p>
+                          </>
+                        ) : (
+                          <p className="text-sm text-muted-foreground text-center">— (sin Parte A)</p>
+                        )}
+                      </div>
+
+                      {/* B */}
+                      <div className="rounded-lg border p-4 sm:col-span-2 sm:col-start-3 flex flex-col">
+                        {pb ? (
+                          <>
+                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
+                              {pb.role ?? 'Parte B'}
+                            </p>
+                            <p className="font-semibold">{pb.name ?? '—'}</p>
+                            <p className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
+                              <Phone className="h-3 w-3" />
+                              {pb.phone ?? '—'}
+                            </p>
+                          </>
+                        ) : (
+                          <p className="text-sm text-muted-foreground text-center">— (sin Parte B)</p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
               )}
             </CardContent>
           </Card>
 
           {/* Notas */}
-          {escritura.notas && (
+          {escritura.notes ? (
             <Card className="shadow-premium">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-serif">
@@ -269,67 +381,45 @@ export default function EscrituraDetail(
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm whitespace-pre-wrap">{escritura.notas}</p>
+                <p className="text-sm whitespace-pre-wrap">{escritura.notes}</p>
               </CardContent>
             </Card>
-          )}
-
-          {/* Adjuntos */}
-          <Card className="shadow-premium">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 font-serif">
-                <Paperclip className="h-5 w-5 text-primary" />
-                Adjuntos
-                {escritura.adjuntos.length > 0 && (
-                  <span className="text-sm font-normal text-muted-foreground">
-                    ({escritura.adjuntos.length})
-                  </span>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <AttachmentList attachments={escritura.adjuntos} />
-            </CardContent>
-          </Card>
-
-          {/* Bitácora */}
-          <Card className="shadow-premium">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 font-serif">
-                <History className="h-5 w-5 text-primary" />
-                Bitácora de Actividad
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <AuditTimeline entries={escritura.bitacora} />
-            </CardContent>
-          </Card>
+          ) : null}
         </div>
 
-        {/* Sidebar - Budget */}
-        <div className="space-y-6">
-          <Card className="shadow-premium sticky top-20">
-            <CardHeader>
-              <CardTitle className="font-serif">Presupuesto</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <BudgetBreakdown
-                presupuesto={escritura.presupuesto}
-                tipo={escritura.tipo}
-                showIsr={escritura.tipo === 'compraventa'}
-              />
-            </CardContent>
-          </Card>
+        {/* Sidebar */}
+        <div>
+          <div className="space-y-6">
+            <Card className="shadow-premium sticky top-20">
+              <CardHeader>
+                <CardTitle className="font-serif">Presupuesto</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <BudgetBreakdown
+                  presupuesto={{
+                    baseValue: escritura.baseValue,
+                    totalA: escritura.totalA,
+                    totalB: escritura.totalB,
+                    taxes: escritura.deedTax,
+                    rolesDisponibles: rolesDisponibles,
+                  }}
+                />
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="space-y-6"></div>
         </div>
       </div>
 
-      {/* Delete Confirmation Dialog */}
+      {/* Delete dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>¿Eliminar esta escritura?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. La escritura <strong>{escritura.folioInterno}</strong> será eliminada permanentemente del sistema.
+              Esta acción no se puede deshacer. La escritura <strong>{escritura.folio}</strong>{' '}
+              será eliminada permanentemente del sistema.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -344,14 +434,14 @@ export default function EscrituraDetail(
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* WhatsApp Modal */}
+      {/* WhatsApp modal */}
       <WhatsAppModal
         open={showWhatsAppModal}
         onOpenChange={setShowWhatsAppModal}
-        escritura={escritura}
+        escritura={escritura as any}
         onSend={handleSendWhatsApp}
         onSkip={() => setShowWhatsAppModal(false)}
-        isResend={escritura.reciboEnviado}
+        isResend={reciboEnviado}
       />
     </div>
   );

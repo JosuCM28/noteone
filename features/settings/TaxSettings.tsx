@@ -298,7 +298,7 @@ export default function Impuestos({ taxes }: taxSettingsConfigProps) {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full group-hover:border-primary/50"
+                  className="w-full group-hover:border-primary/50 cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedTipo(tipo);

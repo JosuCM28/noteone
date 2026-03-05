@@ -57,7 +57,7 @@ export default function EscrituraEdit({ escritura }: EscrituraEditProps) {
       totalB: escritura.totalB,
       status: escritura.status,
       participants: escritura.participants,
-      taxes: {...DEFAULT_TAX_CONFIG, ...escritura.taxes},
+      taxes: {...DEFAULT_TAX_CONFIG, ...escritura.DeedTax},
     },
   });
 
