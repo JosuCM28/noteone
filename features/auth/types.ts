@@ -10,3 +10,4 @@ export type SignUpForm = {
   password: string;
   role: 'user' | 'admin';
 };
+export type UserRol = 'user' | 'admin';

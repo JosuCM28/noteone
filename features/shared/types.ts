@@ -109,7 +109,7 @@ export interface TipoEscrituraConfig {
 export interface EstatusConfig {
   value: EstatusEscritura;
   label: string;
-  color: 'default' | 'warning' | 'info' | 'success' | 'destructive' | 'secondary';
+  color: 'default' | 'warning' | 'info' | 'success' | 'destructive' | 'secondary' | 'purple' | 'orange';
 }
 
 export interface DraftParticipant {
@@ -227,4 +227,22 @@ export type DeedTable = Omit<DeedRawTable, "baseValue"> & {
   baseValue: number | null;
 };
 
+const userRawTableSelect = {
+  id: true,
+  name: true,
+  email: true,
+  role: true,
+  username: true,
+  isActive: true,
+  createdAt: true,
+
+} satisfies Prisma.UserSelect;
+
+export type UserRawTable = Prisma.UserGetPayload<{
+  select: typeof userRawTableSelect;
+}>;
+
+export type UserRawTableWithId = Omit<DeedRawTable, 'currentUserId'> & {
+  currentUserId: string;
+};
 

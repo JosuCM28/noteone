@@ -1125,6 +1125,7 @@ export const UserScalarFieldEnum = {
   image: 'image',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  isActive: 'isActive',
   username: 'username',
   displayUsername: 'displayUsername',
   role: 'role',
@@ -1234,10 +1235,10 @@ export const AuditLogScalarFieldEnum = {
   details: 'details',
   deedFolio: 'deedFolio',
   deedNumber: 'deedNumber',
-  createdAt: 'createdAt',
-  deletedAt: 'deletedAt',
+  changes: 'changes',
   deletedById: 'deletedById',
-  changes: 'changes'
+  createdAt: 'createdAt',
+  deletedAt: 'deletedAt'
 } as const
 
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]

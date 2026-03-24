@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, Pencil, Trash2, ArrowUpDown } from "lucide-react";
+import {  ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { MoreHorizontal } from "lucide-react";
 import {
   DropdownMenu,
@@ -21,20 +20,24 @@ import type { DeedTable } from "@/features/shared/types";
 import { deleteEscritura } from "@/features/escrituras/action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { ro } from "date-fns/locale";
+import { useTransition } from "react";
 
 export const deleteDeed = async (id: string) => {
   try {
     await deleteEscritura(id);
+    toast.success("Escritura eliminada");
+
   } catch (error) {
     console.error("Error deleting deed", error);
   }
 };
 
+
 export const columnsList: ColumnDef<DeedTable>[] = [
   {
     accessorKey: "folio",
     header: () => <span>Folio / Número</span>,
+    enableGlobalFilter: true,
     cell: ({ row }) => {
       const folio = row.getValue("folio") as string;
       // const deedNumber = row.getValue("deedNumber") as string | null;
@@ -52,6 +55,7 @@ export const columnsList: ColumnDef<DeedTable>[] = [
   {
     accessorKey: "deedNumber",
     header: () => <span>Número de escritura</span>,
+    enableGlobalFilter: true,
     cell: ({ row }) => {
       const deedNumber = row.getValue("deedNumber") as string;
       // const deedNumber = row.getValue("deedNumber") as string | null;
@@ -88,20 +92,20 @@ export const columnsList: ColumnDef<DeedTable>[] = [
       </div>
     ),
   },
-
   {
-    accessorKey: "participants",
+    id: "participants",
     header: () => <span>Persona(s)</span>,
+    enableGlobalFilter: true,
+    accessorFn: (row) =>
+      (row.participants ?? [])
+        .map((p: { name: string }) => p.name)
+        .join(" "),
     meta: {
       thClassName: "hidden md:table-cell",
       tdClassName: "hidden md:table-cell",
     },
     cell: ({ row }) => {
-      const participants = (row.getValue("participants") ?? []) as {
-        name: string;
-        phone?: string | null;
-        side?: "A" | "B";
-      }[];
+      const participants = row.original.participants ?? [];
 
       const a = participants.find((p) => p.side === "A") ?? participants[0];
       const b = participants.find((p) => p.side === "B");
@@ -315,12 +319,10 @@ export const columnsList: ColumnDef<DeedTable>[] = [
                 onClick={() => {
                   (table.options.meta as any)?.confirm?.({
                     title: "¿Eliminar escritura?",
-                    description: `Se eliminará la escritura #${
-                      deed.folio ?? "sin número"
-                    }. Esta acción no se puede deshacer.`,
+                    description: `Se eliminará la escritura #${deed.folio ?? "sin número"
+                      }. Esta acción no se puede deshacer.`,
                     onConfirm: async () => {
                       await deleteDeed(id);
-                      toast.success("Escritura eliminada");
                     },
                   });
                 }}

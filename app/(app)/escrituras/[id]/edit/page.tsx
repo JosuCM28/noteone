@@ -1,6 +1,5 @@
 import { EscrituraEdit } from '@/features/escrituras'
 import { getEscritura } from '@/features/escrituras/action';
-import { MOCK_ESCRITURAS } from '@/features/shared/data/mock-data'
 
 
 

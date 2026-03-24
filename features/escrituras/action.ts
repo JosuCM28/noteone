@@ -9,6 +9,7 @@ import { get } from "http";
 import { getAuthUserId } from "../auth/actions";
 import { isPrismaUniqueError } from "@/lib/prisma-errors";
 import { es } from "date-fns/locale";
+import { revalidatePath } from "next/cache";
 
 type Grouped = Record<string, number>;
 
@@ -317,6 +318,7 @@ export async function deleteEscritura(id: string) {
       id: escritura.id,
     },
   });
+  revalidatePath("/escrituras");
 }
 
 

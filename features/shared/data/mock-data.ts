@@ -1,7 +1,7 @@
 import { Escritura, User, TipoEscrituraConfig, EstatusConfig } from '@/features/shared/types';
 
 export const TIPOS_ESCRITURA: TipoEscrituraConfig[] = [
- {
+  {
     value: 'testamento',
     label: 'Testamento',
     description: 'Disposición de bienes para después del fallecimiento',
@@ -96,7 +96,7 @@ export const TIPOS_ESCRITURA: TipoEscrituraConfig[] = [
     description: 'Facultad legal para actuar en nombre de otro',
     icon: 'pen-tool',
     personaALabel: 'Poderante',
-    
+
   },
   {
     value: 'constitucion-ac',
@@ -106,30 +106,35 @@ export const TIPOS_ESCRITURA: TipoEscrituraConfig[] = [
     personaALabel: 'Asociado',
   },
   {
-  value: 'inft-indistinto-nombre',
-  label: 'Información Testimonial para Acreditar Uso Indistinto de Nombre',
-  description:
-    'Procedimiento mediante el cual se acredita, a través de testimonios, que una persona ha utilizado de forma indistinta dos o más nombres para identificarse en actos relacionados con un inmueble.',
-  icon: 'file-text',
-  personaALabel: 'Otorgante',
-},
-{
-  value: 'inft-construccion-casahabitacion',
-  label: 'Información Testimonial para Acreditar Construcción de Casa Habitación',
-  description:
-    'Procedimiento notarial mediante testimonios para acreditar la existencia, antigüedad y características de una construcción destinada a casa habitación sobre un inmueble.',
-  icon: 'home',
-  personaALabel: 'Otorgante',
-},
+    value: 'inft-indistinto-nombre',
+    label: 'Información Testimonial para Acreditar Uso Indistinto de Nombre',
+    description:
+      'Procedimiento mediante el cual se acredita, a través de testimonios, que una persona ha utilizado de forma indistinta dos o más nombres para identificarse en actos relacionados con un inmueble.',
+    icon: 'file-text',
+    personaALabel: 'Otorgante',
+  },
+  {
+    value: 'inft-construccion-casahabitacion',
+    label: 'Información Testimonial para Acreditar Construcción de Casa Habitación',
+    description:
+      'Procedimiento notarial mediante testimonios para acreditar la existencia, antigüedad y características de una construcción destinada a casa habitación sobre un inmueble.',
+    icon: 'home',
+    personaALabel: 'Otorgante',
+  },
 
 ];
 
 export const ESTATUS_CONFIG: EstatusConfig[] = [
   { value: 'por_liquidar', label: 'Pendiente de Pago', color: 'warning' },
-  { value: 'liquidado', label: 'Liquidado', color: 'info' },
-  { value: 'proceso_pago', label: 'Proceso de Pago', color: 'secondary' },
+
+  { value: 'liquidado', label: 'Liquidado', color: 'purple' },
+
+  { value: 'proceso_pago', label: 'Proceso de Pago', color: 'orange' },
+
   { value: 'registro', label: 'Registro', color: 'info' },
-  { value: 'proceso_entrega', label: 'en Entrega', color: 'secondary' },
+
+  { value: 'proceso_entrega', label: 'En Entrega', color: 'secondary' },
+
   { value: 'entregado', label: 'Entregado', color: 'success' },
 ];
 
