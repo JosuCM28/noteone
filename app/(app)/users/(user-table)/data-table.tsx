@@ -57,8 +57,8 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { CreateUserSchema } from "@/features/users/schema";
-import { UserRole } from "@/features/shared/types";
-import { postUser } from "@/features/users/action";
+import { UserRole, UserRawTable } from "@/features/shared/types";
+import { postUser, updateUser } from "@/features/users/action";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -80,6 +80,7 @@ export function DataTableUser<TData, TValue>({
   const router = useRouter();
 
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editUserId, setEditUserId] = useState<string | null>(null);
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmTitle, setConfirmTitle] = useState("¿Estás seguro?");
@@ -109,7 +110,20 @@ export function DataTableUser<TData, TValue>({
   });
 
   const openNew = () => {
+    setEditUserId(null);
     form.reset();
+    setDialogOpen(true);
+  };
+
+  const openEdit = (user: UserRawTable) => {
+    setEditUserId(user.id);
+    form.reset({
+      fullName: user.name ?? "",
+      username: user.username ?? "",
+      email: user.email ?? "",
+      password: "",
+      role: user.role as UserRole,
+    });
     setDialogOpen(true);
   };
 
@@ -143,14 +157,20 @@ export function DataTableUser<TData, TValue>({
 
   const handleSubmit = async (values: z.infer<typeof CreateUserSchema>) => {
     try {
-      await postUser(values);
-      toast.success("Usuario creado");
+      if (editUserId) {
+        await updateUser(editUserId, values);
+        toast.success("Usuario actualizado");
+      } else {
+        await postUser(values);
+        toast.success("Usuario creado");
+      }
       setDialogOpen(false);
+      setEditUserId(null);
       form.reset();
       router.refresh();
     } catch (error) {
       console.error(error);
-      toast.error("Error al crear el usuario");
+      toast.error(editUserId ? "Error al actualizar el usuario" : "Error al crear el usuario");
     }
   };
 
@@ -170,6 +190,7 @@ export function DataTableUser<TData, TValue>({
       currentUserId,
       confirm,
       refreshTable: () => router.refresh(),
+      openEdit,
     },
   });
   const hasFilters =
@@ -335,7 +356,7 @@ export function DataTableUser<TData, TValue>({
         <DialogContent>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <DialogHeader>
-              <DialogTitle>Nuevo Usuario</DialogTitle>
+              <DialogTitle>{editUserId ? "Editar Usuario" : "Nuevo Usuario"}</DialogTitle>
             </DialogHeader>
 
             <div className="space-y-4">
@@ -470,7 +491,9 @@ export function DataTableUser<TData, TValue>({
                 type="submit"
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? "Creando..." : "Crear"}
+                {form.formState.isSubmitting
+                  ? editUserId ? "Guardando..." : "Creando..."
+                  : editUserId ? "Guardar" : "Crear"}
               </Button>
             </DialogFooter>
           </form>

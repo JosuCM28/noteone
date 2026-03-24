@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { UserRawTable } from "@/features/shared/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Pencil } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { deleteUser } from "@/features/users/action";
@@ -15,6 +15,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -47,6 +48,7 @@ type TableMetaUsers = {
   currentUserId?: string;
   confirm?: (options: ConfirmOptions) => void;
   refreshTable?: () => void;
+  openEdit?: (user: UserRawTable) => void;
 };
 
 export const columnsUser: ColumnDef<UserRawTable>[] = [
@@ -185,6 +187,14 @@ export const columnsUser: ColumnDef<UserRawTable>[] = [
                 }}
               >
                 Eliminar
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => meta?.openEdit?.(user)}
+              >
+                <Pencil className="mr-2 h-4 w-4" />
+                Editar
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
