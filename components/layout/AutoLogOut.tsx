@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { authClient } from "@/lib/auth-client"; // tu instancia del cliente
 
-const IDLE_MS = 30 * 60 * 1000;
+const IDLE_MS = 90 * 180 * 1000;
 
 export function IdleLogout() {
   const t = useRef<ReturnType<typeof setTimeout> | null>(null);

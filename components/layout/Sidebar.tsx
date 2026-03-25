@@ -1,7 +1,7 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { LayoutDashboard, FileText, Users, Scale, LogOut, Cog } from 'lucide-react';
+import { LayoutDashboard, FileText, Users, Scale, LogOut, Cog, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 // import { useAuth } from '@/features/auth';
 import { Button } from '@/components/ui/button';
@@ -13,19 +13,26 @@ import {
 import { toast } from 'sonner';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
+import { admin } from 'better-auth/plugins';
+import { UserRole } from '@/features/shared/types';
 
-const navItems = [
-    { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { href: '/escrituras', icon: FileText, label: 'Escrituras' },
-    { href: '/users', icon: Users, label: 'Usuarios' },
-    { href: '/settings', icon: Cog, label: 'Configuraciones'},
-];
+
+
+
 
 interface SidebarProps {
     collapsed?: boolean;
+    userRole: string | null | undefined;
 }
 
-export default function Sidebar({ collapsed = false }: SidebarProps) {
+export default function Sidebar({ collapsed = false, userRole }: SidebarProps) {
+    const navItems = [
+        { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', adminOnly: false },
+        { href: '/escrituras', icon: FileText, label: 'Escrituras', adminOnly: false },
+        { href: '/users', icon: Users, label: 'Usuarios', adminOnly: userRole !== 'admin' as UserRole ? true : false },
+        { href: '/verificar-recibo', icon: ShieldCheck, label: 'Verificar Recibo', adminOnly: false },
+        { href: '/settings', icon: Cog, label: 'Configuraciones', adminOnly: false },
+    ];
     const pathname = usePathname();
     const router = useRouter();
     // const { isAdmin, logout, user } = useAuth();
@@ -45,7 +52,8 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
         }
 
     }
-    //   const filteredItems = navItems.filter(item => !item.adminOnly || isAdmin);
+
+
     const filteredItems = navItems.filter(item => !item.adminOnly || null);
 
     return (

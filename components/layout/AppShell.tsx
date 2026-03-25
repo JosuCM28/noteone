@@ -5,9 +5,10 @@ import  Sidebar  from './Sidebar';
 import  Topbar  from './Topbar';
 import { MobileNav } from './MobileNav';
 import { Skeleton } from '@/components/ui/skeleton';
+import { UserRol } from '@/features/auth/types';
 
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ children, userRole }: { children: ReactNode, userRole: string | null | undefined }) {
 //   const { isAuthenticated, loading } = useAuth();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [globalSearch, setGlobalSearch] = useState('');
@@ -32,7 +33,9 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-background">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:w-64 lg:border-r lg:bg-card lg:block">
-        <Sidebar />
+        <Sidebar 
+        userRole={userRole}
+        />
       </aside>
 
 

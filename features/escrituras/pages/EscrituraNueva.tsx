@@ -96,7 +96,9 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingTipo, setPendingTipo] = useState<TipoEscritura | null>(null);
-  // ✅ draft: solo isDirty
+  const [escrituraId, setEscrituraId] = useState<string | null>(null);
+
+
   const hasUnsavedDraft = form.formState.isDirty;
 
   const resetDraftKeepingTipo = (keepTipo: string) => {
@@ -155,9 +157,9 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
 
   const onSubmit: SubmitHandler<FormInput> = async (values) => {
     const data: FormOutput = EscrituraFormSchema.parse(values);
-    console.log(data);
     try {
-      await postEscritura(data);
+      const escrituraReturnId = await postEscritura(data);
+      setEscrituraId(escrituraReturnId);
       toast.success("Escritura creada correctamente");
       setShowWhatsAppModal(true);
 
@@ -184,6 +186,7 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
                 type="button"
                 variant="ghost"
                 size="icon"
+                className="cursor-pointer"
                 onClick={() => router.push("/escrituras")}
               >
                 <ArrowLeft className="h-5 w-5" />
@@ -191,7 +194,7 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
               <h1 className="font-serif text-2xl font-bold">Nueva Escritura</h1>
             </div>
 
-            <Button type="submit" disabled={!canSubmit} className="btn-accent">
+            <Button type="submit" disabled={!canSubmit} className="btn-accent cursor-pointer">
               <Save className="h-4 w-4 mr-2" />
               Guardar Escritura
             </Button>
@@ -259,7 +262,7 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
               Cancelar
             </Button>
 
-            <Button type="submit" disabled={!canSubmit} className="btn-accent">
+            <Button type="submit" disabled={!canSubmit} className="btn-accent cursor-pointer">
               <Save className="h-4 w-4 mr-2" />
               Guardar Escritura
             </Button>
@@ -268,6 +271,9 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
           <WhatsAppModal
             open={showWhatsAppModal}
             onOpenChange={setShowWhatsAppModal}
+            deedId={escrituraId!}
+            folio={form.getValues("folio")}
+            participants={form.getValues("participants")}
             onSend={() => {
               toast.success("Recibo enviado por WhatsApp");
               router.push("/escrituras");

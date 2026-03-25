@@ -80,6 +80,7 @@ export function TipoSelector({
                 onClick={goPrev}
                 disabled={!canPrev}
                 aria-label="Anterior"
+                className="cursor-pointer"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -95,6 +96,7 @@ export function TipoSelector({
                 onClick={goNext}
                 disabled={!canNext}
                 aria-label="Siguiente"
+                className="cursor-pointer"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -114,11 +116,11 @@ export function TipoSelector({
                 type="button"
                 onClick={() => !isEditing && onSelect(t.value)} // ✅ bloquear cambio en edición
                 className={cn(
-                  "p-4 rounded-xl border-2 text-left transition-all ",
+                  "p-4 rounded-xl border-2 text-left transition-all",
                   selectedTipo === t.value
                     ? "border-primary bg-primary/5"
                     : "border-border",
-                  isEditing && "cursor-pointer col-span-full "
+                  isEditing ? "col-span-full cursor-default" : "cursor-pointer"
                 )}
               >
                 <Icon className="h-5 w-5 mb-2 text-primary" />

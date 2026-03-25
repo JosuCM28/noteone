@@ -5,16 +5,27 @@ import { SignInForm, SignUpForm } from './types';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
+import { prisma } from '@/lib/prisma';
 
 export const signIn = async (values: SignInForm) => {
     const { username, password } = values;
+
+    // Verificar estado de la cuenta antes de intentar el login
+    const user = await prisma.user.findFirst({
+        where: { username },
+        select: { isActive: true },
+    });
+
+    if (user && user.isActive === false) {
+        return { error: 'ACCOUNT_DISABLED' as const };
+    }
+
     const res = await auth.api.signInUsername({
         body: {
             username,
             password,
         }
-
-    })
+    });
     return res;
 }
 //persona que se registra por su cuenta

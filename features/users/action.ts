@@ -1,11 +1,12 @@
 'use server';
 
 import z from "zod";
-import { CreateUserSchema } from "./schema";
+import { CreateUserSchema, UpdateUserSchema, ResetPasswordSchema } from "./schema";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { signUp, signUpForAdmin } from "../auth/actions";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 
 
 export async function postUser(values: z.infer<typeof CreateUserSchema>) {
@@ -58,23 +59,35 @@ export async function getUsers() {
     return users;
 }
 
-export async function updateUser(id: string, values: z.infer<typeof CreateUserSchema>) {
+export async function updateUser(id: string, values: z.infer<typeof UpdateUserSchema>) {
+    const parsed = UpdateUserSchema.parse(values);
     const user = await prisma.user.update({
         where: {
             id,
         },
         data: {
-            name: values.fullName,
-            username: values.username,
-            email: values.email,
-            password: values.password,
-            role: values.role,
+            name: parsed.fullName,
+            username: parsed.username,
+            email: parsed.email,
+            role: parsed.role,
         }
     })
     if (!user) {
         throw new Error("No se encontró el usuario");
     }
     return user;
+}
+
+export async function resetUserPassword(id: string, values: z.infer<typeof ResetPasswordSchema>) {
+    const parsed = ResetPasswordSchema.parse(values);
+    const res = await auth.api.setUserPassword({
+        body: {
+            newPassword: parsed.password,
+            userId: id,
+        },
+        headers: await headers(),
+    });
+    return res;
 }
 
 export async function deleteUser(id: string) {

@@ -44,7 +44,11 @@ export function BudgetBreakdown({ presupuesto, className }: BudgetBreakdownProps
                 className="flex items-center justify-between text-sm"
               >
                 <span className="text-muted-foreground">{t.name}</span>
-                <Money amount={t.amount} />
+                {t.key === "traslado" ? (
+                  <span className="font-medium tabular-nums">{t.amount}%</span>
+                ) : (
+                  <Money amount={t.amount} />
+                )}
               </div>
             ))}
 

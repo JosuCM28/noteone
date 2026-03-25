@@ -176,6 +176,7 @@ export function ParticipantesManager({
               type="button"
               variant="outline"
               size="sm"
+              className="cursor-pointer"
               onClick={() => setShowForm(true)}
             >
               <Plus className="h-4 w-4 mr-1" />
@@ -215,6 +216,7 @@ export function ParticipantesManager({
                     type="button"
                     variant="ghost"
                     size="icon"
+                    className="cursor-pointer"
                     onClick={() => handleEdit(p)}
                   >
                     <Edit2 className="h-4 w-4" />
@@ -226,7 +228,7 @@ export function ParticipantesManager({
                     size="icon"
                     onClick={() => onRemove(p.id)}
                     disabled={!canRemove}
-                    className="text-destructive hover:text-destructive"
+                    className="cursor-pointer text-destructive hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -243,7 +245,7 @@ export function ParticipantesManager({
               <h4 className="font-medium">
                 {editingId ? "Editar Participante" : "Nuevo Participante"}
               </h4>
-              <Button type="button" variant="ghost" size="icon" onClick={handleCancel}>
+              <Button type="button" variant="ghost" size="icon" className="cursor-pointer" onClick={handleCancel}>
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -313,11 +315,12 @@ export function ParticipantesManager({
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={handleCancel}>
+              <Button type="button" variant="outline" className="cursor-pointer" onClick={handleCancel}>
                 Cancelar
               </Button>
               <Button
                 type="button"
+                className="cursor-pointer"
                 onClick={handleSubmit}
                 disabled={!formData.role || !formData.name || !formData.phone}
               >

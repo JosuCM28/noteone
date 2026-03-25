@@ -65,6 +65,7 @@ export function ParticipantsTable({
                 type="button"
                 variant="outline"
                 size="icon"
+                className="cursor-pointer"
                 onClick={() => onEdit(p.id)}
               >
                 <Pencil className="h-4 w-4" />
@@ -74,6 +75,7 @@ export function ParticipantsTable({
                 type="button"
                 variant="destructive"
                 size="icon"
+                className="cursor-pointer"
                 onClick={() => onDelete(p.id)}
               >
                 <Trash2 className="h-4 w-4" />

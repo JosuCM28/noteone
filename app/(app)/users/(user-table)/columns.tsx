@@ -9,7 +9,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal, Pencil } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { deleteUser, updateUser } from "@/features/users/action";
+import { deleteUser, updateUser, resetUserPassword } from "@/features/users/action";
 import { toast } from "sonner";
 import { UserStatusSwitch } from "@/features/users/components/user-status-swtich";
 import {
@@ -38,7 +38,12 @@ import {
 } from "@/components/ui/select";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateUserSchema, CreateUserInput } from "@/features/users/schema";
+import {
+  UpdateUserSchema,
+  UpdateUserInput,
+  ResetPasswordSchema,
+  ResetPasswordInput,
+} from "@/features/users/schema";
 
 function SortHeader({
   title,
@@ -50,7 +55,7 @@ function SortHeader({
   return (
     <Button
       variant="ghost"
-      className="h-auto p-0 text-[13px] font-semibold uppercase tracking-wide text-slate-500 hover:bg-transparent hover:text-slate-700"
+      className="h-auto p-0 cursor-pointer text-[13px] font-semibold uppercase tracking-wide text-slate-500 hover:bg-transparent hover:text-slate-700"
       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
     >
       {title}
@@ -80,19 +85,27 @@ function ActionsCell({
 }) {
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
+  const [resetOpen, setResetOpen] = useState(false);
 
-  const form = useForm<CreateUserInput>({
-    resolver: zodResolver(CreateUserSchema),
+  const editForm = useForm<UpdateUserInput>({
+    resolver: zodResolver(UpdateUserSchema),
     defaultValues: {
       fullName: user.name ?? "",
       username: user.username ?? "",
       email: user.email ?? "",
-      password: "",
       role: user.role as "admin" | "user",
     },
   });
 
-  const handleEdit = async (values: CreateUserInput) => {
+  const resetForm = useForm<ResetPasswordInput>({
+    resolver: zodResolver(ResetPasswordSchema),
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  const handleEdit = async (values: UpdateUserInput) => {
     try {
       await updateUser(user.id, values);
       toast.success("Usuario actualizado");
@@ -103,6 +116,17 @@ function ActionsCell({
     }
   };
 
+  const handleResetPassword = async (values: ResetPasswordInput) => {
+    try {
+      await resetUserPassword(user.id, values);
+      toast.success("Contraseña restablecida correctamente");
+      setResetOpen(false);
+      resetForm.reset();
+    } catch {
+      toast.error("Error al restablecer la contraseña");
+    }
+  };
+
   return (
     <>
       <div className="flex justify-end">
@@ -110,14 +134,39 @@ function ActionsCell({
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="h-8 w-8 p-0 data-[state=open]:bg-muted"
+              className="h-8 w-8 p-0 cursor-pointer data-[state=open]:bg-muted"
             >
               <span className="sr-only">Abrir menú</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-44">
+          <DropdownMenuContent align="end" className="w-52">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => {
+                editForm.reset({
+                  fullName: user.name ?? "",
+                  username: user.username ?? "",
+                  email: user.email ?? "",
+                  role: user.role as "admin" | "user",
+                });
+                setEditOpen(true);
+              }}
+            >
+              <Pencil className="mr-2 h-4 w-4" />
+              Editar
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => {
+                resetForm.reset();
+                setResetOpen(true);
+              }}
+            >
+              Restablecer contraseña
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem
               className="cursor-pointer text-destructive focus:text-destructive"
               onClick={() => {
@@ -134,30 +183,14 @@ function ActionsCell({
             >
               Eliminar
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={() => {
-                form.reset({
-                  fullName: user.name ?? "",
-                  username: user.username ?? "",
-                  email: user.email ?? "",
-                  password: "",
-                  role: user.role as "admin" | "user",
-                });
-                setEditOpen(true);
-              }}
-            >
-              <Pencil className="mr-2 h-4 w-4" />
-              Editar
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
+      {/* Diálogo de edición */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent>
-          <form onSubmit={form.handleSubmit(handleEdit)} className="space-y-4">
+          <form onSubmit={editForm.handleSubmit(handleEdit)} className="space-y-4">
             <DialogHeader>
               <DialogTitle>Editar Usuario</DialogTitle>
             </DialogHeader>
@@ -165,7 +198,7 @@ function ActionsCell({
             <div className="space-y-4">
               <Controller
                 name="fullName"
-                control={form.control}
+                control={editForm.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor="fullName">Nombre completo</FieldLabel>
@@ -174,7 +207,7 @@ function ActionsCell({
                       id="fullName"
                       type="text"
                       placeholder="Ingrese su nombre completo"
-                      disabled={form.formState.isSubmitting}
+                      disabled={editForm.formState.isSubmitting}
                     />
                     {fieldState.error?.message && (
                       <p className="text-sm text-destructive">{fieldState.error.message}</p>
@@ -184,7 +217,7 @@ function ActionsCell({
               />
               <Controller
                 name="username"
-                control={form.control}
+                control={editForm.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor="username">Usuario</FieldLabel>
@@ -193,7 +226,7 @@ function ActionsCell({
                       id="username"
                       type="text"
                       placeholder="Ingrese su usuario"
-                      disabled={form.formState.isSubmitting}
+                      disabled={editForm.formState.isSubmitting}
                     />
                     {fieldState.error?.message && (
                       <p className="text-sm text-destructive">{fieldState.error.message}</p>
@@ -203,7 +236,7 @@ function ActionsCell({
               />
               <Controller
                 name="email"
-                control={form.control}
+                control={editForm.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -212,26 +245,7 @@ function ActionsCell({
                       id="email"
                       type="email"
                       placeholder="Ingrese su email"
-                      disabled={form.formState.isSubmitting}
-                    />
-                    {fieldState.error?.message && (
-                      <p className="text-sm text-destructive">{fieldState.error.message}</p>
-                    )}
-                  </Field>
-                )}
-              />
-              <Controller
-                name="password"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="password">Contraseña</FieldLabel>
-                    <Input
-                      {...field}
-                      id="password"
-                      type="password"
-                      placeholder="Ingrese su contraseña"
-                      disabled={form.formState.isSubmitting}
+                      disabled={editForm.formState.isSubmitting}
                     />
                     {fieldState.error?.message && (
                       <p className="text-sm text-destructive">{fieldState.error.message}</p>
@@ -241,14 +255,14 @@ function ActionsCell({
               />
               <Controller
                 name="role"
-                control={form.control}
+                control={editForm.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor="role">Rol</FieldLabel>
                     <Select
                       value={field.value}
                       onValueChange={field.onChange}
-                      disabled={form.formState.isSubmitting}
+                      disabled={editForm.formState.isSubmitting}
                     >
                       <SelectTrigger id="role">
                         <SelectValue placeholder="Seleccione un rol" />
@@ -278,9 +292,79 @@ function ActionsCell({
               <Button
                 className="btn-accent cursor-pointer"
                 type="submit"
-                disabled={form.formState.isSubmitting}
+                disabled={editForm.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? "Guardando..." : "Guardar"}
+                {editForm.formState.isSubmitting ? "Guardando..." : "Guardar"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Diálogo de restablecer contraseña */}
+      <Dialog open={resetOpen} onOpenChange={setResetOpen}>
+        <DialogContent>
+          <form onSubmit={resetForm.handleSubmit(handleResetPassword)} className="space-y-4">
+            <DialogHeader>
+              <DialogTitle>Restablecer Contraseña</DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4">
+              <Controller
+                name="password"
+                control={resetForm.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="new-password">Nueva contraseña</FieldLabel>
+                    <Input
+                      {...field}
+                      id="new-password"
+                      type="password"
+                      placeholder="Ingrese la nueva contraseña"
+                      disabled={resetForm.formState.isSubmitting}
+                    />
+                    {fieldState.error?.message && (
+                      <p className="text-sm text-destructive">{fieldState.error.message}</p>
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="confirmPassword"
+                control={resetForm.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="confirm-password">Confirmar contraseña</FieldLabel>
+                    <Input
+                      {...field}
+                      id="confirm-password"
+                      type="password"
+                      placeholder="Confirme la nueva contraseña"
+                      disabled={resetForm.formState.isSubmitting}
+                    />
+                    {fieldState.error?.message && (
+                      <p className="text-sm text-destructive">{fieldState.error.message}</p>
+                    )}
+                  </Field>
+                )}
+              />
+            </div>
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                type="button"
+                className="cursor-pointer"
+                onClick={() => setResetOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                className="btn-accent cursor-pointer"
+                type="submit"
+                disabled={resetForm.formState.isSubmitting}
+              >
+                {resetForm.formState.isSubmitting ? "Restableciendo..." : "Restablecer"}
               </Button>
             </DialogFooter>
           </form>

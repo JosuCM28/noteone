@@ -56,10 +56,11 @@ import { toast } from 'sonner';
 import { StatusBadge } from '../components/StatusBadge';
 import { BudgetBreakdown } from '../components/BudgetBreakdown';
 import { WhatsAppModal } from '../components/WhatsAppModal';
+import { PDFActionsPanel } from '../components/PDFActionsPanel';
 
 import { ESTATUS_CONFIG, TIPOS_ESCRITURA } from '@/features/shared/data/mock-data';
 import type { EstatusEscritura } from '@/features/shared/types';
-import { getEscrituraForView, updateEscrituraStatus } from '../action';
+import { getEscrituraForView, updateEscrituraStatus, deleteEscritura } from '../action';
 import { getStatusLabel } from '@/lib/utils';
 
 type Escritura = Awaited<ReturnType<typeof getEscrituraForView>>;
@@ -126,8 +127,13 @@ export default function EscrituraDetail({ escritura }: EscrituraDetailProps) {
   };
 
   const handleDelete = async () => {
-    toast.success('Escritura eliminada correctamente');
-    router.push('/escrituras');
+    try {
+      await deleteEscritura(escritura.id);
+      toast.success('Escritura eliminada correctamente');
+      router.push('/escrituras');
+    } catch {
+      toast.error('No se pudo eliminar la escritura. Inténtelo de nuevo.');
+    }
   };
 
   const handleSendWhatsApp = async () => {
@@ -144,7 +150,7 @@ export default function EscrituraDetail({ escritura }: EscrituraDetailProps) {
       {/* Header */}
       <div className="flex flex-col gap-3 sm:gap-4">
         <div className="flex items-center gap-3 sm:gap-4">
-          <Button variant="ghost" size="icon" asChild className="shrink-0">
+          <Button variant="ghost" size="icon" asChild className="shrink-0 cursor-pointer">
             <Link href="/escrituras">
               <ArrowLeft className="h-5 w-5" />
             </Link>
@@ -389,8 +395,8 @@ export default function EscrituraDetail({ escritura }: EscrituraDetailProps) {
 
         {/* Sidebar */}
         <div>
-          <div className="space-y-6">
-            <Card className="shadow-premium sticky top-20">
+          <div className="space-y-6 sticky top-20">
+            <Card className="shadow-premium">
               <CardHeader>
                 <CardTitle className="font-serif">Presupuesto</CardTitle>
               </CardHeader>
@@ -406,9 +412,13 @@ export default function EscrituraDetail({ escritura }: EscrituraDetailProps) {
                 />
               </CardContent>
             </Card>
-          </div>
 
-          <div className="space-y-6"></div>
+            <PDFActionsPanel
+              deedId={escritura.id}
+              folio={escritura.folio}
+              hasParticipantesB={b.length > 0}
+            />
+          </div>
         </div>
       </div>
 
@@ -438,7 +448,9 @@ export default function EscrituraDetail({ escritura }: EscrituraDetailProps) {
       <WhatsAppModal
         open={showWhatsAppModal}
         onOpenChange={setShowWhatsAppModal}
-        escritura={escritura as any}
+        deedId={escritura.id}
+        folio={escritura.folio}
+        participants={escritura.participants}
         onSend={handleSendWhatsApp}
         onSkip={() => setShowWhatsAppModal(false)}
         isResend={reciboEnviado}

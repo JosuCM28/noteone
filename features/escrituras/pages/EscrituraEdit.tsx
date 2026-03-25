@@ -155,7 +155,7 @@ export default function EscrituraEdit({ escritura }: EscrituraEditProps) {
           return;
         }
       }
-      toast.error("Error al crear la escritura");
+      toast.error("Error al actualizar la escritura");
 
     }
 
@@ -170,14 +170,15 @@ export default function EscrituraEdit({ escritura }: EscrituraEditProps) {
                 type="button"
                 variant="ghost"
                 size="icon"
+                className="cursor-pointer"
                 onClick={() => router.push("/escrituras")}
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
-              <h1 className="font-serif text-2xl font-bold">Nueva Escritura</h1>
+              <h1 className="font-serif text-2xl font-bold">Editar Escritura</h1>
             </div>
 
-            <Button type="submit" disabled={!canSubmit} className="btn-accent">
+            <Button type="submit" disabled={!canSubmit} className="btn-accent cursor-pointer">
               <Save className="h-4 w-4 mr-2" />
               Guardar Escritura
             </Button>
@@ -255,6 +256,9 @@ export default function EscrituraEdit({ escritura }: EscrituraEditProps) {
           <WhatsAppModal
             open={showWhatsAppModal}
             onOpenChange={setShowWhatsAppModal}
+            participants={ form.getValues("participants") }
+            deedId={escritura.id}
+            folio={escritura.folio}
             onSend={() => {
               toast.success("Recibo enviado por WhatsApp");
               router.push("/escrituras");

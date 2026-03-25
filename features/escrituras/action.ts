@@ -2,13 +2,11 @@
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { EscrituraFormSchema } from "./schema";
-import { Deed, DeedStatus, DeedTax } from "@/generated/prisma/client";
+import { DeedStatus } from "@/generated/prisma/client";
 import { PRESUPUESTO_RULES_BY_TIPO, TaxKey } from "../shared/tax-rules";
 import { EstatusEscritura, TAX_ITEM_LABELS, TipoEscritura } from "../shared/types";
-import { get } from "http";
 import { getAuthUserId } from "../auth/actions";
 import { isPrismaUniqueError } from "@/lib/prisma-errors";
-import { es } from "date-fns/locale";
 import { revalidatePath } from "next/cache";
 
 type Grouped = Record<string, number>;
@@ -22,7 +20,6 @@ export async function postEscritura(values: z.infer<typeof EscrituraFormSchema>)
   const filterTaxes = Object.entries(values.taxes).filter(([name]) => taxesByTypeSet.has(name as TaxKey));
 
 
-
   const userId = await getAuthUserId();
 
   const taxesSideB = new Set<TaxKey>([
@@ -33,7 +30,7 @@ export async function postEscritura(values: z.infer<typeof EscrituraFormSchema>)
 
   try {
 
-    await prisma.$transaction(async (tx) => {
+    const escrituraId = await prisma.$transaction(async (tx) => {
       const escritura = await tx.deed.create({
         data: {
           type: values.type,
@@ -71,6 +68,7 @@ export async function postEscritura(values: z.infer<typeof EscrituraFormSchema>)
           },
 
         }
+
       });
 
       const user = await tx.user.findUnique({
@@ -92,8 +90,11 @@ export async function postEscritura(values: z.infer<typeof EscrituraFormSchema>)
           deedNumber: escritura.deedNumber,
         },
       });
+      return escritura.id;
     });
-
+    revalidatePath("/escrituras");
+    revalidatePath("/dashboard");
+    return escrituraId;
   }
   catch (error) {
     if (isPrismaUniqueError(error)) {
@@ -119,13 +120,11 @@ export async function updateEscritura(
 
   const userId = await getAuthUserId();
   const taxesSideB = new Set<TaxKey>(["pagoISR", "honorariosB"]);
-
   try {
     await prisma.$transaction(async (tx) => {
       const existing = await tx.deed.findFirst({
         where: {
           id: deedId,
-          userId,
         },
         select: {
           id: true,
@@ -135,7 +134,7 @@ export async function updateEscritura(
           notes: true,
         },
       });
-
+      
       if (!existing) {
         throw new Error("ESCRITURA_NOT_FOUND");
       }
@@ -231,6 +230,8 @@ export async function updateEscritura(
 
 
     });
+    revalidatePath("/escrituras");
+    revalidatePath("/dashboard");
   } catch (error) {
     if (isPrismaUniqueError(error)) {
       throw new Error("ESCRITURANUMBER_TAKEN");
@@ -302,6 +303,59 @@ export async function getEscriturasForTable() {
   return escrituras;
 }
 
+export async function getDashboardData() {
+  const [counts, recent] = await Promise.all([
+    prisma.deed.groupBy({
+      by: ["status"],
+      _count: { _all: true },
+    }),
+    prisma.deed.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      select: {
+        id: true,
+        folio: true,
+        deedNumber: true,
+        typeLabel: true,
+        status: true,
+        totalA: true,
+        totalB: true,
+        createdAt: true,
+        participants: {
+          select: { name: true, side: true },
+          orderBy: { createdAt: "asc" },
+        },
+      },
+    }),
+  ]);
+
+  const countMap = Object.fromEntries(
+    counts.map((c) => [c.status, c._count._all])
+  );
+
+  const total = counts.reduce((sum, c) => sum + c._count._all, 0);
+
+  return {
+    stats: {
+      total,
+      porLiquidar: countMap["POR_LIQUIDAR"] ?? 0,
+      enRegistro: countMap["REGISTRO"] ?? 0,
+      entregadas: countMap["ENTREGADO"] ?? 0,
+    },
+    recentWritings: recent.map((d) => ({
+      id: d.id,
+      folio: d.folio,
+      deedNumber: d.deedNumber,
+      typeLabel: d.typeLabel,
+      status: d.status.toLowerCase(),
+      totalA: d.totalA?.toNumber() ?? 0,
+      totalB: d.totalB?.toNumber() ?? 0,
+      participantA: d.participants.find((p) => p.side === "A") ?? null,
+      participantB: d.participants.find((p) => p.side === "B") ?? null,
+    })),
+  };
+}
+
 export async function deleteEscritura(id: string) {
   const escritura = await prisma.deed.findUnique({
     where: {
@@ -364,6 +418,37 @@ export async function updateEscrituraStatus(id: string, status: EstatusEscritura
     });
   });
 
+}
+
+export async function verificarEscritura(id: string) {
+  const escritura = await prisma.deed.findUnique({
+    where: { id },
+    include: {
+      participants: {
+        select: { name: true, role: true, side: true },
+      },
+      deedTax: {
+        select: { name: true, amount: true, side: true },
+      },
+    },
+  });
+
+  if (!escritura) return null;
+
+  return {
+    id: escritura.id,
+    folio: escritura.folio,
+    deedNumber: escritura.deedNumber,
+    typeLabel: escritura.typeLabel,
+    status: escritura.status.toLowerCase(),
+    totalA: escritura.totalA?.toNumber() ?? 0,
+    totalB: escritura.totalB?.toNumber() ?? 0,
+    participants: escritura.participants,
+    deedTax: escritura.deedTax.map((t) => ({
+      ...t,
+      amount: t.amount.toNumber(),
+    })),
+  };
 }
 
 export async function getEscrituraForView(id: string) {

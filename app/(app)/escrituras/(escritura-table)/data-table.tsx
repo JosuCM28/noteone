@@ -44,13 +44,16 @@ import Link from "next/link";
 interface DataTableDeedProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-
+  /** Valor lowercase de estatus (ej: "por_liquidar") para pre-aplicar el filtro */
+  initialStatus?: string;
 }
 
-export function DataTableDeed<TData, TValue>({ columns, data }: DataTableDeedProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+export function DataTableDeed<TData, TValue>({ columns, data, initialStatus }: DataTableDeedProps<TData, TValue>) {
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: "createdAt", desc: true },
+  ]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    initialStatus ? [{ id: "status", value: initialStatus }] : []
   );
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const confirmRef = React.useRef<null | (() => void | Promise<void>)>(null);
@@ -129,7 +132,7 @@ export function DataTableDeed<TData, TValue>({ columns, data }: DataTableDeedPro
             Consulta todas las escrituras
           </p>
         </div>
-        <Button asChild className="btn-accent w-full sm:w-fit">
+        <Button asChild className="btn-accent cursor-pointer w-full sm:w-fit">
           <Link href="/escrituras/new">
             <Plus className="mr-2 h-4 w-4" />
             Nueva escritura
@@ -178,25 +181,22 @@ export function DataTableDeed<TData, TValue>({ columns, data }: DataTableDeedPro
                 (table.getColumn("status")?.getFilterValue() as string) ?? ""
               }
               onValueChange={(value) =>
-                table.getColumn("status")?.setFilterValue(value as string)
+                table.getColumn("status")?.setFilterValue(value === "__all__" ? "" : value)
               }
             >
               <SelectTrigger className="w-full max-w-48">
-                <SelectValue placeholder="Tipo de escritura" />
+                <SelectValue placeholder="Estatus" />
               </SelectTrigger>
 
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Estatus</SelectLabel>
-
+                  <SelectItem value="__all__">Todos</SelectItem>
                   {ESTATUS_CONFIG.map((t) => (
-                    <div key={t.value}>
-                      <SelectItem value={t.label}>
-                        {t.label}
-                      </SelectItem>
-                    </div>
+                    <SelectItem key={t.value} value={t.value}>
+                      {t.label}
+                    </SelectItem>
                   ))}
-
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -266,25 +266,64 @@ export function DataTableDeed<TData, TValue>({ columns, data }: DataTableDeedPro
             </tbody>
           </table>
 
-          <div className="flex items-center justify-end space-x-2 py-4 gap-2 pr-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-              className="cursor-pointer"
-            >
-              <ArrowLeft className="h-4 w-4 cursor-pointer" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-              className="cursor-pointer"
-            >
-              <ArrowRight className="h-4 w-4 cursor-pointer" />
-            </Button>
+          <div className="flex items-center justify-between py-4 px-4 gap-4 flex-wrap">
+            <p className="text-sm text-muted-foreground">
+              Página{" "}
+              <span className="font-medium">
+                {table.getState().pagination.pageIndex + 1}
+              </span>{" "}
+              de{" "}
+              <span className="font-medium">
+                {Math.max(table.getPageCount(), 1)}
+              </span>
+              {" "}·{" "}
+              <span className="font-medium">
+                {table.getFilteredRowModel().rows.length}
+              </span>{" "}
+              resultado(s)
+            </p>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground whitespace-nowrap">Filas por página</span>
+                <Select
+                  value={String(table.getState().pagination.pageSize)}
+                  onValueChange={(value) => {
+                    table.setPageSize(Number(value));
+                  }}
+                >
+                  <SelectTrigger className="h-8 w-[70px] cursor-pointer">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[10, 20, 30, 50, 100].map((size) => (
+                      <SelectItem key={size} value={String(size)} className="cursor-pointer">
+                        {size}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                  className="cursor-pointer"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                  className="cursor-pointer"
+                >
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
 

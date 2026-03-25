@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Scale, Eye, EyeOff, LogOut } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -31,7 +31,17 @@ export default function Login() {
   });
 
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
+
+  // Mostrar toast si fue redirigido por cuenta inhabilitada
+  useEffect(() => {
+    if (searchParams.get('disabled') === '1') {
+      toast.error('Tu cuenta está inhabilitada. Contacta al administrador.', {
+        duration: 5000,
+      });
+    }
+  }, [searchParams]);
 
   const handleRegister = async () => {
     try {
@@ -53,6 +63,13 @@ export default function Login() {
   const handleSubmit = async (values: z.infer<typeof SignInSchema>) => {
     try {
       const res = await signIn(values);
+
+      if (res && 'error' in res && res.error === 'ACCOUNT_DISABLED') {
+        toast.error('Tu cuenta está inhabilitada. Contacta al administrador.', {
+          duration: 5000,
+        });
+        return;
+      }
 
       if (!res?.user) {
         toast.error('Credenciales incorrectas');
@@ -183,7 +200,7 @@ export default function Login() {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                          className="absolute right-0 top-0 h-full px-3 hover:bg-transparent cursor-pointer"
                           onClick={() => setShowPassword((prev) => !prev)}
                           disabled={form.formState.isSubmitting}
                         >
@@ -220,9 +237,9 @@ export default function Login() {
                 </Button>
 
                 {/* Debug / Register Button (Opcional) */}
-                <Button type="button" variant="outline" onClick={handleRegister} className="cursor-pointer w-full">
+                {/* <Button type="button" variant="outline" onClick={handleRegister} className="cursor-pointer w-full">
                   Registrar rápido (dev)
-                </Button>
+                </Button> */}
               </form>
             </CardContent>
           </Card>

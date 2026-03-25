@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ColumnDef,
   ColumnFiltersState,
+  SortingState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -88,6 +89,9 @@ export function DataTableUser<TData, TValue>({
   );
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [globalFilter, setGlobalFilter] = React.useState("");
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: "createdAt", desc: true },
+  ]);
   const confirmRef = useState<{ current: null | (() => void | Promise<void>) }>(
     { current: null }
   )[0];
@@ -160,9 +164,11 @@ export function DataTableUser<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     state: {
+      sorting,
       globalFilter,
       columnFilters,
     },
@@ -309,25 +315,64 @@ export function DataTableUser<TData, TValue>({
             </TableBody>
           </Table>
         </div>
-        <div className="flex items-center justify-end space-x-2 py-4 gap-2 pr-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-            className="cursor-pointer"
-          >
-            <ArrowLeft className="h-4 w-4 cursor-pointer" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-            className="cursor-pointer"
-          >
-            <ArrowRight className="h-4 w-4 cursor-pointer" />
-          </Button>
+        <div className="flex items-center justify-between py-4 px-4 gap-4 flex-wrap">
+          <p className="text-sm text-muted-foreground">
+            Página{" "}
+            <span className="font-medium">
+              {table.getState().pagination.pageIndex + 1}
+            </span>{" "}
+            de{" "}
+            <span className="font-medium">
+              {Math.max(table.getPageCount(), 1)}
+            </span>
+            {" "}·{" "}
+            <span className="font-medium">
+              {table.getFilteredRowModel().rows.length}
+            </span>{" "}
+            usuario(s)
+          </p>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground whitespace-nowrap">Filas por página</span>
+              <Select
+                value={String(table.getState().pagination.pageSize)}
+                onValueChange={(value) => {
+                  table.setPageSize(Number(value));
+                }}
+              >
+                <SelectTrigger className="h-8 w-[70px] cursor-pointer">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[10, 20, 30, 50, 100].map((size) => (
+                    <SelectItem key={size} value={String(size)} className="cursor-pointer">
+                      {size}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+                className="cursor-pointer"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+                className="cursor-pointer"
+              >
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 

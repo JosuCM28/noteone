@@ -26,9 +26,8 @@ export const deleteDeed = async (id: string) => {
   try {
     await deleteEscritura(id);
     toast.success("Escritura eliminada");
-
-  } catch (error) {
-    console.error("Error deleting deed", error);
+  } catch {
+    toast.error("No se pudo eliminar la escritura. Inténtelo de nuevo.");
   }
 };
 
@@ -185,6 +184,11 @@ export const columnsList: ColumnDef<DeedTable>[] = [
         </Button>
       );
     },
+    filterFn: (row, columnId, filterValue: string) => {
+      if (!filterValue) return true;
+      const status = row.getValue(columnId) as string;
+      return status.toLowerCase() === filterValue.toLowerCase();
+    },
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       return <StatusBadge status={status.toLowerCase() as any} />;
@@ -195,7 +199,7 @@ export const columnsList: ColumnDef<DeedTable>[] = [
     accessorKey: "createdAt",
     header: ({ column }) => (
       <button
-        className="flex items-center gap-1 hover:text-foreground transition-colors"
+        className="flex items-center gap-1 cursor-pointer hover:text-foreground transition-colors"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Fecha firma <ArrowUpDown className="h-3 w-3" />

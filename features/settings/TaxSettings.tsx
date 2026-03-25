@@ -142,6 +142,7 @@ export default function Impuestos({ taxes }: taxSettingsConfigProps) {
             type="button"
             variant="ghost"
             size="icon"
+            className="cursor-pointer"
             onClick={() => setSelectedTipo(null)}
           >
             <ChevronLeft className="h-5 w-5" />
@@ -192,7 +193,7 @@ export default function Impuestos({ taxes }: taxSettingsConfigProps) {
 
                             <div className="relative">
                               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
-                                $
+                                {key === "traslado" ? "%" : "$"}
                               </span>
 
                               <Input
@@ -226,12 +227,13 @@ export default function Impuestos({ taxes }: taxSettingsConfigProps) {
                 <Button
                   type="button"
                   variant="outline"
+                  className="cursor-pointer"
                   onClick={() => setSelectedTipo(null)}
                 >
                   Cancelar
                 </Button>
 
-                <Button type="submit" className="gap-2">
+                <Button type="submit" className="cursor-pointer gap-2">
                   <Save className="h-4 w-4" />
                   Guardar Cambios
                 </Button>
