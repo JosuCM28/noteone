@@ -52,4 +52,4 @@ USER nextjs
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "pnpm prisma migrate deploy && node server.js"]
+CMD ["./start.sh"]
