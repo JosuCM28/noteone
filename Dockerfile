@@ -1,22 +1,29 @@
 # syntax=docker/dockerfile:1
 
+# ---------- BASE ----------
 FROM node:20-alpine AS base
 WORKDIR /app
 
 RUN apk add --no-cache libc6-compat openssl
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
+# ---------- DEPENDENCIES ----------
 FROM base AS deps
 WORKDIR /app
+
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
+# ---------- BUILDER ----------
 FROM base AS builder
 WORKDIR /app
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
 RUN pnpm build
 
+# ---------- RUNNER ----------
 FROM node:20-alpine AS runner
 WORKDIR /app
 
@@ -28,20 +35,21 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 
 RUN addgroup -S nodejs && adduser -S nextjs -G nodejs
 
-COPY --from=builder /app/public ./public
+# Necesarios para correr Prisma migrate deploy en runtime
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/start.sh ./start.sh
 
+# Next standalone
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
 
-RUN chmod +x ./start.sh
+RUN chown -R nextjs:nodejs /app
 
 USER nextjs
 
 EXPOSE 3000
 
-CMD ["sh", "./start.sh"]
+CMD ["sh", "-c", "pnpm prisma migrate deploy && node server.js"]
