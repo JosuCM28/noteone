@@ -1894,6 +1894,11 @@ export type DeedFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * Skip the first `n` Deeds.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Deeds.
+   */
   distinct?: Prisma.DeedScalarFieldEnum | Prisma.DeedScalarFieldEnum[]
 }
 

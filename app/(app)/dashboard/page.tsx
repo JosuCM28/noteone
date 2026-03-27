@@ -11,10 +11,12 @@ const DashboardPage = async () => {
   const { stats, recentWritings } = await getDashboardData();
 
   const firstName = session.user.name?.split(' ')[0] ?? 'Usuario';
+  const userRole = (session.user as any).role ?? 'user';
 
   return (
     <Dashboard
       userName={firstName}
+      userRole={userRole}
       stats={stats}
       recentWritings={recentWritings}
     />

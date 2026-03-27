@@ -46,11 +46,11 @@ export default function Login() {
   const handleRegister = async () => {
     try {
       const res = await signUp({
-        username: 'josue',
+        username: 'admin',
         password: 'Piripitiflautica',
-        name: 'josue',
-        email: 'josue@example.com',
-        role: 'user',
+        name: 'admin',
+        email: 'admin@admin.com',
+        role: 'admin',
         
       });
       toast.success('Registro exitoso');
@@ -71,10 +71,10 @@ export default function Login() {
         return;
       }
 
-      if (!res?.user) {
-        toast.error('Credenciales incorrectas');
-        return;
-      }
+      // if (!res?.user) {
+      //   toast.error('Credenciales incorrectas');
+      //   return;
+      // }
 
       toast.success('Bienvenido al sistema');
       router.push('/dashboard');
@@ -237,9 +237,9 @@ export default function Login() {
                 </Button>
 
                 {/* Debug / Register Button (Opcional) */}
-                {/* <Button type="button" variant="outline" onClick={handleRegister} className="cursor-pointer w-full">
+                <Button type="button" variant="outline" onClick={handleRegister} className="cursor-pointer w-full hidden ">
                   Registrar rápido (dev)
-                </Button> */}
+                </Button>
               </form>
             </CardContent>
           </Card>

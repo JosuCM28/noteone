@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
-import { Search, Plus, Menu, Bell, ChevronDown, User, LogOut } from 'lucide-react';
+import { Search, Plus, Menu, ChevronDown, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -12,10 +12,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-// import { useAuth } from '@/features/auth';
 import { usePathname, useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { toast } from 'sonner';
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: 'Administrador',
+  user: 'Operador',
+};
 
 const HIDE_BUTTON_ROUTES = new Set([
   "/dashboard",
@@ -31,11 +35,21 @@ interface TopbarProps {
 }
 
 export default function Topbar({ onMenuClick, onSearch, searchValue = '', showSearch = true }: TopbarProps) {
-  //   const { user, logout } = useAuth();
   const [localSearch, setLocalSearch] = useState(searchValue);
   const pathname = usePathname();
   const hideButton = HIDE_BUTTON_ROUTES.has(pathname);
   const router = useRouter();
+
+  const { data: session } = authClient.useSession();
+  const userName = session?.user?.name ?? 'Usuario';
+  const userRole = (session?.user as any)?.role ?? 'user';
+  const roleLabel = ROLE_LABELS[userRole] ?? userRole;
+  const initials = userName
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((n: string) => n[0].toUpperCase())
+    .join('');
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocalSearch(e.target.value);
@@ -120,7 +134,7 @@ export default function Topbar({ onMenuClick, onSearch, searchValue = '', showSe
             <Button variant="ghost" className="gap-2 pl-2 pr-1 shrink-0 hover:bg-muted-foreground/10 hover:text-muted-foreground/90">
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                  {/* {initials} */} JCM
+                  {initials}
                 </AvatarFallback>
               </Avatar>
               <ChevronDown className="h-4 w-4 text-muted-foreground " />
@@ -129,8 +143,8 @@ export default function Topbar({ onMenuClick, onSearch, searchValue = '', showSe
           <DropdownMenuContent align="end" className="w-56">
   <DropdownMenuLabel>
     <div>
-      <p className="font-medium">Josue</p>
-      <p className="text-xs text-muted-foreground capitalize">Administrador</p>
+      <p className="font-medium">{userName}</p>
+      <p className="text-xs text-muted-foreground capitalize">{roleLabel}</p>
     </div>
   </DropdownMenuLabel>
 

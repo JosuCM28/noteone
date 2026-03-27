@@ -32,8 +32,14 @@ type RecentWriting = {
   participantB: { name: string } | null;
 };
 
+const ROLE_LABELS: Record<string, string> = {
+  admin: 'Administrador',
+  user: 'Operador',
+};
+
 type DashboardProps = {
   userName: string;
+  userRole: string;
   stats: Stats;
   recentWritings: RecentWriting[];
 };
@@ -105,7 +111,9 @@ function KpiCard({ label, value, icon, iconBg, bar, trending, href }: KpiCardPro
 }
 
 /* ─── componente principal ──────────────────────────── */
-export default function Dashboard({ userName, stats, recentWritings }: DashboardProps) {
+export default function Dashboard({ userName, userRole, stats, recentWritings }: DashboardProps) {
+  const roleLabel = ROLE_LABELS[userRole] ?? userRole;
+
   return (
     <div className="space-y-6 animate-fade-in max-w-7xl mx-auto sm:p-6 lg:p-8 pt-10 sm:pt-8 lg:pt-5">
 
@@ -116,7 +124,8 @@ export default function Dashboard({ userName, stats, recentWritings }: Dashboard
             Bienvenido, {userName}
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground mt-1">
-            Aquí está el resumen de actividad de la notaría
+            <span className="font-medium text-foreground">{roleLabel}</span>
+            {' '}· Aquí está el resumen de actividad de la notaría
           </p>
         </div>
         <Button asChild className="btn-accent w-full sm:w-fit">
