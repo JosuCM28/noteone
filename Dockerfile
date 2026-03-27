@@ -46,10 +46,11 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-RUN chown -R nextjs:nodejs /app
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh && chown -R nextjs:nodejs /app
 
 USER nextjs
 
 EXPOSE 3000
 
-CMD ["./start.sh"]
+CMD ["/bin/sh", "/app/start.sh"]

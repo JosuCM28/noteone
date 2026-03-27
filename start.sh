@@ -1,8 +1,11 @@
 #!/bin/sh
 set -e
 
-echo "Applying Prisma migrations..."
-pnpm prisma migrate deploy
+if [ -z "$DATABASE_URL" ]; then
+  echo "DATABASE_URL no está definida"
+  exit 1
+fi
 
-echo "Starting Next.js..."
+echo "DATABASE_URL detectada"
+pnpm prisma migrate deploy
 node server.js
