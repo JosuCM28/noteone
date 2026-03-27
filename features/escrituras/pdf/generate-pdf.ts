@@ -60,6 +60,6 @@ export async function generatePDFBase64(
       break;
   }
 
-  const buffer = await renderToBuffer(element);
+  const buffer = await renderToBuffer(element as any);
   return buffer.toString("base64");
 }
