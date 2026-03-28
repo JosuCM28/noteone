@@ -29,7 +29,7 @@ export default function Sidebar({ collapsed = false, userRole }: SidebarProps) {
     const navItems = [
         { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', adminOnly: false },
         { href: '/escrituras', icon: FileText, label: 'Escrituras', adminOnly: false },
-        { href: '/users', icon: Users, label: 'Usuarios', adminOnly: userRole !== 'admin' as UserRole ? true : false },
+        { href: '/users', icon: Users, label: 'Usuarios', adminOnly: userRole !== 'admin' },
         { href: '/verificar-recibo', icon: ShieldCheck, label: 'Verificar Recibo', adminOnly: false },
         { href: '/settings', icon: Cog, label: 'Configuraciones', adminOnly: false },
     ];
@@ -54,7 +54,7 @@ export default function Sidebar({ collapsed = false, userRole }: SidebarProps) {
     }
 
 
-    const filteredItems = navItems.filter(item => !item.adminOnly || null);
+    const filteredItems = navItems.filter(item => !item.adminOnly);
 
     return (
         <aside

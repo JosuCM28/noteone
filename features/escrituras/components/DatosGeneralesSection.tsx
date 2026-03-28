@@ -23,7 +23,7 @@ export function DatosGeneralesSection() {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <div className="flex justify-between items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
           {/* folioInterno -> folio */}
           <FormField
 

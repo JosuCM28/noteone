@@ -193,7 +193,7 @@ export default function EscrituraDetail({ escritura }: EscrituraDetailProps) {
             </SelectContent>
           </Select>
 
-          <div className="flex-1 min-w-0" />
+          <div className="hidden sm:block flex-1 min-w-0" />
 
           {showSendButton ? (
             <Button

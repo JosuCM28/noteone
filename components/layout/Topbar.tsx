@@ -105,7 +105,7 @@ export default function Topbar({ onMenuClick, onSearch, searchValue = '', showSe
         </div>
       )}
 
-      <div className="flex-1 min-w-0" />
+      <div className="hidden sm:block flex-1 min-w-0" />
 
       {/* Actions */}
 
@@ -113,7 +113,7 @@ export default function Topbar({ onMenuClick, onSearch, searchValue = '', showSe
         <div>
           {!hideButton && (
             <Button asChild className="btn-accent hidden sm:inline-flex">
-              <Link href="/escrituras/nueva">
+              <Link href="/escrituras/new">
                 <Plus className="h-4 w-4 mr-2" />
                 Nueva escritura
               </Link>
@@ -123,7 +123,7 @@ export default function Topbar({ onMenuClick, onSearch, searchValue = '', showSe
         </div>
 
         <Button asChild variant="ghost" size="icon" className="sm:hidden">
-          <Link href="/escrituras/nueva">
+          <Link href="/escrituras/new">
             <Plus className="h-5 w-5" />
           </Link>
         </Button>

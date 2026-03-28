@@ -40,7 +40,7 @@ export function AppShell({ children, userRole }: { children: ReactNode, userRole
 
 
       {/* Mobile Navigation */}
-      <MobileNav open={mobileNavOpen} onOpenChange={setMobileNavOpen} />
+      <MobileNav open={mobileNavOpen} onOpenChange={setMobileNavOpen} userRole={userRole} />
 
       {/* Main Content */}
        <div className="lg:pl-64">

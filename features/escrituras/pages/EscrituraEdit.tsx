@@ -164,7 +164,7 @@ export default function EscrituraEdit({ escritura }: EscrituraEditProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="max-w-5xl mx-auto space-y-6 animate-fade-in pb-8">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-4">
               <Button
                 type="button"
@@ -175,7 +175,7 @@ export default function EscrituraEdit({ escritura }: EscrituraEditProps) {
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
-              <h1 className="font-serif text-2xl font-bold">Editar Escritura</h1>
+              <h1 className="font-serif text-xl sm:text-2xl font-bold">Editar Escritura</h1>
             </div>
 
             <Button type="submit" disabled={!canSubmit} className="btn-accent cursor-pointer">

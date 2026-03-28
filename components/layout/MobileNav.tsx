@@ -1,27 +1,30 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, FileText, Users, Scale, LogOut, X } from 'lucide-react';
+import { LayoutDashboard, FileText, Users, Scale, LogOut, X, ShieldCheck, Cog } from 'lucide-react';
 import { cn } from '@/lib/utils';
 // import { useAuth } from '@/features/auth';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 
 const navItems = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/escrituras', icon: FileText, label: 'Escrituras' },
-  { href: '/usuarios', icon: Users, label: 'Usuarios', adminOnly: true },
+  { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', adminOnly: false },
+  { href: '/escrituras', icon: FileText, label: 'Escrituras', adminOnly: false },
+  { href: '/users', icon: Users, label: 'Usuarios', adminOnly: true },
+  { href: '/verificar-recibo', icon: ShieldCheck, label: 'Verificar Recibo', adminOnly: false },
+  { href: '/settings', icon: Cog, label: 'Configuraciones', adminOnly: false },
 ];
 
 interface MobileNavProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  userRole?: string | null;
 }
 
-export function MobileNav({ open, onOpenChange }: MobileNavProps) {
+export function MobileNav({ open, onOpenChange, userRole }: MobileNavProps) {
   const pathname = usePathname();
 //   const { isAdmin, logout, user } = useAuth();
 
-  const filteredItems = navItems.filter(item => !item.adminOnly || null);
+  const filteredItems = navItems.filter(item => !item.adminOnly || userRole === 'admin');
 
 //   const handleLogout = () => {
 //     onOpenChange(false);

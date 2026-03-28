@@ -251,7 +251,7 @@ export default function Impuestos({ taxes }: taxSettingsConfigProps) {
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <Settings className="h-6 w-6 text-primary" />
-          <h1 className="text-3xl font-serif font-semibold text-foreground">
+          <h1 className="text-xl sm:text-3xl font-serif font-semibold text-foreground">
             Configuración de Impuestos
           </h1>
         </div>
