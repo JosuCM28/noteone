@@ -133,7 +133,7 @@ export default function Sidebar({ collapsed = false, userRole }: SidebarProps) {
 
                     <Tooltip delayDuration={0}>
                         <TooltipTrigger asChild>
-                            <form action={handleLogOut}>
+                            
                                 <Button
                                     variant="ghost"
                                     size={collapsed ? 'icon' : 'default'}
@@ -146,7 +146,6 @@ export default function Sidebar({ collapsed = false, userRole }: SidebarProps) {
                                     <LogOut className="h-5 w-5" />
                                     {!collapsed && <span className="ml-3 cursor-pointer">Cerrar sesión</span>}
                                 </Button>
-                            </form>
                         </TooltipTrigger>
                         {collapsed && (
                             <TooltipContent side="right" className="bg-slate-900 border-slate-700 text-white cursor-pointer">
