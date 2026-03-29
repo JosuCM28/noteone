@@ -8,4 +8,4 @@ fi
 
 echo "DATABASE_URL detectada"
 pnpm prisma migrate deploy
-node server.js
+exec node server.js

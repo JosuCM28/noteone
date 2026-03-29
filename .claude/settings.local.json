@@ -6,7 +6,9 @@
       "Bash(wc -l /d/ProyectoNotaria/noteone/features/escrituras/pages/*.tsx)",
       "Bash(grep -r \"searchParams\\\\|SearchParams\" /d/ProyectoNotaria/noteone/app --include=*.tsx -n)",
       "Bash(grep -r \"getEscrituras\\\\|getAllEscrituras\" /d/ProyectoNotaria/noteone --include=*.ts --include=*.tsx -n)",
-      "Bash(ls \"D:/ProyectoNotaria/noteone/app/\\(app\\)/escrituras/\")"
+      "Bash(ls \"D:/ProyectoNotaria/noteone/app/\\(app\\)/escrituras/\")",
+      "Bash(find /d/ProyectoNotaria/noteone -type f \\\\\\(-name Dockerfile -o -name docker-compose*.yml -o -name .env* -o -name next.config.* -o -name .github \\\\\\) -not -path */node_modules/*)",
+      "Bash(find /d/ProyectoNotaria/noteone -maxdepth 2 -name .env.example -o -name .env.*)"
     ]
   }
 }
