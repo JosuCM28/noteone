@@ -4,14 +4,17 @@ import { ReactNode, useState } from 'react';
 import  Sidebar  from './Sidebar';
 import  Topbar  from './Topbar';
 import { MobileNav } from './MobileNav';
-import { Skeleton } from '@/components/ui/skeleton';
 import { UserRol } from '@/features/auth/types';
+import { usePathname } from 'next/navigation';
 
+
+const HIDE_TOPBAR_ROUTES = new Set(['/escrituras/new']);
 
 export function AppShell({ children, userRole }: { children: ReactNode, userRole: string | null | undefined }) {
 //   const { isAuthenticated, loading } = useAuth();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [globalSearch, setGlobalSearch] = useState('');
+  const pathname = usePathname();
+  const showTopbar = !HIDE_TOPBAR_ROUTES.has(pathname);
 
 //   if (loading) {
 //     return (
@@ -44,11 +47,9 @@ export function AppShell({ children, userRole }: { children: ReactNode, userRole
 
       {/* Main Content */}
        <div className="lg:pl-64">
-        <Topbar
-          onMenuClick={() => setMobileNavOpen(true)}
-          onSearch={setGlobalSearch}
-          searchValue={globalSearch}
-        />
+        {showTopbar && (
+          <Topbar onMenuClick={() => setMobileNavOpen(true)} />
+        )}
 
         <main className="p-4 sm:p-6 lg:p-8">
           {children}

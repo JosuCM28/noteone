@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Save } from "lucide-react";
 import { toast } from "sonner";
@@ -93,6 +93,14 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
     ];
   }, [tipoConfig]);
 
+  const datosGeneralesRef = useRef<HTMLDivElement>(null);
+
+  const scrollToDatosGenerales = () => {
+    setTimeout(() => {
+      datosGeneralesRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
+  };
+
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingTipo, setPendingTipo] = useState<TipoEscritura | null>(null);
@@ -132,6 +140,7 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
       form.setValue("type", next as any, { shouldDirty: true });
       const cfg = TIPOS_ESCRITURA.find((x) => x.value === next);
       form.setValue("typeLabel", cfg?.label ?? next, { shouldDirty: true });
+      scrollToDatosGenerales();
       return;
     }
 
@@ -147,6 +156,7 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
     setPendingTipo(null);
     setConfirmOpen(false);
     toast.message("Se reinició el borrador al cambiar el tipo de escritura");
+    scrollToDatosGenerales();
   };
 
   const cancelChangeTipo = () => {
@@ -206,7 +216,9 @@ export default function EscrituraNueva({ taxes }: EscrituraNuevaProps) {
               onSelect={handleTipoChange}
             />
 
-            <DatosGeneralesSection />
+            <div ref={datosGeneralesRef}>
+              <DatosGeneralesSection />
+            </div>
 
             <ParticipantesManager
               // ✅ mapea fields -> lo que tu manager espera (inglés)

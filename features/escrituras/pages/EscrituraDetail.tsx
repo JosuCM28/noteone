@@ -56,6 +56,7 @@ import { toast } from 'sonner';
 import { StatusBadge } from '../components/StatusBadge';
 import { BudgetBreakdown } from '../components/BudgetBreakdown';
 import { WhatsAppModal } from '../components/WhatsAppModal';
+import { StatusWhatsAppModal } from '../components/StatusWhatsAppModal';
 import { PDFActionsPanel } from '../components/PDFActionsPanel';
 
 import { ESTATUS_CONFIG, TIPOS_ESCRITURA } from '@/features/shared/data/mock-data';
@@ -75,6 +76,7 @@ export default function EscrituraDetail({ escritura }: EscrituraDetailProps) {
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState(false);
 
   // ✅ Dialog controlado solo para abrir/cerrar
   const [showAuditDialog, setShowAuditDialog] = useState(false);
@@ -208,6 +210,16 @@ export default function EscrituraDetail({ escritura }: EscrituraDetailProps) {
               <span className="sm:hidden">Recibo</span>
             </Button>
           ) : null}
+
+          <Button
+            variant="outline"
+            className="cursor-pointer w-full sm:w-auto"
+            onClick={() => setShowStatusModal(true)}
+          >
+            <MessageCircle className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Enviar status</span>
+            <span className="sm:hidden">Status</span>
+          </Button>
 
           {/* ✅ Dialog Bitácora (usa escritura.auditLogs) */}
           <Dialog open={showAuditDialog} onOpenChange={setShowAuditDialog}>
@@ -454,6 +466,17 @@ export default function EscrituraDetail({ escritura }: EscrituraDetailProps) {
         onSend={handleSendWhatsApp}
         onSkip={() => setShowWhatsAppModal(false)}
         isResend={reciboEnviado}
+      />
+
+      {/* Status WhatsApp modal */}
+      <StatusWhatsAppModal
+        open={showStatusModal}
+        onOpenChange={setShowStatusModal}
+        participants={escritura.participants}
+        folio={escritura.folio}
+        deedNumber={escritura.deedNumber}
+        typeLabel={escritura.typeLabel}
+        status={escritura.status}
       />
     </div>
   );

@@ -306,7 +306,7 @@ export function ReciboA({ escritura }: Props) {
         {/* ── Total a pagar ── */}
         <View style={s.totalBox}>
           <View style={s.totalLeft}>
-            <Text style={s.totalLabel}>Total a Pagar</Text>
+            <Text style={s.totalLabel}>Total Pagado</Text>
             <Text style={s.totalNote}>{rolesA} · {escritura.typeLabel}</Text>
           </View>
           <Text style={s.totalAmount}>{formatMXN(escritura.totalA)}</Text>

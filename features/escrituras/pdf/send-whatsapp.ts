@@ -88,3 +88,60 @@ export async function sendReciboWhatsApp(
 
   return { success: true };
 }
+
+export async function sendStatusWhatsApp(params: {
+  phone: string;
+  recipientName: string;
+  role: string;
+  folio: string;
+  deedNumber: string | null;
+  typeLabel: string;
+  statusLabel: string;
+}): Promise<SendWhatsAppResult> {
+  const apiUrl = process.env.EVOLUTION_API_URL;
+  const apiKey = process.env.EVOLUTION_API_KEY;
+  const instance = process.env.EVOLUTION_INSTANCE;
+
+  if (!apiUrl || !apiKey || !instance) {
+    return {
+      success: false,
+      error: "Las variables de entorno de apiEvolution no están configuradas.",
+    };
+  }
+
+  const { phone, recipientName, role, folio, deedNumber, typeLabel, statusLabel } = params;
+  const normalizedPhone = normalizePhone(phone);
+
+  const text =
+    `Hola ${recipientName}, este es el status de tu escritura:\n\n` +
+    `📋 Folio: ${folio}\n` +
+    `📝 No. Escritura: ${deedNumber ?? "En proceso"}\n` +
+    `🏷 Tipo: ${typeLabel}\n` +
+    `👤 Rol: ${role}\n` +
+    `📌 Estatus: ${statusLabel}\n\n` +
+    `Cualquier duda o pregunta contáctanos.`;
+
+  let res: Response;
+  try {
+    res = await fetch(`${apiUrl}/message/sendText/${instance}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: apiKey },
+      body: JSON.stringify({ number: normalizedPhone, text }),
+    });
+  } catch (err) {
+    return {
+      success: false,
+      error: `No se pudo conectar con apiEvolution: ${err instanceof Error ? err.message : String(err)}`,
+    };
+  }
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    return {
+      success: false,
+      error: `apiEvolution respondió con error ${res.status}: ${body || res.statusText}`,
+    };
+  }
+
+  return { success: true };
+}
