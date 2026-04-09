@@ -121,11 +121,11 @@ export default function Login() {
           </div>
 
           <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Sistema de Gestión Notarial
+            Notaria Uno - Sistema de Gestión
           </h1>
 
           <p className="text-base sm:text-lg text-white/80 max-w-md">
-            Administre sus escrituras, presupuestos y trámites notariales de manera eficiente y segura.
+            Altotonga, Ver.
           </p>
         </div>
       </div>

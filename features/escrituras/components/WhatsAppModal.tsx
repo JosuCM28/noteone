@@ -123,7 +123,13 @@ export function WhatsAppModal({
       toast.success(
         `Recibo de ${participant?.role ?? "cliente"} enviado a ${participant?.name ?? "cliente"}`
       );
-      onSend();
+      // Solo cerrar y redirigir cuando ambas partes hayan sido enviadas
+      const otherState = side === "A" ? stateB : stateA;
+      const otherExists = side === "A" ? !!firstB : !!firstA;
+      const allWillBeSent = !otherExists || otherState.status === "success";
+      if (allWillBeSent) {
+        onSend();
+      }
     } else {
       setState((s) => ({ ...s, status: "error", error: result.error }));
       toast.error(`Error al enviar recibo de ${participant?.role ?? side}: ${result.error}`);

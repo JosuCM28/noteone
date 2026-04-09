@@ -200,7 +200,7 @@ export default function Impuestos({ taxes }: taxSettingsConfigProps) {
                                 id={`${selectedTipo}.${String(key)}`}
                                 type="number"
                                 min="0"
-                                step="0.000001"
+                                step="any"
                                 maxLength={12}
                                 value={Number(value) || ""}
                                 onChange={(e) => {
