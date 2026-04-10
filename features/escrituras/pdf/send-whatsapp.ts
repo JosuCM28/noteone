@@ -74,7 +74,7 @@ export async function sendReciboWhatsApp(
   } catch (err) {
     return {
       success: false,
-      error: `No se pudo conectar con apiEvolution: ${err instanceof Error ? err.message : String(err)}`,
+      error: `No se pudo conectar con apiEvolutionn: ${err instanceof Error ? err.message : String(err)}`,
     };
   }
 

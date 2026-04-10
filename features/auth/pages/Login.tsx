@@ -98,7 +98,8 @@ export default function Login() {
         />
 
         {/* ✅ Premium overlay: gradient + blur suave */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/35 to-black/10 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/35 to-black/10 backdrop-blur-[2px]" 
+        />
 
         {/* ✅ Optional: premium grain/noise overlay (sin cuadrícula) */}
         <div
