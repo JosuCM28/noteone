@@ -60,7 +60,7 @@ export function StatusWhatsAppModal({
 }: StatusWhatsAppModalProps) {
   const firstA = participants.find((p) => p.side === "A");
   const firstB = participants.find((p) => p.side === "B");
-  const statusLabel = getStatusLabel(status);
+  const statusLabel = getStatusLabel(status as import("@/features/shared/types").EstatusEscritura);
 
   const [stateA, setStateA] = useState<ParticipantState>({
     phone: firstA?.phone ?? "",
