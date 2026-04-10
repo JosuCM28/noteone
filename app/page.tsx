@@ -86,6 +86,49 @@ export default function Home() {
           animation: particle linear infinite;
           pointer-events: none;
         }
+        .main-card {
+          padding: 64px 72px;
+        }
+        .btn-iniciar {
+          display: inline-block;
+          padding: 18px 88px;
+          font-size: 1.1rem;
+          font-weight: 700;
+          letter-spacing: 0.22em;
+          color: #ffffff;
+          background: linear-gradient(135deg, #ea7729 0%, #c05a10 50%, #ea7729 100%);
+          background-size: 200% auto;
+          border: none;
+          border-radius: 50px;
+          cursor: pointer;
+          text-transform: uppercase;
+          transition: background-position 0.4s ease, transform 0.15s ease;
+          font-family: var(--font-sans);
+          width: auto;
+        }
+        .btn-iniciar:hover {
+          background-position: right center;
+          transform: scale(1.055);
+        }
+        @media (max-width: 480px) {
+          .main-card {
+            padding: 40px 24px;
+          }
+          .btn-iniciar {
+            width: 100%;
+            padding: 16px 24px;
+            font-size: 1rem;
+            letter-spacing: 0.18em;
+          }
+        }
+        @media (min-width: 481px) and (max-width: 640px) {
+          .main-card {
+            padding: 48px 36px;
+          }
+          .btn-iniciar {
+            padding: 18px 56px;
+          }
+        }
       `}</style>
 
       <div style={{
@@ -174,16 +217,15 @@ export default function Home() {
         }} />
 
         {/* ── Tarjeta principal ── */}
-        <div className="card-in" style={{
+        <div className="card-in main-card" style={{
           position: "relative", zIndex: 10,
           backdropFilter: "blur(28px) saturate(160%)",
           WebkitBackdropFilter: "blur(28px) saturate(160%)",
           background: "linear-gradient(140deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
           border: "1px solid rgba(234,119,41,0.22)",
           borderRadius: "20px",
-          padding: "64px 72px",
           maxWidth: "660px",
-          width: "90%",
+          width: "92%",
           textAlign: "center",
           boxShadow: "0 8px 40px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08)",
         }}>
@@ -276,34 +318,8 @@ export default function Home() {
           </p>
 
           {/* Botón INICIAR */}
-          <Link href="/login" style={{ textDecoration: "none" }}>
-            <button
-              className="btn-in"
-              style={{
-                display: "inline-block",
-                padding: "18px 88px",
-                fontSize: "1.1rem",
-                fontWeight: "700",
-                letterSpacing: "0.22em",
-                color: "#ffffff",
-                background: "linear-gradient(135deg, #ea7729 0%, #c05a10 50%, #ea7729 100%)",
-                backgroundSize: "200% auto",
-                border: "none",
-                borderRadius: "50px",
-                cursor: "pointer",
-                textTransform: "uppercase",
-                transition: "background-position 0.4s ease, transform 0.15s ease",
-                fontFamily: "var(--font-sans)",
-              }}
-              onMouseOver={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.backgroundPosition = "right center";
-                (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.055)";
-              }}
-              onMouseOut={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.backgroundPosition = "left center";
-                (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)";
-              }}
-            >
+          <Link href="/login" style={{ textDecoration: "none", display: "block" }}>
+            <button className="btn-in btn-iniciar">
               INICIAR
             </button>
           </Link>
