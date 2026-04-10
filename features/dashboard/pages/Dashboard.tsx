@@ -18,6 +18,7 @@ type Stats = {
   porLiquidar: number;
   enRegistro: number;
   entregadas: number;
+  trendingTotal: string;
 };
 
 type RecentWriting = {
@@ -143,7 +144,7 @@ export default function Dashboard({ userName, userRole, stats, recentWritings }:
           value={stats.total}
           icon={<FileText className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />}
           iconBg="bg-primary/10"
-          trending="+12%"
+          trending={stats.trendingTotal}
           href="/escrituras"
         />
         <KpiCard

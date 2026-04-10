@@ -304,7 +304,11 @@ export async function getEscriturasForTable() {
 }
 
 export async function getDashboardData() {
-  const [counts, recent] = await Promise.all([
+  const now = new Date();
+  const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+  const [counts, recent, currentMonthCount, previousMonthCount] = await Promise.all([
     prisma.deed.groupBy({
       by: ["status"],
       _count: { _all: true },
@@ -327,6 +331,12 @@ export async function getDashboardData() {
         },
       },
     }),
+    prisma.deed.count({
+      where: { createdAt: { gte: startOfCurrentMonth } },
+    }),
+    prisma.deed.count({
+      where: { createdAt: { gte: startOfPreviousMonth, lt: startOfCurrentMonth } },
+    }),
   ]);
 
   const countMap = Object.fromEntries(
@@ -335,12 +345,21 @@ export async function getDashboardData() {
 
   const total = counts.reduce((sum, c) => sum + c._count._all, 0);
 
+  let trendingTotal = "N/A";
+  if (previousMonthCount > 0) {
+    const pct = ((currentMonthCount - previousMonthCount) / previousMonthCount) * 100;
+    trendingTotal = (pct >= 0 ? "+" : "") + pct.toFixed(1) + "%";
+  } else if (currentMonthCount > 0) {
+    trendingTotal = "+100%";
+  }
+
   return {
     stats: {
       total,
       porLiquidar: countMap["POR_LIQUIDAR"] ?? 0,
       enRegistro: countMap["REGISTRO"] ?? 0,
       entregadas: countMap["ENTREGADO"] ?? 0,
+      trendingTotal,
     },
     recentWritings: recent.map((d) => ({
       id: d.id,
