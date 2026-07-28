@@ -10,7 +10,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 
 RUN apk add --no-cache libc6-compat openssl \
     && corepack enable \
-    && corepack prepare pnpm@11.17.0 --activate
+    && corepack prepare pnpm@10.19.0 --activate
 
 # ---------- DEPENDENCIES ----------
 FROM base AS deps
